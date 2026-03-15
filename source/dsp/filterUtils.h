@@ -2,8 +2,8 @@
 
 #include <JuceHeader.h>
 
-#include "globals.h"
-#include "peakband.h"
+#include "GraphicEqGlobals.h"
+#include "PeakBand.h"
 
 //==============================================================================
 struct FilterUtils
@@ -55,5 +55,5 @@ struct FilterUtils
     static void updateBandEnablements(MonoChain&                                        monoChain,
                                       juce::AudioParameterBool*                         lcEnabledParam,
                                       juce::AudioParameterBool*                         hcEnabledParam,
-                                      std::array<PeakBand, Globals::getNumPeakBands()>& peakBands);
+                                      std::array<PeakBand, GraphicEqGlobals::getNumPeakBands()>& peakBands);
 };

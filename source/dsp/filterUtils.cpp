@@ -1,4 +1,4 @@
-#include "filterutils.h"
+#include "FilterUtils.h"
 
 //==============================================================================
 void FilterUtils::updatePeakCoefficients(MonoChain&                 monoChain,
@@ -103,13 +103,13 @@ FilterUtils::CoefficientsType FilterUtils::makeLowPassFilter(juce::AudioParamete
 void FilterUtils::updateBandEnablements(MonoChain&                                        monoChain,
                                         juce::AudioParameterBool*                         lcEnabledParam,
                                         juce::AudioParameterBool*                         hcEnabledParam,
-                                        std::array<PeakBand, Globals::getNumPeakBands()>& peakBands)
+                                        std::array<PeakBand, GraphicEqGlobals::getNumPeakBands()>& peakBands)
 {
     if (lcEnabledParam == nullptr || hcEnabledParam == nullptr) {
         return;
     }
 
-    for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
+    for (size_t i = 0; i < GraphicEqGlobals::getNumPeakBands(); ++i) {
         if (peakBands.at(i).peakEnabledParam == nullptr) {
             return;
         }

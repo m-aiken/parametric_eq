@@ -1,7 +1,7 @@
-#include "fftdatagenerator.h"
+#include "FftDataGenerator.h"
 
 //==============================================================================
-void FFTDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer<float>& audioData)
+void FftDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer<float>& audioData)
 {
     const auto fftSize = getFFTSize();
 
@@ -22,13 +22,13 @@ void FFTDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer<float>
     juce::FloatVectorOperations::multiply(fftData.data(), 1.f / static_cast<float>(numBins), numBins + 1);
 
     for (auto i = 0; i < numBins + 1; ++i) {
-        fftData[i] = juce::Decibels::gainToDecibels(fftData[i], Globals::getNegativeInf());
+        fftData[i] = juce::Decibels::gainToDecibels(fftData[i], GraphicEqGlobals::getNegativeInf());
     }
 
     fftDataFifo.push(fftData);
 }
 
-void FFTDataGenerator::changeOrder(Globals::FFTOrder newOrder)
+void FftDataGenerator::changeOrder(GraphicEqGlobals::FFTOrder newOrder)
 {
     order      = newOrder;
     forwardFFT = std::make_unique<juce::dsp::FFT>(order);

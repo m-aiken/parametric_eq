@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "customlinearslider.h"
+#include "CustomLinearSlider.h"
 
 //==============================================================================
 struct AnalyzerControls : juce::Component

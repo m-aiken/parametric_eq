@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-namespace Globals {
+namespace GraphicEqGlobals {
 
 constexpr float getMaxDecibels() { return 24.f; }
 constexpr float getNegativeInf() { return -72.f; }

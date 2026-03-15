@@ -2,10 +2,10 @@
 
 #include <JuceHeader.h>
 
-#include "analyzerpathgenerator.h"
-#include "fftdatagenerator.h"
-#include "monobufferfifo.h"
-#include "globals.h"
+#include "AnalyzerPathGenerator.h"
+#include "FftDataGenerator.h"
+#include "MonoBufferFifo.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 struct PathProducer : juce::Thread
@@ -14,7 +14,7 @@ struct PathProducer : juce::Thread
     ~PathProducer() override;
 
     void   run() override;
-    void   changeOrder(Globals::FFTOrder order);
+    void   changeOrder(GraphicEqGlobals::FFTOrder order);
     int    getFFTSize() const;
     double getBinWidth() const;
     void   pauseThread();
@@ -29,7 +29,7 @@ struct PathProducer : juce::Thread
 private:
     MonoBufferFifo<juce::AudioBuffer<float>>* singleChannelSampleFifo;
 
-    std::unique_ptr<FFTDataGenerator>      fftDataGenerator;
+    std::unique_ptr<FftDataGenerator>      fftDataGenerator;
     std::unique_ptr<AnalyzerPathGenerator> pathGenerator;
 
     std::vector<float> renderData;
@@ -45,7 +45,7 @@ private:
     juce::Rectangle<float> fftBounds;
 
     std::atomic<float> decayRateInDbPerSec { 0.f };
-    std::atomic<float> negativeInfinity { Globals::getNegativeInf() };
-    std::atomic<float> maxDecibels { Globals::getMaxDecibels() };
+    std::atomic<float> negativeInfinity { GraphicEqGlobals::getNegativeInf() };
+    std::atomic<float> maxDecibels { GraphicEqGlobals::getMaxDecibels() };
     std::atomic<bool>  processingIsEnabled { false };
 };

@@ -1,6 +1,6 @@
-#include "colourpalette.h"
-#include "eqproperties.h"
-#include "peakcontrol.h"
+#include "ColourPalette.h"
+#include "EqProperties.h"
+#include "PeakControl.h"
 
 //==============================================================================
 PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _bandNum)
@@ -47,7 +47,7 @@ void PeakControl::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds();
 
-    g.setFont(Globals::getFont());
+    g.setFont(GraphicEqGlobals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
@@ -67,7 +67,7 @@ void PeakControl::paint(juce::Graphics& g)
     auto labelRectY  = labelRect.getY();
     auto labelWidth  = labelRect.getWidth() * 0.5;
     auto labelHeight = labelRect.getHeight() / 3;
-    auto padding     = Globals::getFont().getHeight();
+    auto padding     = GraphicEqGlobals::getFont().getHeight();
 
     auto         dbValue  = (gainSlider != nullptr) ? gainSlider->getValue() : 0;
     juce::String dbPrefix = dbValue > 0 ? "+" : "";

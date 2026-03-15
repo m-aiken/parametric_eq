@@ -2,12 +2,12 @@
 
 #include <JuceHeader.h>
 
-#include "analyzercontainer.h"
-#include "analyzercontrols.h"
-#include "customlookandfeel.h"
-#include "eqcontrolscontainer.h"
-#include "PluginProcessor.h"
-#include "themebutton.h"
+#include "AnalyzerContainer.h"
+#include "AnalyzerControls.h"
+#include "CustomLookAndFeel.h"
+#include "EqControlsContainer.h"
+#include "GraphicEqProcessor.h"
+#include "ThemeButton.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor, juce::Timer

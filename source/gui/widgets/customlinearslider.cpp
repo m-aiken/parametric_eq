@@ -1,4 +1,4 @@
-#include "customlinearslider.h"
+#include "CustomLinearSlider.h"
 
 //==============================================================================
 CustomLinearSlider::CustomLinearSlider(juce::RangedAudioParameter& rap)

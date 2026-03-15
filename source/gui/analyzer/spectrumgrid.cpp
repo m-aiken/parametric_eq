@@ -1,22 +1,22 @@
-#include "colourpalette.h"
-#include "globals.h"
-#include "spectrumgrid.h"
+#include "ColourPalette.h"
+#include "GraphicEqGlobals.h"
+#include "SpectrumGrid.h"
 
 //==============================================================================
 void SpectrumGrid::paint(juce::Graphics& g)
 {
     auto        bounds       = getLocalBounds();
-    const float minFreq      = Globals::getMinFrequency();
-    const float maxFreq      = Globals::getMaxFrequency();
-    const float minDb        = Globals::getNegativeInf();
-    const float maxDb        = Globals::getMaxDecibels();
+    const float minFreq      = GraphicEqGlobals::getMinFrequency();
+    const float maxFreq      = GraphicEqGlobals::getMaxFrequency();
+    const float minDb        = GraphicEqGlobals::getNegativeInf();
+    const float maxDb        = GraphicEqGlobals::getMaxDecibels();
     auto        boundsX      = bounds.getX();
     auto        boundsY      = bounds.getY();
     auto        boundsWidth  = bounds.getWidth();
     auto        boundsBottom = bounds.getBottom();
     auto        boundsRight  = bounds.getRight();
 
-    g.setFont(Globals::getFont());
+    g.setFont(GraphicEqGlobals::getFont());
 
     g.setColour(ColourPalette::getColourV2(ColourPalette::Text).withAlpha(0.2f));
 

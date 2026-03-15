@@ -2,10 +2,10 @@
 
 #include <JuceHeader.h>
 
-#include "filterutils.h"
-#include "customlinearslider.h"
-#include "customrotarycontrol.h"
-#include "powerbutton.h"
+#include "FilterUtils.h"
+#include "CustomLinearSlider.h"
+#include "CustomRotaryControl.h"
+#include "PowerButton.h"
 
 //==============================================================================
 struct CutControl : juce::Component

@@ -2,10 +2,10 @@
 
 #include <JuceHeader.h>
 
-#include "monobufferfifo.h"
-#include "responsecurve.h"
-#include "spectrumanalyzer.h"
-#include "spectrumgrid.h"
+#include "MonoBufferFifo.h"
+#include "ResponseCurve.h"
+#include "SpectrumAnalyzer.h"
+#include "SpectrumGrid.h"
 
 //==============================================================================
 struct AnalyzerContainer : juce::Component

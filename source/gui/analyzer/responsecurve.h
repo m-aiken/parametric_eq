@@ -2,9 +2,9 @@
 
 #include <JuceHeader.h>
 
-#include "filterutils.h"
-#include "globals.h"
-#include "peakband.h"
+#include "FilterUtils.h"
+#include "GraphicEqGlobals.h"
+#include "PeakBand.h"
 
 //==============================================================================
 struct Node : juce::ToggleButton
@@ -37,7 +37,7 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void removeListeners();
     bool allControlPtrsValid();
 
-    std::array<juce::Point<int>, Globals::getNumPeakBands()>& getNodeCoordinates() { return nodeCoordinates; }
+    std::array<juce::Point<int>, GraphicEqGlobals::getNumPeakBands()>& getNodeCoordinates() { return nodeCoordinates; }
 
     size_t getActiveNodeIndex() { return activeNode; }
 
@@ -58,12 +58,12 @@ private:
     juce::AudioParameterFloat*  highCutFreqParam { nullptr };
     juce::AudioParameterChoice* highCutSlopeParam { nullptr };
 
-    std::array<PeakBand, Globals::getNumPeakBands()>              peakBands;
-    std::array<std::unique_ptr<Node>, Globals::getNumPeakBands()> peakNodes;
-    std::array<juce::Point<int>, Globals::getNumPeakBands()>      nodeCoordinates;
+    std::array<PeakBand, GraphicEqGlobals::getNumPeakBands()>              peakBands;
+    std::array<std::unique_ptr<Node>, GraphicEqGlobals::getNumPeakBands()> peakNodes;
+    std::array<juce::Point<int>, GraphicEqGlobals::getNumPeakBands()>      nodeCoordinates;
 
-    std::array<juce::Value, Globals::getNumPeakBands()> xValues;
-    std::array<juce::Value, Globals::getNumPeakBands()> yValues;
+    std::array<juce::Value, GraphicEqGlobals::getNumPeakBands()> xValues;
+    std::array<juce::Value, GraphicEqGlobals::getNumPeakBands()> yValues;
 
     size_t activeNode;
 };

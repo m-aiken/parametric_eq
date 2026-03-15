@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "globals.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 namespace EqProperties {
@@ -66,7 +66,7 @@ inline void addCutParams(juce::AudioProcessorValueTreeState::ParameterLayout& la
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(LOW_CUT_FREQ),
                                                            params.at(LOW_CUT_FREQ),
-                                                           juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.2f),
+                                                           juce::NormalisableRange(GraphicEqGlobals::getMinFrequency(), GraphicEqGlobals::getMaxFrequency(), 1.f, 0.2f),
                                                            50.f));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(LOW_CUT_SLOPE),
@@ -80,7 +80,7 @@ inline void addCutParams(juce::AudioProcessorValueTreeState::ParameterLayout& la
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(HIGH_CUT_FREQ),
                                                            params.at(HIGH_CUT_FREQ),
-                                                           juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 1.f),
+                                                           juce::NormalisableRange(GraphicEqGlobals::getMinFrequency(), GraphicEqGlobals::getMaxFrequency(), 1.f, 1.f),
                                                            15000.f));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(HIGH_CUT_SLOPE),
@@ -95,12 +95,12 @@ inline void addCutParams(juce::AudioProcessorValueTreeState::ParameterLayout& la
 
 inline void addPeakParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
 {
-    auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 1.f);
-    auto gainNormalisableRange = juce::NormalisableRange(Globals::getNegativeInf(), Globals::getMaxDecibels(), 0.5f, 1.f);
+    auto freqNormalisableRange = juce::NormalisableRange(GraphicEqGlobals::getMinFrequency(), GraphicEqGlobals::getMaxFrequency(), 1.f, 1.f);
+    auto gainNormalisableRange = juce::NormalisableRange(GraphicEqGlobals::getNegativeInf(), GraphicEqGlobals::getMaxDecibels(), 0.5f, 1.f);
 
     std::vector<float> defaultFreqs { 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f };
 
-    for (int i = 0; i < Globals::getNumPeakBands(); ++i) {
+    for (int i = 0; i < GraphicEqGlobals::getNumPeakBands(); ++i) {
         layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::FREQUENCY, i),
                                                                getPeakControlParamName(PeakControl::FREQUENCY, i),
                                                                freqNormalisableRange,

@@ -1,4 +1,4 @@
-#include "analyzerpathgenerator.h"
+#include "AnalyzerPathGenerator.h"
 
 //==============================================================================
 void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
@@ -10,8 +10,8 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
 {
     auto numBins = static_cast<int>(fftSize * 0.5);
 
-    const float minFreq = Globals::getMinFrequency();
-    const float maxFreq = Globals::getMaxFrequency();
+    const float minFreq = GraphicEqGlobals::getMinFrequency();
+    const float maxFreq = GraphicEqGlobals::getMaxFrequency();
 
     auto fftBoundsBottom = fftBounds.getBottom();
     auto fftBoundsY      = fftBounds.getY();

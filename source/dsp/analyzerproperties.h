@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "globals.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 namespace AnalyzerProperties {
@@ -22,12 +22,12 @@ inline const std::map<ParamNames, juce::String>& getAnalyzerParams()
     return paramNamesMap;
 }
 
-inline const std::map<Globals::FFTOrder, juce::String>& getAnalyzerPoints()
+inline const std::map<GraphicEqGlobals::FFTOrder, juce::String>& getAnalyzerPoints()
 {
-    static std::map<Globals::FFTOrder, juce::String> fftOrderMap = {
-        { Globals::order2048, "order2048" },
-        { Globals::order4096, "order4096" },
-        { Globals::order8192, "order8192" }
+    static std::map<GraphicEqGlobals::FFTOrder, juce::String> fftOrderMap = {
+        { GraphicEqGlobals::order2048, "order2048" },
+        { GraphicEqGlobals::order4096, "order4096" },
+        { GraphicEqGlobals::order8192, "order8192" }
     };
 
     return fftOrderMap;
@@ -40,7 +40,7 @@ inline void addAnalyzerParams(juce::AudioProcessorValueTreeState::ParameterLayou
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(Analyzer_Points),
                                                             params.at(Analyzer_Points),
-                                                            juce::StringArray { fftOrders.at(Globals::order2048), fftOrders.at(Globals::order4096), fftOrders.at(Globals::order8192) },
+                                                            juce::StringArray { fftOrders.at(GraphicEqGlobals::order2048), fftOrders.at(GraphicEqGlobals::order4096), fftOrders.at(GraphicEqGlobals::order8192) },
                                                             0));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(Analyzer_Decay_Rate),

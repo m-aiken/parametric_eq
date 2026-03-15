@@ -2,10 +2,10 @@
 
 #include <JuceHeader.h>
 
-#include "filterutils.h"
-#include "monobufferfifo.h"
-#include "globals.h"
-#include "peakband.h"
+#include "FilterUtils.h"
+#include "GraphicEqGlobals.h"
+#include "MonoBufferFifo.h"
+#include "PeakBand.h"
 
 //==============================================================================
 class GraphicEqProcessor : public juce::AudioProcessor
@@ -52,11 +52,11 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState                         apvts { *this, nullptr, "Parameters", createParameterLayout() };
 
-    MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoL { Globals::Channel::Left };
-    MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoR { Globals::Channel::Right };
+    MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoL { GraphicEqGlobals::Channel::Left };
+    MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoR { GraphicEqGlobals::Channel::Right };
 
-    MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoL { Globals::Channel::Left };
-    MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoR { Globals::Channel::Right };
+    MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoL { GraphicEqGlobals::Channel::Left };
+    MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoR { GraphicEqGlobals::Channel::Right };
 
 private:
     FilterUtils::MonoChain leftChain;
@@ -69,7 +69,7 @@ private:
     juce::AudioParameterFloat*  highCutFreqParam { nullptr };
     juce::AudioParameterChoice* highCutSlopeParam { nullptr };
 
-    std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
+    std::array<PeakBand, GraphicEqGlobals::getNumPeakBands()> peakBands;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)

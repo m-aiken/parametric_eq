@@ -2,8 +2,8 @@
 
 #include <JuceHeader.h>
 
-#include "fifo.h"
-#include "globals.h"
+#include "Fifo.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 struct AnalyzerPathGenerator
@@ -12,8 +12,8 @@ struct AnalyzerPathGenerator
                       juce::Rectangle<float>    fftBounds,
                       int                       fftSize,
                       float                     binWidth,
-                      float                     negativeInfinity = Globals::getNegativeInf(),
-                      float                     maxDb            = Globals::getMaxDecibels());
+                      float                     negativeInfinity = GraphicEqGlobals::getNegativeInf(),
+                      float                     maxDb            = GraphicEqGlobals::getMaxDecibels());
 
     int  getNumPathsAvailable() const;
     bool getPath(juce::Path& path);

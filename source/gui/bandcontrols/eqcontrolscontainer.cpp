@@ -1,4 +1,4 @@
-#include "eqcontrolscontainer.h"
+#include "EqControlsContainer.h"
 
 //==============================================================================
 EqControlsContainer::EqControlsContainer(juce::AudioProcessorValueTreeState& apvts)

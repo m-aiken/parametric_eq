@@ -1,8 +1,6 @@
-#include "colourpalette.h"
-#include "globals.h"
-#include "PluginEditor.h"
-#include "PluginProcessor.h"
-
+#include "ColourPalette.h"
+#include "GraphicEqEditor.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
@@ -53,7 +51,7 @@ void GraphicEqEditor::paint(juce::Graphics& g)
     }
 
     g.fillAll(ColourPalette::getColourV2(ColourPalette::MainBackground));
-    g.setFont(Globals::getFont());
+    g.setFont(GraphicEqGlobals::getFont());
     g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
     auto analyzerBounds = analyzerContainer->getBounds();
@@ -78,7 +76,7 @@ void GraphicEqEditor::resized()
     auto bounds           = getLocalBounds();
     auto mainWindowWidth  = bounds.getWidth();
     auto mainWindowHeight = bounds.getHeight();
-    auto padding          = Globals::getFont().getHeight();
+    auto padding          = GraphicEqGlobals::getFont().getHeight();
 
     juce::Rectangle<int> analyzerBounds(padding * 3,
                                         padding * 6,
@@ -107,8 +105,8 @@ void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labe
 {
     auto textHeight = g.getCurrentFont().getHeight();
 
-    auto maxDb = Globals::getMaxDecibels();
-    auto minDb = Globals::getNegativeInf();
+    auto maxDb = GraphicEqGlobals::getMaxDecibels();
+    auto minDb = GraphicEqGlobals::getNegativeInf();
 
     auto dbScaleY      = labelBounds.getY();
     auto dbScaleHeight = labelBounds.getHeight();
@@ -134,8 +132,8 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
 {
     std::vector<float> freqs { 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f };
 
-    const float minFreq = Globals::getMinFrequency();
-    const float maxFreq = Globals::getMaxFrequency();
+    const float minFreq = GraphicEqGlobals::getMinFrequency();
+    const float maxFreq = GraphicEqGlobals::getMaxFrequency();
 
     auto boundsX     = labelBounds.getX();
     auto boundsY     = labelBounds.getY();

@@ -2,8 +2,8 @@
 
 #include <JuceHeader.h>
 
-#include "customrotarycontrol.h"
-#include "powerbutton.h"
+#include "CustomRotaryControl.h"
+#include "PowerButton.h"
 
 //==============================================================================
 struct PeakControl : juce::Component

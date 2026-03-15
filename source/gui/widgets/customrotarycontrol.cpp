@@ -1,6 +1,6 @@
-#include "colourpalette.h"
-#include "customrotarycontrol.h"
-#include "globals.h"
+#include "ColourPalette.h"
+#include "CustomRotaryControl.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter& rap, const juce::String& title)
@@ -21,7 +21,7 @@ void CustomRotaryControl::paint(juce::Graphics& g)
 
     auto range = param->getNormalisableRange();
 
-    g.setFont(Globals::getFont());
+    g.setFont(GraphicEqGlobals::getFont());
     g.setColour(ColourPalette::getColourV2(ColourPalette::RotaryText));
 
     auto valueToDraw = juce::jmap<float>(getValue(),
@@ -46,7 +46,7 @@ void CustomRotaryControl::paint(juce::Graphics& g)
 
     juce::Rectangle<float> r;
 
-    r.setSize(g.getCurrentFont().getStringWidth(getName()), Globals::getFont().getHeight());
+    r.setSize(g.getCurrentFont().getStringWidth(getName()), GraphicEqGlobals::getFont().getHeight());
     r.setCentre(center);
     g.drawFittedText(getName(), r.toNearestInt(), juce::Justification::centred, 1);
 }
@@ -57,7 +57,7 @@ juce::Rectangle<int> CustomRotaryControl::getRotaryBounds() const
 
     auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 
-    size -= Globals::getFont().getHeight() * 0.6;
+    size -= GraphicEqGlobals::getFont().getHeight() * 0.6;
 
     juce::Rectangle<int> r;
     r.setSize(size, size);

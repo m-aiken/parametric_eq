@@ -1,6 +1,6 @@
-#include "colourpalette.h"
-#include "cutcontrol.h"
-#include "eqproperties.h"
+#include "ColourPalette.h"
+#include "CutControl.h"
+#include "EqProperties.h"
 
 //==============================================================================
 CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUtils::ChainPositions& _chainPosition)
@@ -42,7 +42,7 @@ void CutControl::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds();
 
-    g.setFont(Globals::getFont());
+    g.setFont(GraphicEqGlobals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
@@ -97,7 +97,7 @@ void CutControl::resized()
 
     auto bounds   = getLocalBounds();
     auto diameter = (bounds.getWidth() * 0.55);
-    auto padding  = Globals::getFont().getHeight();
+    auto padding  = GraphicEqGlobals::getFont().getHeight();
 
     powerButton->setBounds(6, 6, 16, 16);
 

@@ -2,15 +2,15 @@
 
 #include <JuceHeader.h>
 
-#include "fifo.h"
-#include "globals.h"
+#include "Fifo.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 template <typename BlockType>
 struct MonoBufferFifo
 {
     using SampleType = typename BlockType::SampleType;
-    explicit MonoBufferFifo(Globals::Channel ch)
+    explicit MonoBufferFifo(GraphicEqGlobals::Channel ch)
         : channelToUse(ch)
     {
         prepared.set(false);
@@ -52,10 +52,10 @@ struct MonoBufferFifo
     int  getSize() const { return size.get(); }
 
 private:
-    Globals::Channel    channelToUse;
-    int                 fifoIndex = 0;
-    Fifo<BlockType, 20> audioBufferFifo;
-    BlockType           bufferToFill;
-    juce::Atomic<bool>  prepared = false;
-    juce::Atomic<int>   size     = 0;
+    GraphicEqGlobals::Channel channelToUse;
+    int                       fifoIndex = 0;
+    Fifo<BlockType, 20>       audioBufferFifo;
+    BlockType                 bufferToFill;
+    juce::Atomic<bool>        prepared = false;
+    juce::Atomic<int>         size     = 0;
 };

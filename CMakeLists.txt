@@ -38,57 +38,57 @@ juce_generate_juce_header(${PROJECT_NAME})
 
 set(PROJECT_SOURCES
         PRIVATE
-        source/PluginEditor.cpp
-        source/PluginProcessor.cpp
-        source/dsp/analyzerpathgenerator.cpp
-        source/dsp/fftdatagenerator.cpp
-        source/dsp/filterutils.cpp
-        source/gui/analyzer/analyzercontainer.cpp
-        source/gui/analyzer/responsecurve.cpp
-        source/gui/analyzer/spectrumanalyzer.cpp
-        source/gui/analyzer/spectrumgrid.cpp
-        source/gui/analyzercontrols.cpp
-        source/gui/bandcontrols/cutcontrol.cpp
-        source/gui/bandcontrols/eqcontrolscontainer.cpp
-        source/gui/bandcontrols/peakcontrol.cpp
-        source/gui/customlookandfeel.cpp
-        source/gui/pathproducer.cpp
-        source/gui/widgets/customlinearslider.cpp
-        source/gui/widgets/customrotarycontrol.cpp
-        source/gui/widgets/powerbutton.cpp
-        source/gui/widgets/themebutton.cpp
+        source/GraphicEqEditor.cpp
+        source/GraphicEqProcessor.cpp
+        source/dsp/AnalyzerPathGenerator.cpp
+        source/dsp/FftDataGenerator.cpp
+        source/dsp/FilterUtils.cpp
+        source/gui/analyzer/AnalyzerContainer.cpp
+        source/gui/analyzer/ResponseCurve.cpp
+        source/gui/analyzer/SpectrumAnalyzer.cpp
+        source/gui/analyzer/SpectrumGrid.cpp
+        source/gui/AnalyzerControls.cpp
+        source/gui/bandcontrols/CutControl.cpp
+        source/gui/bandcontrols/EqControlsContainer.cpp
+        source/gui/bandcontrols/PeakControl.cpp
+        source/gui/CustomLookAndFeel.cpp
+        source/gui/PathProducer.cpp
+        source/gui/widgets/CustomLinearSlider.cpp
+        source/gui/widgets/CustomRotaryControl.cpp
+        source/gui/widgets/PowerButton.cpp
+        source/gui/widgets/ThemeButton.cpp
 )
 
 set(PROJECT_HEADERS
         PRIVATE
-        source/PluginEditor.h
-        source/PluginProcessor.h
-        source/utils/colourpalette.h
-        source/utils/globals.h
-        source/utils/tailwindcolours.h
-        source/dsp/analyzerpathgenerator.h
-        source/dsp/analyzerproperties.h
-        source/dsp/eqproperties.h
-        source/dsp/fftdatagenerator.h
-        source/dsp/fifo.h
-        source/dsp/filterutils.h
-        source/dsp/monobufferfifo.h
-        source/dsp/peakband.h
-        source/gui/analyzer/analyzercontainer.h
-        source/gui/analyzer/responsecurve.h
-        source/gui/analyzer/spectrumanalyzer.h
-        source/gui/analyzer/spectrumgrid.h
-        source/gui/analyzercontrols.h
-        source/gui/bandcontrols/cutcontrol.h
-        source/gui/bandcontrols/eqcontrolscontainer.h
-        source/gui/bandcontrols/peakcontrol.h
-        source/gui/customlookandfeel.h
-        source/gui/paramlistener.h
-        source/gui/pathproducer.h
-        source/gui/widgets/customlinearslider.h
-        source/gui/widgets/customrotarycontrol.h
-        source/gui/widgets/powerbutton.h
-        source/gui/widgets/themebutton.h
+        source/GraphicEqEditor.h
+        source/GraphicEqProcessor.h
+        source/utils/ColourPalette.h
+        source/utils/GraphicEqGlobals.h
+        source/utils/TailwindColours.h
+        source/dsp/AnalyzerPathGenerator.h
+        source/dsp/AnalyzerProperties.h
+        source/dsp/EqProperties.h
+        source/dsp/FftDataGenerator.h
+        source/dsp/Fifo.h
+        source/dsp/Filterutils.h
+        source/dsp/MonoBufferFifo.h
+        source/dsp/Peakband.h
+        source/gui/analyzer/Analyzercontainer.h
+        source/gui/analyzer/Responsecurve.h
+        source/gui/analyzer/Spectrumanalyzer.h
+        source/gui/analyzer/Spectrumgrid.h
+        source/gui/Analyzercontrols.h
+        source/gui/bandcontrols/Cutcontrol.h
+        source/gui/bandcontrols/EqControlsContainer.h
+        source/gui/bandcontrols/PeakControl.h
+        source/gui/CustomLookAndFeel.h
+        source/gui/ParamListener.h
+        source/gui/PathProducer.h
+        source/gui/widgets/CustomLinearSlider.h
+        source/gui/widgets/CustomRotaryControl.h
+        source/gui/widgets/PowerButton.h
+        source/gui/widgets/ThemeButton.h
 )
 
 target_sources(${PROJECT_NAME}

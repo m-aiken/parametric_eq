@@ -2,9 +2,9 @@
 
 #include <JuceHeader.h>
 
-#include "cutcontrol.h"
-#include "globals.h"
-#include "peakcontrol.h"
+#include "CutControl.h"
+#include "GraphicEqGlobals.h"
+#include "PeakControl.h"
 
 //==============================================================================
 struct EqControlsContainer : juce::Component
@@ -18,5 +18,5 @@ private:
     std::unique_ptr<CutControl> lowCutControl;
     std::unique_ptr<CutControl> highCutControl;
 
-    std::array<std::unique_ptr<PeakControl>, Globals::getNumPeakBands()> peakControls;
+    std::array<std::unique_ptr<PeakControl>, GraphicEqGlobals::getNumPeakBands()> peakControls;
 };

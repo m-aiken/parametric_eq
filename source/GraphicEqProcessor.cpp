@@ -1,7 +1,7 @@
-#include "analyzerproperties.h"
-#include "eqproperties.h"
-#include "PluginEditor.h"
-#include "PluginProcessor.h"
+#include "AnalyzerProperties.h"
+#include "EqProperties.h"
+#include "GraphicEqEditor.h"
+#include "GraphicEqProcessor.h"
 
 //==============================================================================
 GraphicEqProcessor::GraphicEqProcessor()
@@ -264,8 +264,8 @@ void GraphicEqProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     }
 
     juce::dsp::AudioBlock<float> block(buffer);
-    auto                         leftBlock  = block.getSingleChannelBlock(Globals::Channel::Left);
-    auto                         rightBlock = block.getSingleChannelBlock(Globals::Channel::Right);
+    auto                         leftBlock  = block.getSingleChannelBlock(GraphicEqGlobals::Channel::Left);
+    auto                         rightBlock = block.getSingleChannelBlock(GraphicEqGlobals::Channel::Right);
 
     juce::dsp::ProcessContextReplacing<float> leftCtx(leftBlock);
     juce::dsp::ProcessContextReplacing<float> rightCtx(rightBlock);

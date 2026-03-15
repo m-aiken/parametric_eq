@@ -1,7 +1,7 @@
-#include "analyzercontrols.h"
-#include "analyzerproperties.h"
-#include "colourpalette.h"
-#include "globals.h"
+#include "AnalyzerControls.h"
+#include "AnalyzerProperties.h"
+#include "ColourPalette.h"
+#include "GraphicEqGlobals.h"
 
 //==============================================================================
 AnalyzerControls::AnalyzerControls(juce::AudioProcessorValueTreeState& apvts)
@@ -27,9 +27,9 @@ void AnalyzerControls::paint(juce::Graphics& g)
 {
     auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
-    auto sliderHeight = Globals::getFont().getHeight();
+    auto sliderHeight = GraphicEqGlobals::getFont().getHeight();
 
-    g.setFont(Globals::getFont());
+    g.setFont(GraphicEqGlobals::getFont());
     g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
     g.drawFittedText("FFT Order (2048/4096/8192)",
@@ -57,7 +57,7 @@ void AnalyzerControls::resized()
 
     auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
-    auto sliderHeight = Globals::getFont().getHeight();
+    auto sliderHeight = GraphicEqGlobals::getFont().getHeight();
     auto padding      = sliderHeight * 0.2;
 
     fftOrderSlider->setBounds(0,

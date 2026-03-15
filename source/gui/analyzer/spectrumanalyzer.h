@@ -2,9 +2,9 @@
 
 #include <JuceHeader.h>
 
-#include "monobufferfifo.h"
-#include "paramlistener.h"
-#include "pathproducer.h"
+#include "MonoBufferFifo.h"
+#include "ParamListener.h"
+#include "PathProducer.h"
 
 //==============================================================================
 struct SpectrumAnalyzer : juce::Component, juce::Timer

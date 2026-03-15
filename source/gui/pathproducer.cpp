@@ -1,4 +1,4 @@
-#include "pathproducer.h"
+#include "PathProducer.h"
 
 //==============================================================================
 PathProducer::PathProducer(double _sampleRate, MonoBufferFifo<juce::AudioBuffer<float>>& scsf)
@@ -6,13 +6,13 @@ PathProducer::PathProducer(double _sampleRate, MonoBufferFifo<juce::AudioBuffer<
     , singleChannelSampleFifo(&scsf)
     , sampleRate(_sampleRate)
 {
-    fftDataGenerator = std::make_unique<FFTDataGenerator>();
+    fftDataGenerator = std::make_unique<FftDataGenerator>();
     pathGenerator    = std::make_unique<AnalyzerPathGenerator>();
 
     // TODO - initialising these 2 might not be necessary ultimately.
     // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
     bufferForGenerator.setSize(1, getFFTSize());
-    renderData.resize(getFFTSize(), Globals::getNegativeInf());
+    renderData.resize(getFFTSize(), GraphicEqGlobals::getNegativeInf());
 
     startThread();
 }
@@ -76,7 +76,7 @@ void PathProducer::run()
     }
 }
 
-void PathProducer::changeOrder(Globals::FFTOrder order)
+void PathProducer::changeOrder(GraphicEqGlobals::FFTOrder order)
 {
     if (fftDataGenerator == nullptr || singleChannelSampleFifo == nullptr) {
         return;
