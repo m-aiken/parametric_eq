@@ -1,6 +1,5 @@
+#include "analyzerproperties.h"
 #include "spectrumanalyzer.h"
-#include "../../dsp/analyzerproperties.h"
-#include "../../utils/colourpalette.h"
 
 //==============================================================================
 SpectrumAnalyzer::SpectrumAnalyzer(double                                    _sampleRate,

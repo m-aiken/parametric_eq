@@ -1,6 +1,6 @@
+#include "colourpalette.h"
 #include "customrotarycontrol.h"
-#include "../../utils/colourpalette.h"
-#include "../../utils/globals.h"
+#include "globals.h"
 
 //==============================================================================
 CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter& rap, const juce::String& title)

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../../utils/globals.h"
-#include "JuceHeader.h"
+#include <JuceHeader.h>
+
 #include "cutcontrol.h"
+#include "globals.h"
 #include "peakcontrol.h"
 
 //==============================================================================

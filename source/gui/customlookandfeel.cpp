@@ -1,5 +1,5 @@
+#include "colourpalette.h"
 #include "customlookandfeel.h"
-#include "../utils/colourpalette.h"
 
 //==============================================================================
 void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g,

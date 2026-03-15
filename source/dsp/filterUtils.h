@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../utils/globals.h"
-#include "peakband.h"
 #include <JuceHeader.h>
+
+#include "globals.h"
+#include "peakband.h"
 
 //==============================================================================
 struct FilterUtils

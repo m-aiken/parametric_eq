@@ -2,8 +2,8 @@
 
 #include <JuceHeader.h>
 
-#include "../utils/globals.h"
 #include "fifo.h"
+#include "globals.h"
 
 //==============================================================================
 struct AnalyzerPathGenerator

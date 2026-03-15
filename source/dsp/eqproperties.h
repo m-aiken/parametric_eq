@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "../utils/globals.h"
+#include "globals.h"
 
 //==============================================================================
 namespace EqProperties {

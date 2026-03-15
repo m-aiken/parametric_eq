@@ -1,6 +1,6 @@
+#include "colourpalette.h"
+#include "eqproperties.h"
 #include "peakcontrol.h"
-#include "../../dsp/eqproperties.h"
-#include "../../utils/colourpalette.h"
 
 //==============================================================================
 PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _bandNum)

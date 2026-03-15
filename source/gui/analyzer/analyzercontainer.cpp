@@ -1,5 +1,5 @@
 #include "analyzercontainer.h"
-#include "../../utils/colourpalette.h"
+#include "colourpalette.h"
 
 //==============================================================================
 AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&       apvts,

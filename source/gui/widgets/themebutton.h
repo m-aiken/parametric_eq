@@ -1,6 +1,6 @@
 #pragma once
 
-#include "JuceHeader.h"
+#include <JuceHeader.h>
 
 //==============================================================================
 struct ThemeButton : juce::ToggleButton

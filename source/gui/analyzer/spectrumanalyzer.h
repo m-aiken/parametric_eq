@@ -1,11 +1,10 @@
 #pragma once
 
-#include "JuceHeader.h"
+#include <JuceHeader.h>
 
-#include "../../dsp/monobufferfifo.h"
-#include "../../utils/globals.h"
-#include "../paramlistener.h"
-#include "../pathproducer.h"
+#include "monobufferfifo.h"
+#include "paramlistener.h"
+#include "pathproducer.h"
 
 //==============================================================================
 struct SpectrumAnalyzer : juce::Component, juce::Timer

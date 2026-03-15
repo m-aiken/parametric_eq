@@ -1,6 +1,6 @@
+#include "colourpalette.h"
+#include "globals.h"
 #include "spectrumgrid.h"
-#include "../../utils/colourpalette.h"
-#include "../../utils/globals.h"
 
 //==============================================================================
 void SpectrumGrid::paint(juce::Graphics& g)

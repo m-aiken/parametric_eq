@@ -2,10 +2,10 @@
 
 #include <JuceHeader.h>
 
-#include "../dsp/analyzerpathgenerator.h"
-#include "../dsp/fftdatagenerator.h"
-#include "../dsp/monobufferfifo.h"
-#include "../utils/globals.h"
+#include "analyzerpathgenerator.h"
+#include "fftdatagenerator.h"
+#include "monobufferfifo.h"
+#include "globals.h"
 
 //==============================================================================
 struct PathProducer : juce::Thread

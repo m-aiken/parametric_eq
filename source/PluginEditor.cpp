@@ -1,8 +1,8 @@
+#include "colourpalette.h"
+#include "globals.h"
 #include "PluginEditor.h"
 #include "PluginProcessor.h"
 
-#include "utils/colourpalette.h"
-#include "utils/globals.h"
 
 //==============================================================================
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)

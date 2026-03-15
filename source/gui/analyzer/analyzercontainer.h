@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../dsp/monobufferfifo.h"
-#include "JuceHeader.h"
+#include <JuceHeader.h>
+
+#include "monobufferfifo.h"
 #include "responsecurve.h"
 #include "spectrumanalyzer.h"
 #include "spectrumgrid.h"

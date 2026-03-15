@@ -2,8 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "./globals.h"
-#include "./tailwindcolours.h"
+#include "tailwindcolours.h"
 
 //==============================================================================
 namespace ColourPalette {

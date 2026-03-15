@@ -1,7 +1,7 @@
 #include "analyzercontrols.h"
-#include "../dsp/analyzerproperties.h"
-#include "../utils/colourpalette.h"
-#include "../utils/globals.h"
+#include "analyzerproperties.h"
+#include "colourpalette.h"
+#include "globals.h"
 
 //==============================================================================
 AnalyzerControls::AnalyzerControls(juce::AudioProcessorValueTreeState& apvts)

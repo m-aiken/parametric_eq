@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../dsp/filterutils.h"
-#include "../../dsp/peakband.h"
-#include "../../utils/colourpalette.h"
-#include "../../utils/globals.h"
-#include "JuceHeader.h"
+#include <JuceHeader.h>
+
+#include "filterutils.h"
+#include "globals.h"
+#include "peakband.h"
 
 //==============================================================================
 struct Node : juce::ToggleButton

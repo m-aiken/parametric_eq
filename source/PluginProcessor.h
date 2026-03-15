@@ -1,12 +1,11 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include <juce_audio_processors/juce_audio_processors.h>
 
-#include "dsp/filterutils.h"
-#include "dsp/monobufferfifo.h"
-#include "dsp/peakband.h"
-#include "utils/globals.h"
+#include "filterutils.h"
+#include "monobufferfifo.h"
+#include "globals.h"
+#include "peakband.h"
 
 //==============================================================================
 class GraphicEqProcessor : public juce::AudioProcessor
@@ -55,7 +54,7 @@ public:
 
     MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoL { Globals::Channel::Left };
     MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoR { Globals::Channel::Right };
-    
+
     MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoL { Globals::Channel::Left };
     MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoR { Globals::Channel::Right };
 

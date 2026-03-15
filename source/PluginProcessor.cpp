@@ -1,7 +1,7 @@
-#include "PluginProcessor.h"
+#include "analyzerproperties.h"
+#include "eqproperties.h"
 #include "PluginEditor.h"
-#include "dsp/analyzerproperties.h"
-#include "dsp/eqproperties.h"
+#include "PluginProcessor.h"
 
 //==============================================================================
 GraphicEqProcessor::GraphicEqProcessor()

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../widgets/customrotarycontrol.h"
-#include "../widgets/powerbutton.h"
-#include "JuceHeader.h"
+#include <JuceHeader.h>
+
+#include "customrotarycontrol.h"
+#include "powerbutton.h"
 
 //==============================================================================
 struct PeakControl : juce::Component

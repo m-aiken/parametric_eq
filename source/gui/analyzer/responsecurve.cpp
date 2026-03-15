@@ -1,6 +1,6 @@
+#include "colourpalette.h"
+#include "eqproperties.h"
 #include "responsecurve.h"
-#include "../../dsp/eqproperties.h"
-#include "../../utils/colourpalette.h"
 
 //==============================================================================
 Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
