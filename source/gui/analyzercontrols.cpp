@@ -42,7 +42,7 @@ AnalyzerControls::paint(juce::Graphics& g)
     auto sliderHeight = GraphicEqGlobals::getFont().getHeight();
 
     g.setFont(GraphicEqGlobals::getFont());
-    g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
+    g.setColour(ColourPalette::Text);
 
     g.drawFittedText("FFT Order (2048/4096/8192)", 0, 0, sliderWidth, sliderHeight, juce::Justification::centred, 1);
 

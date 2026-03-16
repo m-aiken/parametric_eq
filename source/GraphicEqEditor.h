@@ -7,7 +7,6 @@
 #include "CustomLookAndFeel.h"
 #include "EqControlsContainer.h"
 #include "GraphicEqProcessor.h"
-#include "ThemeButton.h"
 
 class GraphicEqEditor
     : public juce::AudioProcessorEditor
@@ -29,7 +28,6 @@ private:
     GraphicEqProcessor& processorRef;
 
     std::unique_ptr< AnalyzerControls >    analyzerControls;
-    std::unique_ptr< ThemeButton >         themeButton;
     std::unique_ptr< AnalyzerContainer >   analyzerContainer;
     std::unique_ptr< EqControlsContainer > eqControls;
 

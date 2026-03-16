@@ -12,7 +12,6 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     setLookAndFeel(&lnf);
 
     analyzerControls  = std::make_unique< AnalyzerControls >(processorRef.apvts);
-    themeButton       = std::make_unique< ThemeButton >();
     analyzerContainer = std::make_unique< AnalyzerContainer >(processorRef.apvts,
                                                               processorRef.getSampleRate(),
                                                               processorRef.preEqMonoFifoL,
@@ -23,18 +22,12 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     eqControls = std::make_unique< EqControlsContainer >(processorRef.apvts);
 
     addAndMakeVisible(*analyzerControls);
-    addAndMakeVisible(*themeButton);
     addAndMakeVisible(*analyzerContainer);
     addAndMakeVisible(*eqControls);
 
     setSize(800, 600);
 
     activeNode = analyzerContainer->getActiveNodeIndex();
-
-    themeButton->onClick = [this]() {
-        ColourPalette::toggleDarkMode();
-        repaint();
-    };
 
     startTimerHz(20);
 }
@@ -58,9 +51,9 @@ GraphicEqEditor::paint(juce::Graphics& g)
         return;
     }
 
-    g.fillAll(ColourPalette::getColourV2(ColourPalette::MainBackground));
+    g.fillAll(ColourPalette::MainBackground);
     g.setFont(GraphicEqGlobals::getFont());
-    g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
+    g.setColour(ColourPalette::Text);
 
     auto analyzerBounds = analyzerContainer->getBounds();
 
@@ -87,7 +80,7 @@ GraphicEqEditor::paint(juce::Graphics& g)
 void
 GraphicEqEditor::resized()
 {
-    if (analyzerControls == nullptr || themeButton == nullptr || analyzerContainer == nullptr || eqControls == nullptr) {
+    if (analyzerControls == nullptr || analyzerContainer == nullptr || eqControls == nullptr) {
         return;
     }
 
@@ -104,12 +97,6 @@ GraphicEqEditor::resized()
     auto analyzerwidth = analyzerBounds.getWidth();
 
     analyzerControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.25), padding, analyzerwidth * 0.5, padding * 3);
-
-    auto themeButtonDiameter = 24;
-    themeButton->setBounds(bounds.getRight() - themeButtonDiameter - padding,
-                           padding,
-                           themeButtonDiameter,
-                           themeButtonDiameter);
 
     analyzerContainer->setBounds(analyzerBounds);
 

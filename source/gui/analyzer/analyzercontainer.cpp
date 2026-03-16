@@ -11,20 +11,18 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&        
                                      MonoBufferFifo< juce::AudioBuffer< float > >& postEqBufferL,
                                      MonoBufferFifo< juce::AudioBuffer< float > >& postEqBufferR)
 {
-    backgroundGrid = std::make_unique< SpectrumGrid >();
-    spectrumAnalyzerPreEq =
-        std::make_unique< SpectrumAnalyzer >(sampleRate,
-                                             preEqBufferL,
-                                             preEqBufferR,
-                                             apvts,
-                                             ColourPalette::getColourV2(ColourPalette::AnalyzerPreEq).withAlpha(0.1f));
-    spectrumAnalyzerPostEq =
-        std::make_unique< SpectrumAnalyzer >(sampleRate,
-                                             postEqBufferL,
-                                             postEqBufferR,
-                                             apvts,
-                                             ColourPalette::getColourV2(ColourPalette::AnalyzerPostEq).withAlpha(0.25f));
-    responseCurve = std::make_unique< ResponseCurve >(apvts, sampleRate);
+    backgroundGrid         = std::make_unique< SpectrumGrid >();
+    spectrumAnalyzerPreEq  = std::make_unique< SpectrumAnalyzer >(sampleRate,
+                                                                 preEqBufferL,
+                                                                 preEqBufferR,
+                                                                 apvts,
+                                                                 ColourPalette::AnalyzerPreEq.withAlpha(0.1f));
+    spectrumAnalyzerPostEq = std::make_unique< SpectrumAnalyzer >(sampleRate,
+                                                                  postEqBufferL,
+                                                                  postEqBufferR,
+                                                                  apvts,
+                                                                  ColourPalette::AnalyzerPostEq.withAlpha(0.25f));
+    responseCurve          = std::make_unique< ResponseCurve >(apvts, sampleRate);
 
     addAndMakeVisible(*backgroundGrid);
     addAndMakeVisible(*spectrumAnalyzerPreEq);

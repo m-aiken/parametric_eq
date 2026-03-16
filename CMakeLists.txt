@@ -56,7 +56,6 @@ set(PROJECT_SOURCES
         source/gui/widgets/CustomLinearSlider.cpp
         source/gui/widgets/CustomRotaryControl.cpp
         source/gui/widgets/PowerButton.cpp
-        source/gui/widgets/ThemeButton.cpp
 )
 
 set(PROJECT_HEADERS
@@ -88,7 +87,6 @@ set(PROJECT_HEADERS
         source/gui/widgets/CustomLinearSlider.h
         source/gui/widgets/CustomRotaryControl.h
         source/gui/widgets/PowerButton.h
-        source/gui/widgets/ThemeButton.h
 )
 
 target_sources(${PROJECT_NAME}
@@ -116,11 +114,8 @@ target_compile_definitions(${PROJECT_NAME}
         JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-juce_add_binary_data(AudioPluginData SOURCES resources/day_and_night_icon.png)
-
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
-        AudioPluginData
         juce::juce_audio_utils
         juce::juce_dsp
         PUBLIC

@@ -60,15 +60,15 @@ void
 PeakControl::paint(juce::Graphics& g)
 {
     // TODO set a proper colour for nodeFocusOnColour
-    auto nodeFocusOnColour  = ColourPalette::getColourV2(ColourPalette::PeakBandFocus);
-    auto nodeFocusOffColour = ColourPalette::getColourV2(ColourPalette::MainBackground);
+    auto nodeFocusOnColour  = ColourPalette::PeakBandFocus;
+    auto nodeFocusOffColour = ColourPalette::MainBackground;
     g.fillAll(nodeIsActive ? nodeFocusOnColour : nodeFocusOffColour);
 
     auto bounds = getLocalBounds();
 
     g.setFont(GraphicEqGlobals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
-    g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
+    g.setColour(ColourPalette::Text);
 
     g.drawFittedText("P" + juce::String(bandNum),
                      bounds.getRight() - (textHeight * 2),
