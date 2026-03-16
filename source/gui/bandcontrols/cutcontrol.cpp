@@ -2,27 +2,41 @@
 #include "CutControl.h"
 #include "EqProperties.h"
 
-//==============================================================================
+/*---------------------------------------------------------------------------
+**
+*/
 CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUtils::ChainPositions& _chainPosition)
     : chainPosition(_chainPosition)
 {
     const auto& params = EqProperties::getCutParams();
 
-    powerButton           = std::make_unique<PowerButton>();
-    auto enabledParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_ENABLED : EqProperties::CutControls::HIGH_CUT_ENABLED);
-    buttonAttachment      = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, enabledParamName, *powerButton);
+    powerButton           = std::make_unique< PowerButton >();
+    auto enabledParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ?
+                                          EqProperties::CutControls::LOW_CUT_ENABLED :
+                                          EqProperties::CutControls::HIGH_CUT_ENABLED);
+    buttonAttachment      = std::make_unique< juce::AudioProcessorValueTreeState::ButtonAttachment >(apvts,
+                                                                                                enabledParamName,
+                                                                                                *powerButton);
 
-    auto freqParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_FREQ : EqProperties::CutControls::HIGH_CUT_FREQ);
+    auto freqParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ?
+                                       EqProperties::CutControls::LOW_CUT_FREQ :
+                                       EqProperties::CutControls::HIGH_CUT_FREQ);
     auto freqParam     = apvts.getParameter(freqParamName);
     jassert(freqParam != nullptr);
-    freqSlider     = std::make_unique<CustomRotaryControl>(*freqParam, "Hz");
-    freqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, freqParamName, *freqSlider);
+    freqSlider     = std::make_unique< CustomRotaryControl >(*freqParam, "Hz");
+    freqAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(apvts,
+                                                                                              freqParamName,
+                                                                                              *freqSlider);
 
-    auto slopeParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_SLOPE : EqProperties::CutControls::HIGH_CUT_SLOPE);
+    auto slopeParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ?
+                                        EqProperties::CutControls::LOW_CUT_SLOPE :
+                                        EqProperties::CutControls::HIGH_CUT_SLOPE);
     auto slopeParam     = apvts.getParameter(slopeParamName);
     jassert(slopeParam != nullptr);
-    slopeSlider     = std::make_unique<CustomLinearSlider>(*slopeParam);
-    slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
+    slopeSlider     = std::make_unique< CustomLinearSlider >(*slopeParam);
+    slopeAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(apvts,
+                                                                                               slopeParamName,
+                                                                                               *slopeSlider);
 
     powerButton->onClick      = [this]() { setEnablement(); };
     freqSlider->onValueChange = [this]() { repaint(); };
@@ -34,7 +48,11 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     setEnablement();
 }
 
-void CutControl::paint(juce::Graphics& g)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+CutControl::paint(juce::Graphics& g)
 {
     if (freqSlider == nullptr || slopeSlider == nullptr) {
         return;
@@ -78,7 +96,7 @@ void CutControl::paint(juce::Graphics& g)
 
     // Values
     auto valueRectHeight = bounds.getHeight() * 0.4;
-    auto valueRect       = juce::Rectangle<int>(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
+    auto valueRect = juce::Rectangle< int >(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
 
     auto vCX = valueRect.getCentreX();
     auto vY  = valueRect.getY();
@@ -89,7 +107,11 @@ void CutControl::paint(juce::Graphics& g)
     g.drawFittedText(juce::String(freqSlider->getValue()), vCX, vY + vH, vW, vH, juce::Justification::centred, 1);
 }
 
-void CutControl::resized()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+CutControl::resized()
 {
     if (powerButton == nullptr || freqSlider == nullptr || slopeSlider == nullptr) {
         return;
@@ -106,13 +128,14 @@ void CutControl::resized()
                           diameter,
                           diameter);
 
-    slopeSlider->setBounds(padding,
-                           freqSlider->getBottom() + (padding * 3),
-                           bounds.getWidth() - (padding * 2),
-                           padding);
+    slopeSlider->setBounds(padding, freqSlider->getBottom() + (padding * 3), bounds.getWidth() - (padding * 2), padding);
 }
 
-void CutControl::setEnablement()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+CutControl::setEnablement()
 {
     if (powerButton == nullptr || freqSlider == nullptr || slopeSlider == nullptr) {
         return;
@@ -127,3 +150,7 @@ void CutControl::setEnablement()
     freqSlider->setAlpha(toggleState ? 1.f : dim);
     slopeSlider->setAlpha(toggleState ? 1.f : dim);
 }
+
+/*---------------------------------------------------------------------------
+** End of File
+*/

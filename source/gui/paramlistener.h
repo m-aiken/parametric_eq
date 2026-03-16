@@ -2,11 +2,9 @@
 
 #include <JuceHeader.h>
 
-//==============================================================================
-template <typename T>
-struct ParamListener : juce::Timer
-{
-    ParamListener(juce::RangedAudioParameter& rap, std::function<void(T)> valueChangedHandler)
+template < typename T >
+struct ParamListener : juce::Timer {
+    ParamListener(juce::RangedAudioParameter& rap, std::function< void(T) > valueChangedHandler)
         : param(&rap)
         , handleValueChanged(valueChangedHandler)
     {
@@ -17,10 +15,7 @@ struct ParamListener : juce::Timer
         startTimerHz(60);
     }
 
-    ~ParamListener()
-    {
-        stopTimer();
-    }
+    ~ParamListener() { stopTimer(); }
 
     void timerCallback() override
     {
@@ -39,5 +34,5 @@ struct ParamListener : juce::Timer
 private:
     T                           paramValue;
     juce::RangedAudioParameter* param;
-    std::function<void(T)>      handleValueChanged;
+    std::function< void(T) >    handleValueChanged;
 };

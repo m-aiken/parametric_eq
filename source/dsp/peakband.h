@@ -2,9 +2,7 @@
 
 #include <JuceHeader.h>
 
-//==============================================================================
-struct PeakBand
-{
+struct PeakBand {
     juce::AudioParameterFloat* peakFreqParam { nullptr };
     juce::AudioParameterFloat* peakGainParam { nullptr };
     juce::AudioParameterFloat* peakQParam { nullptr };

@@ -1,20 +1,26 @@
 #include "EqControlsContainer.h"
 
-//==============================================================================
+/*---------------------------------------------------------------------------
+**
+*/
 EqControlsContainer::EqControlsContainer(juce::AudioProcessorValueTreeState& apvts)
 {
-    lowCutControl  = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::LowCut);
-    highCutControl = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::HighCut);
+    lowCutControl  = std::make_unique< CutControl >(apvts, FilterUtils::ChainPositions::LowCut);
+    highCutControl = std::make_unique< CutControl >(apvts, FilterUtils::ChainPositions::HighCut);
     addAndMakeVisible(*lowCutControl);
     addAndMakeVisible(*highCutControl);
 
     for (size_t i = 0; i < peakControls.size(); ++i) {
-        peakControls.at(i) = std::make_unique<PeakControl>(apvts, i);
+        peakControls.at(i) = std::make_unique< PeakControl >(apvts, i);
         addAndMakeVisible(*peakControls.at(i));
     }
 }
 
-void EqControlsContainer::resized()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+EqControlsContainer::resized()
 {
     if (lowCutControl == nullptr || highCutControl == nullptr) {
         return;
@@ -25,16 +31,8 @@ void EqControlsContainer::resized()
     using Track = juce::Grid::TrackInfo;
     using Fr    = juce::Grid::Fr;
 
-    grid.templateColumns = {
-        Track(Fr(1)),
-        Track(Fr(1)),
-        Track(Fr(1)),
-        Track(Fr(1)),
-        Track(Fr(1)),
-        Track(Fr(1)),
-        Track(Fr(1)),
-        Track(Fr(1))
-    };
+    grid.templateColumns = { Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1)),
+                             Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1)) };
 
     grid.autoRows = Track(Fr(1));
 
@@ -53,7 +51,11 @@ void EqControlsContainer::resized()
     grid.performLayout(getLocalBounds());
 }
 
-void EqControlsContainer::setBandHasNodeSelection(size_t activeNodeIndex)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+EqControlsContainer::setBandHasNodeSelection(size_t activeNodeIndex)
 {
     for (size_t i = 0; i < peakControls.size(); ++i) {
         if (peakControls.at(i) != nullptr) {
@@ -61,3 +63,7 @@ void EqControlsContainer::setBandHasNodeSelection(size_t activeNodeIndex)
         }
     }
 }
+
+/*---------------------------------------------------------------------------
+** End of File
+*/

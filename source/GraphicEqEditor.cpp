@@ -2,23 +2,25 @@
 #include "GraphicEqEditor.h"
 #include "GraphicEqGlobals.h"
 
-//==============================================================================
+/*---------------------------------------------------------------------------
+**
+*/
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processorRef(p)
 {
     setLookAndFeel(&lnf);
 
-    analyzerControls  = std::make_unique<AnalyzerControls>(processorRef.apvts);
-    themeButton       = std::make_unique<ThemeButton>();
-    analyzerContainer = std::make_unique<AnalyzerContainer>(processorRef.apvts,
-                                                            processorRef.getSampleRate(),
-                                                            processorRef.preEqMonoFifoL,
-                                                            processorRef.preEqMonoFifoR,
-                                                            processorRef.postEqMonoFifoL,
-                                                            processorRef.postEqMonoFifoR);
+    analyzerControls  = std::make_unique< AnalyzerControls >(processorRef.apvts);
+    themeButton       = std::make_unique< ThemeButton >();
+    analyzerContainer = std::make_unique< AnalyzerContainer >(processorRef.apvts,
+                                                              processorRef.getSampleRate(),
+                                                              processorRef.preEqMonoFifoL,
+                                                              processorRef.preEqMonoFifoR,
+                                                              processorRef.postEqMonoFifoL,
+                                                              processorRef.postEqMonoFifoR);
 
-    eqControls = std::make_unique<EqControlsContainer>(processorRef.apvts);
+    eqControls = std::make_unique< EqControlsContainer >(processorRef.apvts);
 
     addAndMakeVisible(*analyzerControls);
     addAndMakeVisible(*themeButton);
@@ -37,14 +39,20 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     startTimerHz(20);
 }
 
+/*---------------------------------------------------------------------------
+**
+*/
 GraphicEqEditor::~GraphicEqEditor()
 {
     stopTimer();
     setLookAndFeel(nullptr);
 }
 
-//==============================================================================
-void GraphicEqEditor::paint(juce::Graphics& g)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqEditor::paint(juce::Graphics& g)
 {
     if (analyzerContainer == nullptr) {
         return;
@@ -56,18 +64,28 @@ void GraphicEqEditor::paint(juce::Graphics& g)
 
     auto analyzerBounds = analyzerContainer->getBounds();
 
-    juce::Rectangle<int> leftDbScaleBounds(0, analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
-    juce::Rectangle<int> rightDbScaleBounds(analyzerBounds.getRight(), analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
+    juce::Rectangle< int > leftDbScaleBounds(0, analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
+    juce::Rectangle< int > rightDbScaleBounds(analyzerBounds.getRight(),
+                                              analyzerBounds.getY(),
+                                              analyzerBounds.getX(),
+                                              analyzerBounds.getHeight());
 
     drawDbLabels(g, leftDbScaleBounds);
     drawDbLabels(g, rightDbScaleBounds);
 
-    auto                 textHeight = g.getCurrentFont().getHeight();
-    juce::Rectangle<int> frequencyScaleBounds(analyzerBounds.getX(), analyzerBounds.getY() - textHeight, analyzerBounds.getWidth(), textHeight);
+    auto                   textHeight = g.getCurrentFont().getHeight();
+    juce::Rectangle< int > frequencyScaleBounds(analyzerBounds.getX(),
+                                                analyzerBounds.getY() - textHeight,
+                                                analyzerBounds.getWidth(),
+                                                textHeight);
     drawFrequencyLabels(g, frequencyScaleBounds);
 }
 
-void GraphicEqEditor::resized()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqEditor::resized()
 {
     if (analyzerControls == nullptr || themeButton == nullptr || analyzerContainer == nullptr || eqControls == nullptr) {
         return;
@@ -78,20 +96,20 @@ void GraphicEqEditor::resized()
     auto mainWindowHeight = bounds.getHeight();
     auto padding          = GraphicEqGlobals::getFont().getHeight();
 
-    juce::Rectangle<int> analyzerBounds(padding * 3,
-                                        padding * 6,
-                                        mainWindowWidth - (padding * 6),
-                                        static_cast<int>(std::floor((mainWindowHeight * 0.6) - (padding * 2))));
+    juce::Rectangle< int > analyzerBounds(padding * 3,
+                                          padding * 6,
+                                          mainWindowWidth - (padding * 6),
+                                          static_cast< int >(std::floor((mainWindowHeight * 0.6) - (padding * 2))));
 
     auto analyzerwidth = analyzerBounds.getWidth();
 
-    analyzerControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.25),
-                                padding,
-                                analyzerwidth * 0.5,
-                                padding * 3);
+    analyzerControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.25), padding, analyzerwidth * 0.5, padding * 3);
 
     auto themeButtonDiameter = 24;
-    themeButton->setBounds(bounds.getRight() - themeButtonDiameter - padding, padding, themeButtonDiameter, themeButtonDiameter);
+    themeButton->setBounds(bounds.getRight() - themeButtonDiameter - padding,
+                           padding,
+                           themeButtonDiameter,
+                           themeButtonDiameter);
 
     analyzerContainer->setBounds(analyzerBounds);
 
@@ -101,7 +119,11 @@ void GraphicEqEditor::resized()
                           bounds.getBottom() - analyzerContainer->getBottom() - (padding * 2));
 }
 
-void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle< int >& labelBounds)
 {
     auto textHeight = g.getCurrentFont().getHeight();
 
@@ -114,23 +136,27 @@ void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labe
     auto dbScaleX      = labelBounds.getX();
 
     for (auto db = minDb; db <= maxDb; db += 12) {
-        auto yCoord   = juce::jmap<int>(db, minDb, maxDb, dbScaleHeight, 0);
+        auto yCoord   = juce::jmap< int >(db, minDb, maxDb, dbScaleHeight, 0);
         auto textY    = yCoord + dbScaleY - (textHeight * 0.5);
         auto dbString = juce::String(db);
 
-        g.drawFittedText((db > 0 ? '+' + dbString : dbString), // text
-                         dbScaleX,                             // x
-                         textY,                                // y
-                         dbScaleWidth,                         // width
-                         textHeight,                           // height
-                         juce::Justification::centred,         // justification
-                         1);                                   // max num lines
+        g.drawFittedText((db > 0 ? '+' + dbString : dbString),  // text
+                         dbScaleX,                              // x
+                         textY,                                 // y
+                         dbScaleWidth,                          // width
+                         textHeight,                            // height
+                         juce::Justification::centred,          // justification
+                         1);                                    // max num lines
     }
 }
 
-void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle< int >& labelBounds)
 {
-    std::vector<float> freqs { 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f };
+    std::vector< float > freqs { 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f };
 
     const float minFreq = GraphicEqGlobals::getMinFrequency();
     const float maxFreq = GraphicEqGlobals::getMaxFrequency();
@@ -143,22 +169,26 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
     auto textWidth  = textHeight * 2.5;
 
     for (auto i = 1; i < freqs.size() - 1; ++i) {
-        auto normalizedX = juce::mapFromLog10<float>(freqs[i], minFreq, maxFreq);
+        auto normalizedX = juce::mapFromLog10< float >(freqs[i], minFreq, maxFreq);
         auto labelX      = boundsX + boundsWidth * normalizedX;
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
 
-        g.drawFittedText(text,                                     // text
-                         labelX - (textWidth * 0.5),               // x
-                         boundsY - (textHeight * 0.5),             // y
-                         textWidth,                                // width
-                         textHeight,                               // height
-                         juce::Justification::horizontallyCentred, // justification
-                         1);                                       // max num lines
+        g.drawFittedText(text,                                      // text
+                         labelX - (textWidth * 0.5),                // x
+                         boundsY - (textHeight * 0.5),              // y
+                         textWidth,                                 // width
+                         textHeight,                                // height
+                         juce::Justification::horizontallyCentred,  // justification
+                         1);                                        // max num lines
     }
 }
 
-void GraphicEqEditor::timerCallback()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqEditor::timerCallback()
 {
     if (analyzerContainer == nullptr || eqControls == nullptr) {
         return;
@@ -169,3 +199,7 @@ void GraphicEqEditor::timerCallback()
         eqControls->setBandHasNodeSelection(activeNode);
     }
 }
+
+/*---------------------------------------------------------------------------
+** End of File
+*/

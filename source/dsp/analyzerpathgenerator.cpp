@@ -1,14 +1,17 @@
 #include "AnalyzerPathGenerator.h"
 
-//==============================================================================
-void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
-                                         juce::Rectangle<float>    fftBounds,
-                                         int                       fftSize,
-                                         float                     binWidth,
-                                         float                     negativeInfinity,
-                                         float                     maxDb)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+AnalyzerPathGenerator::generatePath(const std::vector< float >& renderData,
+                                    juce::Rectangle< float >    fftBounds,
+                                    int                         fftSize,
+                                    float                       binWidth,
+                                    float                       negativeInfinity,
+                                    float                       maxDb)
 {
-    auto numBins = static_cast<int>(fftSize * 0.5);
+    auto numBins = static_cast< int >(fftSize * 0.5);
 
     const float minFreq = GraphicEqGlobals::getMinFrequency();
     const float maxFreq = GraphicEqGlobals::getMaxFrequency();
@@ -18,9 +21,9 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
     auto fftBoundsWidth  = fftBounds.getWidth();
 
     juce::Path path;
-    path.preallocateSpace(3 * static_cast<int>(fftBoundsWidth));
+    path.preallocateSpace(3 * static_cast< int >(fftBoundsWidth));
 
-    auto yCoord = juce::jmap<float>(renderData[0], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
+    auto yCoord = juce::jmap< float >(renderData[0], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
     if (std::isnan(yCoord) || std::isinf(yCoord)) {
         yCoord = fftBoundsBottom;
     }
@@ -32,7 +35,7 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
     const int pathResolution = 2;
 
     for (auto i = 1; i < numBins + 1; i += pathResolution) {
-        yCoord = juce::jmap<float>(renderData[i], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
+        yCoord = juce::jmap< float >(renderData[i], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
 
         if (!std::isnan(yCoord) && !std::isinf(yCoord)) {
             auto binFreq     = i * binWidth;
@@ -52,12 +55,24 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
     pathFifo.push(path);
 }
 
-int AnalyzerPathGenerator::getNumPathsAvailable() const
+/*---------------------------------------------------------------------------
+**
+*/
+int
+AnalyzerPathGenerator::getNumPathsAvailable() const
 {
     return pathFifo.getNumAvailableForReading();
 }
 
-bool AnalyzerPathGenerator::getPath(juce::Path& path)
+/*---------------------------------------------------------------------------
+**
+*/
+bool
+AnalyzerPathGenerator::getPath(juce::Path& path)
 {
     return pathFifo.pull(path);
 }
+
+/*---------------------------------------------------------------------------
+** End of File
+*/

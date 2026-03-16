@@ -1,27 +1,29 @@
 #include "AnalyzerProperties.h"
 #include "SpectrumAnalyzer.h"
 
-//==============================================================================
-SpectrumAnalyzer::SpectrumAnalyzer(double                                    _sampleRate,
-                                   MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
-                                   MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf,
-                                   juce::AudioProcessorValueTreeState&       apvts,
-                                   const juce::Colour&                       fillColour)
+/*---------------------------------------------------------------------------
+**
+*/
+SpectrumAnalyzer::SpectrumAnalyzer(double                                        _sampleRate,
+                                   MonoBufferFifo< juce::AudioBuffer< float > >& leftScsf,
+                                   MonoBufferFifo< juce::AudioBuffer< float > >& rightScsf,
+                                   juce::AudioProcessorValueTreeState&           apvts,
+                                   const juce::Colour&                           fillColour)
     : sampleRate(_sampleRate)
     , colour(fillColour)
 {
-    leftAnalyzerPath  = std::make_unique<juce::Path>();
-    rightAnalyzerPath = std::make_unique<juce::Path>();
+    leftAnalyzerPath  = std::make_unique< juce::Path >();
+    rightAnalyzerPath = std::make_unique< juce::Path >();
 
-    leftPathProducer  = std::make_unique<PathProducer>(_sampleRate, leftScsf);
-    rightPathProducer = std::make_unique<PathProducer>(_sampleRate, rightScsf);
+    leftPathProducer  = std::make_unique< PathProducer >(_sampleRate, leftScsf);
+    rightPathProducer = std::make_unique< PathProducer >(_sampleRate, rightScsf);
 
     const auto& params = AnalyzerProperties::getAnalyzerParams();
 
     auto initListener = [&](auto& listener, const auto& paramName, const auto& lambda) {
         auto param = apvts.getParameter(params.at(paramName));
         if (param != nullptr) {
-            listener = std::make_unique<ParamListener<float>>(*param, lambda);
+            listener = std::make_unique< ParamListener< float > >(*param, lambda);
         }
     };
 
@@ -49,7 +51,11 @@ SpectrumAnalyzer::SpectrumAnalyzer(double                                    _sa
     animate();
 }
 
-void SpectrumAnalyzer::paint(juce::Graphics& g)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::paint(juce::Graphics& g)
 {
     if (leftAnalyzerPath == nullptr || rightAnalyzerPath == nullptr) {
         return;
@@ -65,7 +71,11 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
     g.fillPath(*rightAnalyzerPath);
 }
 
-void SpectrumAnalyzer::resized()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::resized()
 {
     if (leftPathProducer == nullptr || rightPathProducer == nullptr) {
         return;
@@ -76,9 +86,14 @@ void SpectrumAnalyzer::resized()
     rightPathProducer->setFFTRectBounds(bounds.toFloat());
 }
 
-void SpectrumAnalyzer::timerCallback()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::timerCallback()
 {
-    if (leftAnalyzerPath == nullptr || rightAnalyzerPath == nullptr || leftPathProducer == nullptr || rightPathProducer == nullptr) {
+    if (leftAnalyzerPath == nullptr || rightAnalyzerPath == nullptr || leftPathProducer == nullptr
+        || rightPathProducer == nullptr) {
         return;
     }
 
@@ -86,22 +101,27 @@ void SpectrumAnalyzer::timerCallback()
         leftAnalyzerPath->clear();
         rightAnalyzerPath->clear();
         stopTimer();
-    } else {
+    }
+    else {
         if (leftPathProducer->getNumAvailableForReading() > 0) {
             while (leftPathProducer->pull(*leftAnalyzerPath)) {
-            } // get most recent
+            }  // get most recent
         }
 
         if (rightPathProducer->getNumAvailableForReading() > 0) {
             while (rightPathProducer->pull(*rightAnalyzerPath)) {
-            } // get most recent
+            }  // get most recent
         }
     }
 
     repaint();
 }
 
-void SpectrumAnalyzer::setActive(bool activeState)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::setActive(bool activeState)
 {
     active = activeState;
     if (active && !isTimerRunning()) {
@@ -109,7 +129,11 @@ void SpectrumAnalyzer::setActive(bool activeState)
     }
 }
 
-void SpectrumAnalyzer::updateDecayRate(float decayRate)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::updateDecayRate(float decayRate)
 {
     if (leftPathProducer == nullptr || rightPathProducer == nullptr) {
         return;
@@ -119,18 +143,30 @@ void SpectrumAnalyzer::updateDecayRate(float decayRate)
     rightPathProducer->setDecayRate(decayRate);
 }
 
-void SpectrumAnalyzer::updateOrder(float value)
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::updateOrder(float value)
 {
     if (leftPathProducer == nullptr || rightPathProducer == nullptr) {
         return;
     }
 
-    auto denormalizedVal = static_cast<int>(std::floor(juce::jmap<float>(value, 0.f, 1.f, 11.f, 13.f)));
-    leftPathProducer->changeOrder(static_cast<GraphicEqGlobals::FFTOrder>(denormalizedVal));
-    rightPathProducer->changeOrder(static_cast<GraphicEqGlobals::FFTOrder>(denormalizedVal));
+    auto denormalizedVal = static_cast< int >(std::floor(juce::jmap< float >(value, 0.f, 1.f, 11.f, 13.f)));
+    leftPathProducer->changeOrder(static_cast< GraphicEqGlobals::FFTOrder >(denormalizedVal));
+    rightPathProducer->changeOrder(static_cast< GraphicEqGlobals::FFTOrder >(denormalizedVal));
 }
 
-void SpectrumAnalyzer::animate()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+SpectrumAnalyzer::animate()
 {
     startTimerHz(60);
 }
+
+/*---------------------------------------------------------------------------
+** End of File
+*/

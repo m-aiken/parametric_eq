@@ -5,10 +5,8 @@
 #include "Fifo.h"
 #include "GraphicEqGlobals.h"
 
-//==============================================================================
-template <typename BlockType>
-struct MonoBufferFifo
-{
+template < typename BlockType >
+struct MonoBufferFifo {
     using SampleType = typename BlockType::SampleType;
     explicit MonoBufferFifo(GraphicEqGlobals::Channel ch)
         : channelToUse(ch)
@@ -18,16 +16,14 @@ struct MonoBufferFifo
 
     void update(const BlockType& buffer)
     {
-        for (auto i = 0; i < buffer.getNumSamples(); ++i)
-        {
+        for (auto i = 0; i < buffer.getNumSamples(); ++i) {
             pushNextSampleIntoFifo(buffer.getSample(channelToUse, i));
         }
     }
 
     void pushNextSampleIntoFifo(SampleType sample)
     {
-        if (fifoIndex == getSize())
-        {
+        if (fifoIndex == getSize()) {
             audioBufferFifo.push(bufferToFill);
             fifoIndex = 0;
         }
@@ -54,8 +50,8 @@ struct MonoBufferFifo
 private:
     GraphicEqGlobals::Channel channelToUse;
     int                       fifoIndex = 0;
-    Fifo<BlockType, 20>       audioBufferFifo;
+    Fifo< BlockType, 20 >     audioBufferFifo;
     BlockType                 bufferToFill;
-    juce::Atomic<bool>        prepared = false;
-    juce::Atomic<int>         size     = 0;
+    juce::Atomic< bool >      prepared = false;
+    juce::Atomic< int >       size     = 0;
 };

@@ -1,18 +1,30 @@
 #include "AnalyzerContainer.h"
 #include "ColourPalette.h"
 
-//==============================================================================
-AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&       apvts,
-                                     double                                    sampleRate,
-                                     MonoBufferFifo<juce::AudioBuffer<float>>& preEqBufferL,
-                                     MonoBufferFifo<juce::AudioBuffer<float>>& preEqBufferR,
-                                     MonoBufferFifo<juce::AudioBuffer<float>>& postEqBufferL,
-                                     MonoBufferFifo<juce::AudioBuffer<float>>& postEqBufferR)
+/*---------------------------------------------------------------------------
+**
+*/
+AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&           apvts,
+                                     double                                        sampleRate,
+                                     MonoBufferFifo< juce::AudioBuffer< float > >& preEqBufferL,
+                                     MonoBufferFifo< juce::AudioBuffer< float > >& preEqBufferR,
+                                     MonoBufferFifo< juce::AudioBuffer< float > >& postEqBufferL,
+                                     MonoBufferFifo< juce::AudioBuffer< float > >& postEqBufferR)
 {
-    backgroundGrid         = std::make_unique<SpectrumGrid>();
-    spectrumAnalyzerPreEq  = std::make_unique<SpectrumAnalyzer>(sampleRate, preEqBufferL, preEqBufferR, apvts, ColourPalette::getColourV2(ColourPalette::AnalyzerPreEq).withAlpha(0.1f));
-    spectrumAnalyzerPostEq = std::make_unique<SpectrumAnalyzer>(sampleRate, postEqBufferL, postEqBufferR, apvts, ColourPalette::getColourV2(ColourPalette::AnalyzerPostEq).withAlpha(0.25f));
-    responseCurve          = std::make_unique<ResponseCurve>(apvts, sampleRate);
+    backgroundGrid = std::make_unique< SpectrumGrid >();
+    spectrumAnalyzerPreEq =
+        std::make_unique< SpectrumAnalyzer >(sampleRate,
+                                             preEqBufferL,
+                                             preEqBufferR,
+                                             apvts,
+                                             ColourPalette::getColourV2(ColourPalette::AnalyzerPreEq).withAlpha(0.1f));
+    spectrumAnalyzerPostEq =
+        std::make_unique< SpectrumAnalyzer >(sampleRate,
+                                             postEqBufferL,
+                                             postEqBufferR,
+                                             apvts,
+                                             ColourPalette::getColourV2(ColourPalette::AnalyzerPostEq).withAlpha(0.25f));
+    responseCurve = std::make_unique< ResponseCurve >(apvts, sampleRate);
 
     addAndMakeVisible(*backgroundGrid);
     addAndMakeVisible(*spectrumAnalyzerPreEq);
@@ -20,9 +32,14 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&       a
     addAndMakeVisible(*responseCurve);
 }
 
-void AnalyzerContainer::resized()
+/*---------------------------------------------------------------------------
+**
+*/
+void
+AnalyzerContainer::resized()
 {
-    if (backgroundGrid == nullptr || spectrumAnalyzerPreEq == nullptr || spectrumAnalyzerPostEq == nullptr || responseCurve == nullptr) {
+    if (backgroundGrid == nullptr || spectrumAnalyzerPreEq == nullptr || spectrumAnalyzerPostEq == nullptr
+        || responseCurve == nullptr) {
         return;
     }
 
@@ -33,7 +50,11 @@ void AnalyzerContainer::resized()
     responseCurve->setBounds(bounds);
 }
 
-size_t AnalyzerContainer::getActiveNodeIndex()
+/*---------------------------------------------------------------------------
+**
+*/
+size_t
+AnalyzerContainer::getActiveNodeIndex()
 {
     if (responseCurve != nullptr) {
         return responseCurve->getActiveNodeIndex();
@@ -41,3 +62,7 @@ size_t AnalyzerContainer::getActiveNodeIndex()
 
     return 0;
 }
+
+/*---------------------------------------------------------------------------
+** End of File
+*/

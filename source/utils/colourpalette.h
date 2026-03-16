@@ -4,12 +4,13 @@
 
 #include "TailwindColours.h"
 
-//==============================================================================
-namespace ColourPalette {
+namespace ColourPalette
+{
 
 static bool darkMode = false;
 
-static void toggleDarkMode()
+static void
+toggleDarkMode()
 {
     darkMode = !darkMode;
 }
@@ -21,7 +22,7 @@ enum Palette {
     Green
 };
 */
-typedef std::pair<juce::Colour, juce::Colour> DarkLightPair;
+typedef std::pair< juce::Colour, juce::Colour > DarkLightPair;
 
 static const DarkLightPair MainBackground   = DarkLightPair(TailwindColours::Gray800, TailwindColours::Amber50);
 static const DarkLightPair Text             = DarkLightPair(TailwindColours::Amber50, TailwindColours::Gray800);
@@ -37,7 +38,8 @@ static const DarkLightPair NodeOn           = DarkLightPair(TailwindColours::Red
 static const DarkLightPair NodeOff          = DarkLightPair(TailwindColours::Amber50, TailwindColours::Gray800);
 static const DarkLightPair AnalyzerPreEq    = DarkLightPair(TailwindColours::Red400, TailwindColours::Red400);
 static const DarkLightPair AnalyzerPostEq   = DarkLightPair(TailwindColours::Teal400, TailwindColours::Teal400);
-static const DarkLightPair PeakBandFocus    = DarkLightPair(TailwindColours::Teal300.withAlpha(0.05f), TailwindColours::Red300.withAlpha(0.15f));
+static const DarkLightPair PeakBandFocus    = DarkLightPair(TailwindColours::Teal300.withAlpha(0.05f),
+                                                         TailwindColours::Red300.withAlpha(0.15f));
 
 /*
 inline std::map<Palette, juce::Colour> colourMap = {
@@ -49,6 +51,10 @@ inline std::map<Palette, juce::Colour> colourMap = {
 */
 // inline juce::Colour getColour(Palette c) { return colourMap[c]; }
 
-inline juce::Colour getColourV2(DarkLightPair c) { return darkMode ? c.first : c.second; }
-
+inline juce::Colour
+getColourV2(DarkLightPair c)
+{
+    return darkMode ? c.first : c.second;
 }
+
+}  // namespace ColourPalette

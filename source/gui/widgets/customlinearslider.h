@@ -2,9 +2,7 @@
 
 #include <JuceHeader.h>
 
-//==============================================================================
-struct CustomLinearSlider : juce::Slider
-{
+struct CustomLinearSlider : juce::Slider {
     explicit CustomLinearSlider(juce::RangedAudioParameter& rap);
 
     void paint(juce::Graphics& g) override;

@@ -7,10 +7,8 @@
 #include "MonoBufferFifo.h"
 #include "GraphicEqGlobals.h"
 
-//==============================================================================
-struct PathProducer : juce::Thread
-{
-    PathProducer(double _sampleRate, MonoBufferFifo<juce::AudioBuffer<float>>& scsf);
+struct PathProducer : juce::Thread {
+    PathProducer(double _sampleRate, MonoBufferFifo< juce::AudioBuffer< float > >& scsf);
     ~PathProducer() override;
 
     void   run() override;
@@ -18,7 +16,7 @@ struct PathProducer : juce::Thread
     int    getFFTSize() const;
     double getBinWidth() const;
     void   pauseThread();
-    void   setFFTRectBounds(juce::Rectangle<float> bounds);
+    void   setFFTRectBounds(juce::Rectangle< float > bounds);
 
     void setDecayRate(float decayRate);
     bool pull(juce::Path& path);
@@ -27,25 +25,23 @@ struct PathProducer : juce::Thread
     void changePathRange(float negativeInfinityDb, float maxDb);
 
 private:
-    MonoBufferFifo<juce::AudioBuffer<float>>* singleChannelSampleFifo;
+    MonoBufferFifo< juce::AudioBuffer< float > >* singleChannelSampleFifo;
 
-    std::unique_ptr<FftDataGenerator>      fftDataGenerator;
-    std::unique_ptr<AnalyzerPathGenerator> pathGenerator;
+    std::unique_ptr< FftDataGenerator >      fftDataGenerator;
+    std::unique_ptr< AnalyzerPathGenerator > pathGenerator;
 
-    std::vector<float> renderData;
+    std::vector< float > renderData;
 
-    void updateRenderData(std::vector<float>&       renData,
-                          const std::vector<float>& fftData,
-                          int                       numBins,
-                          float                     decayRate);
+    void
+    updateRenderData(std::vector< float >& renData, const std::vector< float >& fftData, int numBins, float decayRate);
 
-    juce::AudioBuffer<float> bufferForGenerator;
+    juce::AudioBuffer< float > bufferForGenerator;
 
-    double                 sampleRate;
-    juce::Rectangle<float> fftBounds;
+    double                   sampleRate;
+    juce::Rectangle< float > fftBounds;
 
-    std::atomic<float> decayRateInDbPerSec { 0.f };
-    std::atomic<float> negativeInfinity { GraphicEqGlobals::getNegativeInf() };
-    std::atomic<float> maxDecibels { GraphicEqGlobals::getMaxDecibels() };
-    std::atomic<bool>  processingIsEnabled { false };
+    std::atomic< float > decayRateInDbPerSec { 0.f };
+    std::atomic< float > negativeInfinity { GraphicEqGlobals::getNegativeInf() };
+    std::atomic< float > maxDecibels { GraphicEqGlobals::getMaxDecibels() };
+    std::atomic< bool >  processingIsEnabled { false };
 };

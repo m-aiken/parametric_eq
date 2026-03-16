@@ -6,27 +6,29 @@
 #include "GraphicEqGlobals.h"
 #include "PeakBand.h"
 
-//==============================================================================
-struct Node : juce::ToggleButton
-{
+struct Node : juce::ToggleButton {
     Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum);
     void paint(juce::Graphics& g) override;
 
 private:
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> paramAttachment;
+    std::unique_ptr< juce::AudioProcessorValueTreeState::ButtonAttachment > paramAttachment;
 };
 
-//==============================================================================
-struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
-{
+/*---------------------------------------------------------------------------
+**
+*/
+struct ResponseCurve
+    : juce::Component
+    , juce::AudioProcessorParameter::Listener
+    , juce::Timer {
     ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate);
     ~ResponseCurve();
 
     void paint(juce::Graphics& g) override;
     void mouseDrag(const juce::MouseEvent& event) override;
 
-    void                               updateMonoChain();
-    std::array<std::vector<double>, 9> getMagnitudes(int boundsWidth);
+    void                                   updateMonoChain();
+    std::array< std::vector< double >, 9 > getMagnitudes(int boundsWidth);
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
@@ -37,7 +39,10 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void removeListeners();
     bool allControlPtrsValid();
 
-    std::array<juce::Point<int>, GraphicEqGlobals::getNumPeakBands()>& getNodeCoordinates() { return nodeCoordinates; }
+    std::array< juce::Point< int >, GraphicEqGlobals::getNumPeakBands() >& getNodeCoordinates()
+    {
+        return nodeCoordinates;
+    }
 
     size_t getActiveNodeIndex() { return activeNode; }
 
@@ -46,7 +51,7 @@ private:
     int    nodeDiameter { 6 };
     int    nodeRadius { 3 };
 
-    juce::Atomic<bool> parametersChanged { false };
+    juce::Atomic< bool > parametersChanged { false };
 
     juce::AudioProcessorValueTreeState& apvts;
     FilterUtils::MonoChain              monoChain;
@@ -58,12 +63,12 @@ private:
     juce::AudioParameterFloat*  highCutFreqParam { nullptr };
     juce::AudioParameterChoice* highCutSlopeParam { nullptr };
 
-    std::array<PeakBand, GraphicEqGlobals::getNumPeakBands()>              peakBands;
-    std::array<std::unique_ptr<Node>, GraphicEqGlobals::getNumPeakBands()> peakNodes;
-    std::array<juce::Point<int>, GraphicEqGlobals::getNumPeakBands()>      nodeCoordinates;
+    std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() >                peakBands;
+    std::array< std::unique_ptr< Node >, GraphicEqGlobals::getNumPeakBands() > peakNodes;
+    std::array< juce::Point< int >, GraphicEqGlobals::getNumPeakBands() >      nodeCoordinates;
 
-    std::array<juce::Value, GraphicEqGlobals::getNumPeakBands()> xValues;
-    std::array<juce::Value, GraphicEqGlobals::getNumPeakBands()> yValues;
+    std::array< juce::Value, GraphicEqGlobals::getNumPeakBands() > xValues;
+    std::array< juce::Value, GraphicEqGlobals::getNumPeakBands() > yValues;
 
     size_t activeNode;
 };

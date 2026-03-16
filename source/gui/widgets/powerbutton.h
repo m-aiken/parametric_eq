@@ -2,9 +2,7 @@
 
 #include <JuceHeader.h>
 
-//==============================================================================
-struct PowerButton : juce::ToggleButton
-{
+struct PowerButton : juce::ToggleButton {
     void paint(juce::Graphics& g) override;
     void mouseEnter(const juce::MouseEvent& e) override;
 };
