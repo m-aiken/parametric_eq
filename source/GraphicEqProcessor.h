@@ -7,65 +7,65 @@
 #include "MonoBufferFifo.h"
 #include "PeakBand.h"
 
-class GraphicEqProcessor : public juce::AudioProcessor
+class GraphicEqProcessor final : public juce::AudioProcessor
 {
 public:
     GraphicEqProcessor();
-    ~GraphicEqProcessor() override;
-
-    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
-
-    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
-
-    void processBlock(juce::AudioBuffer< float >&, juce::MidiBuffer&) override;
-    using AudioProcessor::processBlock;
-
-    juce::AudioProcessorEditor* createEditor() override;
-    bool                        hasEditor() const override;
+    ~GraphicEqProcessor() override = default;
 
     const juce::String getName() const override;
 
-    bool   acceptsMidi() const override;
-    bool   producesMidi() const override;
-    bool   isMidiEffect() const override;
+    bool acceptsMidi() const override;
+    bool producesMidi() const override;
+    bool isMidiEffect() const override;
+
     double getTailLengthSeconds() const override;
 
     int                getNumPrograms() override;
     int                getCurrentProgram() override;
     void               setCurrentProgram(int index) override;
     const juce::String getProgramName(int index) override;
-    void               changeProgramName(int index, const juce::String& newName) override;
+    void               changeProgramName(int index, const juce::String& new_name) override;
 
-    void getStateInformation(juce::MemoryBlock& destData) override;
-    void setStateInformation(const void* data, int sizeInBytes) override;
+    void prepareToPlay(double sample_rate, int samples_per_block) override;
+    void releaseResources() override;
 
-    void updateCutFilter(const FilterUtils::ChainPositions& chainPosition,
-                         juce::AudioParameterFloat*         freqParam,
-                         juce::AudioParameterChoice*        slopeParam,
-                         double                             sampleRate);
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
 
-    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", createParameterLayout() };
+    void processBlock(juce::AudioBuffer< float >& buffer, juce::MidiBuffer& midi_messages) override;
+    juce::AudioProcessorEditor* createEditor() override;
+    bool                        hasEditor() const override;
+    void                        getStateInformation(juce::MemoryBlock& dest_data) override;
+    void                        setStateInformation(const void* data, int size_in_bytes) override;
+
+    juce::AudioProcessorValueTreeState& getApvts();
 
     MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoL { GraphicEqGlobals::Channel::Left };
     MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoR { GraphicEqGlobals::Channel::Right };
-
     MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoL { GraphicEqGlobals::Channel::Left };
     MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoR { GraphicEqGlobals::Channel::Right };
 
 private:
-    FilterUtils::MonoChain leftChain;
-    FilterUtils::MonoChain rightChain;
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    juce::AudioParameterBool*   lowCutEnabledParam { nullptr };
-    juce::AudioParameterFloat*  lowCutFreqParam { nullptr };
-    juce::AudioParameterChoice* lowCutSlopeParam { nullptr };
-    juce::AudioParameterBool*   highCutEnabledParam { nullptr };
-    juce::AudioParameterFloat*  highCutFreqParam { nullptr };
-    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
+    void updateCutFilter(const FilterUtils::ChainPositions& chain_position,
+                         juce::AudioParameterFloat*         freq_param,
+                         juce::AudioParameterChoice*        slope_param,
+                         double                             sample_rate);
 
-    std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() > peakBands;
+    juce::AudioProcessorValueTreeState apvts_;
+
+    FilterUtils::MonoChain left_chain_;
+    FilterUtils::MonoChain right_chain_;
+
+    juce::AudioParameterBool*   low_cut_enabled_param_ { nullptr };
+    juce::AudioParameterFloat*  low_cut_freq_param_ { nullptr };
+    juce::AudioParameterChoice* low_cut_slope_param_ { nullptr };
+    juce::AudioParameterBool*   high_cut_enabled_param_ { nullptr };
+    juce::AudioParameterFloat*  high_cut_freq_param_ { nullptr };
+    juce::AudioParameterChoice* high_cut_slope_param_ { nullptr };
+
+    std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() > peak_bands_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };

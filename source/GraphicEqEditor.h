@@ -8,32 +8,32 @@
 #include "EqControlsContainer.h"
 #include "GraphicEqProcessor.h"
 
-class GraphicEqEditor
+class GraphicEqEditor final
     : public juce::AudioProcessorEditor
-    , juce::Timer
+    , public juce::Timer
 {
 public:
-    explicit GraphicEqEditor(GraphicEqProcessor&);
+    explicit GraphicEqEditor(GraphicEqProcessor& p);
     ~GraphicEqEditor() override;
 
-    void paint(juce::Graphics&) override;
+    void paint(juce::Graphics& g) override;
     void resized() override;
-
-    void drawDbLabels(juce::Graphics& g, juce::Rectangle< int >& labelBounds);
-    void drawFrequencyLabels(juce::Graphics& g, juce::Rectangle< int >& labelBounds);
 
     void timerCallback() override;
 
+    static void drawDbLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds);
+    static void drawFrequencyLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds);
+
 private:
-    GraphicEqProcessor& processorRef;
+    GraphicEqProcessor& processor_ref_;
 
-    std::unique_ptr< AnalyzerControls >    analyzerControls;
-    std::unique_ptr< AnalyzerContainer >   analyzerContainer;
-    std::unique_ptr< EqControlsContainer > eqControls;
+    AnalyzerControls    analyzer_controls_;
+    AnalyzerContainer   analyzer_container_;
+    EqControlsContainer eq_controls_;
 
-    CustomLookAndFeel lnf;
+    size_t active_node_;
 
-    size_t activeNode;
+    CustomLookAndFeel lnf_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqEditor)
 };

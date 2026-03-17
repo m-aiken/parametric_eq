@@ -7,27 +7,24 @@
 */
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     : AudioProcessorEditor(&p)
-    , processorRef(p)
+    , processor_ref_(p)
+    , analyzer_controls_(processor_ref_.getApvts())
+    , analyzer_container_(processor_ref_.getApvts(),
+                          processor_ref_.getSampleRate(),
+                          processor_ref_.preEqMonoFifoL,
+                          processor_ref_.preEqMonoFifoR,
+                          processor_ref_.postEqMonoFifoL,
+                          processor_ref_.postEqMonoFifoR)
+    , eq_controls_(processor_ref_.getApvts())
+    , active_node_(analyzer_container_.getActiveNodeIndex())
 {
-    setLookAndFeel(&lnf);
+    setLookAndFeel(&lnf_);
 
-    analyzerControls  = std::make_unique< AnalyzerControls >(processorRef.apvts);
-    analyzerContainer = std::make_unique< AnalyzerContainer >(processorRef.apvts,
-                                                              processorRef.getSampleRate(),
-                                                              processorRef.preEqMonoFifoL,
-                                                              processorRef.preEqMonoFifoR,
-                                                              processorRef.postEqMonoFifoL,
-                                                              processorRef.postEqMonoFifoR);
-
-    eqControls = std::make_unique< EqControlsContainer >(processorRef.apvts);
-
-    addAndMakeVisible(*analyzerControls);
-    addAndMakeVisible(*analyzerContainer);
-    addAndMakeVisible(*eqControls);
+    addAndMakeVisible(analyzer_controls_);
+    addAndMakeVisible(analyzer_container_);
+    addAndMakeVisible(eq_controls_);
 
     setSize(800, 600);
-
-    activeNode = analyzerContainer->getActiveNodeIndex();
 
     startTimerHz(20);
 }
@@ -47,31 +44,29 @@ GraphicEqEditor::~GraphicEqEditor()
 void
 GraphicEqEditor::paint(juce::Graphics& g)
 {
-    if (analyzerContainer == nullptr) {
-        return;
-    }
-
     g.fillAll(ColourPalette::MainBackground);
     g.setFont(GraphicEqGlobals::getFont());
     g.setColour(ColourPalette::Text);
 
-    auto analyzerBounds = analyzerContainer->getBounds();
+    const auto& analyzer_bounds = analyzer_container_.getBounds();
 
-    juce::Rectangle< int > leftDbScaleBounds(0, analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
-    juce::Rectangle< int > rightDbScaleBounds(analyzerBounds.getRight(),
-                                              analyzerBounds.getY(),
-                                              analyzerBounds.getX(),
-                                              analyzerBounds.getHeight());
+    const auto left_db_scale_bounds =
+        juce::Rectangle< int >(0, analyzer_bounds.getY(), analyzer_bounds.getX(), analyzer_bounds.getHeight());
+    const auto right_db_scale_bounds = juce::Rectangle< int >(analyzer_bounds.getRight(),
+                                                              analyzer_bounds.getY(),
+                                                              analyzer_bounds.getX(),
+                                                              analyzer_bounds.getHeight());
 
-    drawDbLabels(g, leftDbScaleBounds);
-    drawDbLabels(g, rightDbScaleBounds);
+    drawDbLabels(g, left_db_scale_bounds);
+    drawDbLabels(g, right_db_scale_bounds);
 
-    auto                   textHeight = g.getCurrentFont().getHeight();
-    juce::Rectangle< int > frequencyScaleBounds(analyzerBounds.getX(),
-                                                analyzerBounds.getY() - textHeight,
-                                                analyzerBounds.getWidth(),
-                                                textHeight);
-    drawFrequencyLabels(g, frequencyScaleBounds);
+    const auto text_height            = g.getCurrentFont().getHeight();
+    const auto frequency_scale_bounds = juce::Rectangle< int >(analyzer_bounds.getX(),
+                                                               analyzer_bounds.getY() - text_height,
+                                                               analyzer_bounds.getWidth(),
+                                                               text_height);
+
+    drawFrequencyLabels(g, frequency_scale_bounds);
 }
 
 /*---------------------------------------------------------------------------
@@ -80,95 +75,27 @@ GraphicEqEditor::paint(juce::Graphics& g)
 void
 GraphicEqEditor::resized()
 {
-    if (analyzerControls == nullptr || analyzerContainer == nullptr || eqControls == nullptr) {
-        return;
-    }
+    const auto& bounds        = getLocalBounds();
+    const auto& bounds_width  = bounds.getWidth();
+    const auto& bounds_height = bounds.getHeight();
+    const auto& padding       = GraphicEqGlobals::getFont().getHeight();
 
-    auto bounds           = getLocalBounds();
-    auto mainWindowWidth  = bounds.getWidth();
-    auto mainWindowHeight = bounds.getHeight();
-    auto padding          = GraphicEqGlobals::getFont().getHeight();
+    const auto analyzer_bounds = juce::Rectangle< int >(padding * 3,
+                                                        padding * 6,
+                                                        bounds_width - (padding * 6),
+                                                        static_cast< int >(
+                                                            std::floor((bounds_height * 0.6) - (padding * 2))));
 
-    juce::Rectangle< int > analyzerBounds(padding * 3,
-                                          padding * 6,
-                                          mainWindowWidth - (padding * 6),
-                                          static_cast< int >(std::floor((mainWindowHeight * 0.6) - (padding * 2))));
+    const auto analyzer_width = analyzer_bounds.getWidth();
 
-    auto analyzerwidth = analyzerBounds.getWidth();
+    analyzer_controls_.setBounds(bounds.getCentreX() - (analyzer_width * 0.25), padding, analyzer_width * 0.5, padding * 3);
 
-    analyzerControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.25), padding, analyzerwidth * 0.5, padding * 3);
+    analyzer_container_.setBounds(analyzer_bounds);
 
-    analyzerContainer->setBounds(analyzerBounds);
-
-    eqControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.5),
-                          analyzerContainer->getBottom() + padding,
-                          analyzerwidth,
-                          bounds.getBottom() - analyzerContainer->getBottom() - (padding * 2));
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle< int >& labelBounds)
-{
-    auto textHeight = g.getCurrentFont().getHeight();
-
-    auto maxDb = GraphicEqGlobals::getMaxDecibels();
-    auto minDb = GraphicEqGlobals::getNegativeInf();
-
-    auto dbScaleY      = labelBounds.getY();
-    auto dbScaleHeight = labelBounds.getHeight();
-    auto dbScaleWidth  = labelBounds.getWidth();
-    auto dbScaleX      = labelBounds.getX();
-
-    for (auto db = minDb; db <= maxDb; db += 12) {
-        auto yCoord   = juce::jmap< int >(db, minDb, maxDb, dbScaleHeight, 0);
-        auto textY    = yCoord + dbScaleY - (textHeight * 0.5);
-        auto dbString = juce::String(db);
-
-        g.drawFittedText((db > 0 ? '+' + dbString : dbString),  // text
-                         dbScaleX,                              // x
-                         textY,                                 // y
-                         dbScaleWidth,                          // width
-                         textHeight,                            // height
-                         juce::Justification::centred,          // justification
-                         1);                                    // max num lines
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle< int >& labelBounds)
-{
-    std::vector< float > freqs { 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f };
-
-    const float minFreq = GraphicEqGlobals::getMinFrequency();
-    const float maxFreq = GraphicEqGlobals::getMaxFrequency();
-
-    auto boundsX     = labelBounds.getX();
-    auto boundsY     = labelBounds.getY();
-    auto boundsWidth = labelBounds.getWidth();
-
-    auto textHeight = g.getCurrentFont().getHeight();
-    auto textWidth  = textHeight * 2.5;
-
-    for (auto i = 1; i < freqs.size() - 1; ++i) {
-        auto normalizedX = juce::mapFromLog10< float >(freqs[i], minFreq, maxFreq);
-        auto labelX      = boundsX + boundsWidth * normalizedX;
-
-        juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
-
-        g.drawFittedText(text,                                      // text
-                         labelX - (textWidth * 0.5),                // x
-                         boundsY - (textHeight * 0.5),              // y
-                         textWidth,                                 // width
-                         textHeight,                                // height
-                         juce::Justification::horizontallyCentred,  // justification
-                         1);                                        // max num lines
-    }
+    eq_controls_.setBounds(bounds.getCentreX() - (analyzer_width * 0.5),
+                           analyzer_container_.getBottom() + padding,
+                           analyzer_width,
+                           bounds.getBottom() - analyzer_container_.getBottom() - (padding * 2));
 }
 
 /*---------------------------------------------------------------------------
@@ -177,13 +104,73 @@ GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle< int >& 
 void
 GraphicEqEditor::timerCallback()
 {
-    if (analyzerContainer == nullptr || eqControls == nullptr) {
-        return;
+    if (active_node_ != analyzer_container_.getActiveNodeIndex()) {
+        active_node_ = analyzer_container_.getActiveNodeIndex();
+        eq_controls_.setBandHasNodeSelection(active_node_);
     }
+}
 
-    if (activeNode != analyzerContainer->getActiveNodeIndex()) {
-        activeNode = analyzerContainer->getActiveNodeIndex();
-        eqControls->setBandHasNodeSelection(activeNode);
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ void
+GraphicEqEditor::drawDbLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds)
+{
+    const auto&    text_height = g.getCurrentFont().getHeight();
+    constexpr auto max_db      = GraphicEqGlobals::getMaxDecibels();
+    constexpr auto min_db      = GraphicEqGlobals::getNegativeInf();
+
+    const auto db_scale_y      = label_bounds.getY();
+    const auto db_scale_height = label_bounds.getHeight();
+    const auto db_scale_width  = label_bounds.getWidth();
+    const auto db_scale_x      = label_bounds.getX();
+
+    for (auto db = min_db; db <= max_db; db += 12) {
+        const auto y_coord  = juce::jmap< int >(db, min_db, max_db, db_scale_height, 0);
+        const auto text_y   = y_coord + db_scale_y - (text_height * 0.5);
+        auto       dbString = juce::String(db);
+
+        g.drawFittedText((db > 0 ? '+' + dbString : dbString),  // text
+                         db_scale_x,                            // x
+                         text_y,                                // y
+                         db_scale_width,                        // width
+                         text_height,                           // height
+                         juce::Justification::centred,          // justification
+                         1);                                    // max num lines
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ void
+GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds)
+{
+    static const std::vector< float > freqs { 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f };
+
+    constexpr float min_freq = GraphicEqGlobals::getMinFrequency();
+    constexpr float max_freq = GraphicEqGlobals::getMaxFrequency();
+
+    const auto bounds_x     = label_bounds.getX();
+    const auto bounds_y     = label_bounds.getY();
+    const auto bounds_width = label_bounds.getWidth();
+
+    const auto text_height = g.getCurrentFont().getHeight();
+    const auto text_width  = text_height * 2.5;
+
+    for (auto i = 1; i < freqs.size() - 1; ++i) {
+        const auto normalized_x = juce::mapFromLog10< float >(freqs[i], min_freq, max_freq);
+        const auto label_x      = bounds_x + bounds_width * normalized_x;
+
+        juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
+
+        g.drawFittedText(text,                                      // text
+                         label_x - (text_width * 0.5),              // x
+                         bounds_y - (text_height * 0.5),            // y
+                         text_width,                                // width
+                         text_height,                               // height
+                         juce::Justification::horizontallyCentred,  // justification
+                         1);                                        // max num lines
     }
 }
 
