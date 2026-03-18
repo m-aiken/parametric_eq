@@ -39,10 +39,7 @@ struct ResponseCurve
     void removeListeners();
     bool allControlPtrsValid();
 
-    std::array< juce::Point< int >, GraphicEqGlobals::getNumPeakBands() >& getNodeCoordinates()
-    {
-        return nodeCoordinates;
-    }
+    std::array< juce::Point< int >, GraphicEq::NUM_PEAK_BANDS >& getNodeCoordinates() { return nodeCoordinates; }
 
     size_t getActiveNodeIndex() { return activeNode; }
 
@@ -63,12 +60,11 @@ private:
     juce::AudioParameterFloat*  highCutFreqParam { nullptr };
     juce::AudioParameterChoice* highCutSlopeParam { nullptr };
 
-    std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() >                peakBands;
-    std::array< std::unique_ptr< Node >, GraphicEqGlobals::getNumPeakBands() > peakNodes;
-    std::array< juce::Point< int >, GraphicEqGlobals::getNumPeakBands() >      nodeCoordinates;
-
-    std::array< juce::Value, GraphicEqGlobals::getNumPeakBands() > xValues;
-    std::array< juce::Value, GraphicEqGlobals::getNumPeakBands() > yValues;
+    std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >                peakBands;
+    std::array< std::unique_ptr< Node >, GraphicEq::NUM_PEAK_BANDS > peakNodes;
+    std::array< juce::Point< int >, GraphicEq::NUM_PEAK_BANDS >      nodeCoordinates;
+    std::array< juce::Value, GraphicEq::NUM_PEAK_BANDS >             xValues;
+    std::array< juce::Value, GraphicEq::NUM_PEAK_BANDS >             yValues;
 
     size_t activeNode;
 };

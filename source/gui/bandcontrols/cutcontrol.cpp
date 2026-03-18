@@ -60,7 +60,7 @@ CutControl::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds();
 
-    g.setFont(GraphicEqGlobals::getFont());
+    g.setFont(GraphicEq::FONT);
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::Text);
 
@@ -119,7 +119,7 @@ CutControl::resized()
 
     auto bounds   = getLocalBounds();
     auto diameter = (bounds.getWidth() * 0.55);
-    auto padding  = GraphicEqGlobals::getFont().getHeight();
+    auto padding  = GraphicEq::FONT.getHeight();
 
     powerButton->setBounds(6, 6, 16, 16);
 

@@ -34,8 +34,8 @@ struct FilterUtils {
     static CoefficientsType
     makeLowPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate);
 
-    static void updateBandEnablements(MonoChain&                                                   monoChain,
-                                      juce::AudioParameterBool*                                    lcEnabledParam,
-                                      juce::AudioParameterBool*                                    hcEnabledParam,
-                                      std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() >& peakBands);
+    static void updateBandEnablements(MonoChain&                                         monoChain,
+                                      juce::AudioParameterBool*                          lcEnabledParam,
+                                      juce::AudioParameterBool*                          hcEnabledParam,
+                                      std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >& peakBands);
 };

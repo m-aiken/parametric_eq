@@ -39,9 +39,9 @@ AnalyzerControls::paint(juce::Graphics& g)
 {
     auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
-    auto sliderHeight = GraphicEqGlobals::getFont().getHeight();
+    auto sliderHeight = GraphicEq::FONT.getHeight();
 
-    g.setFont(GraphicEqGlobals::getFont());
+    g.setFont(GraphicEq::FONT);
     g.setColour(ColourPalette::Text);
 
     g.drawFittedText("FFT Order (2048/4096/8192)", 0, 0, sliderWidth, sliderHeight, juce::Justification::centred, 1);
@@ -67,7 +67,7 @@ AnalyzerControls::resized()
 
     auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
-    auto sliderHeight = GraphicEqGlobals::getFont().getHeight();
+    auto sliderHeight = GraphicEq::FONT.getHeight();
     auto padding      = sliderHeight * 0.2;
 
     fftOrderSlider->setBounds(0, sliderHeight + padding, sliderWidth, sliderHeight);

@@ -8,24 +8,20 @@
 void
 SpectrumGrid::paint(juce::Graphics& g)
 {
-    auto        bounds       = getLocalBounds();
-    const float minFreq      = GraphicEqGlobals::getMinFrequency();
-    const float maxFreq      = GraphicEqGlobals::getMaxFrequency();
-    const float minDb        = GraphicEqGlobals::getNegativeInf();
-    const float maxDb        = GraphicEqGlobals::getMaxDecibels();
-    auto        boundsX      = bounds.getX();
-    auto        boundsY      = bounds.getY();
-    auto        boundsWidth  = bounds.getWidth();
-    auto        boundsBottom = bounds.getBottom();
-    auto        boundsRight  = bounds.getRight();
+    const auto& bounds       = getLocalBounds();
+    const auto& boundsX      = bounds.getX();
+    const auto& boundsY      = bounds.getY();
+    const auto& boundsWidth  = bounds.getWidth();
+    const auto& boundsBottom = bounds.getBottom();
+    const auto& boundsRight  = bounds.getRight();
 
-    g.setFont(GraphicEqGlobals::getFont());
+    g.setFont(GraphicEq::FONT);
 
     g.setColour(ColourPalette::Text.withAlpha(0.2f));
 
     // dB markers
-    for (auto i = minDb; i <= maxDb; i += 12) {
-        auto yCoord = juce::jmap< float >(i, minDb, maxDb, boundsBottom, boundsY);
+    for (auto i = GraphicEq::MIN_DB; i <= GraphicEq::MAX_DB; i += 12) {
+        auto yCoord = juce::jmap< float >(i, GraphicEq::MIN_DB, GraphicEq::MAX_DB, boundsBottom, boundsY);
         g.drawLine(boundsX + 2, yCoord, boundsRight - 2, yCoord, 1.f);
     }
 
@@ -35,14 +31,14 @@ SpectrumGrid::paint(juce::Graphics& g)
                || (i <= 2000 && i % 200 == 0) || (i <= 5000 && i % 500 == 0) || (i % 1000 == 0);
     };
 
-    for (auto i = minFreq + 1; i < maxFreq - 1; ++i) {
+    for (auto i = GraphicEq::MIN_HZ + 1; i < GraphicEq::MAX_HZ - 1; ++i) {
         if (inCatchGroup(i)) {
             auto alpha = i == 50 || i == 100 || i == 200 || i == 500 || i == 1000 || i == 2000 || i == 5000
                                  || i == 10000 ?
                              0.2f :
                              0.07f;
             g.setColour(ColourPalette::Text.withAlpha(alpha));
-            auto normalizedX = juce::mapFromLog10< float >(i, minFreq, maxFreq);
+            auto normalizedX = juce::mapFromLog10< float >(i, GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
             auto freqLineX   = boundsX + boundsWidth * normalizedX;
             g.drawVerticalLine(freqLineX, boundsY, boundsBottom);
         }

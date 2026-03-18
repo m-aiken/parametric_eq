@@ -62,9 +62,9 @@ set(PROJECT_HEADERS
         PRIVATE
         source/GraphicEqEditor.h
         source/GraphicEqProcessor.h
-        source/utils/ColourPalette.h
-        source/utils/GraphicEqGlobals.h
-        source/utils/TailwindColours.h
+        source/utilities/ColourPalette.h
+        source/utilities/GraphicEqGlobals.h
+        source/utilities/TailwindColours.h
         source/dsp/AnalyzerPathGenerator.h
         source/dsp/AnalyzerProperties.h
         source/dsp/EqProperties.h
@@ -98,7 +98,7 @@ target_sources(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/source
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/utilities
         ${CMAKE_CURRENT_SOURCE_DIR}/source/dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyzer

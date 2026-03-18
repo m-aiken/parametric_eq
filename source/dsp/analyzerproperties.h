@@ -24,14 +24,12 @@ getAnalyzerParams()
 /*---------------------------------------------------------------------------
 **
 */
-inline const std::map< GraphicEqGlobals::FFTOrder, juce::String >&
+inline const std::map< GraphicEq::FFTOrder, juce::String >&
 getAnalyzerPoints()
 {
-    static std::map< GraphicEqGlobals::FFTOrder, juce::String > fftOrderMap = {
-        { GraphicEqGlobals::order2048, "order2048" },
-        { GraphicEqGlobals::order4096, "order4096" },
-        { GraphicEqGlobals::order8192, "order8192" }
-    };
+    static std::map< GraphicEq::FFTOrder, juce::String > fftOrderMap = { { GraphicEq::order2048, "order2048" },
+                                                                         { GraphicEq::order4096, "order4096" },
+                                                                         { GraphicEq::order8192, "order8192" } };
 
     return fftOrderMap;
 }
@@ -45,13 +43,12 @@ addAnalyzerParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
     const auto& params    = getAnalyzerParams();
     const auto& fftOrders = getAnalyzerPoints();
 
-    layout.add(
-        std::make_unique< juce::AudioParameterChoice >(params.at(Analyzer_Points),
-                                                       params.at(Analyzer_Points),
-                                                       juce::StringArray { fftOrders.at(GraphicEqGlobals::order2048),
-                                                                           fftOrders.at(GraphicEqGlobals::order4096),
-                                                                           fftOrders.at(GraphicEqGlobals::order8192) },
-                                                       0));
+    layout.add(std::make_unique< juce::AudioParameterChoice >(params.at(Analyzer_Points),
+                                                              params.at(Analyzer_Points),
+                                                              juce::StringArray { fftOrders.at(GraphicEq::order2048),
+                                                                                  fftOrders.at(GraphicEq::order4096),
+                                                                                  fftOrders.at(GraphicEq::order8192) },
+                                                              0));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(params.at(Analyzer_Decay_Rate),
                                                              params.at(Analyzer_Decay_Rate),

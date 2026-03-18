@@ -28,7 +28,7 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     : sampleRate(_sampleRate)
     , apvts(_apvts)
 {
-    for (size_t i = 0; i < GraphicEqGlobals::getNumPeakBands(); ++i) {
+    for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         peakNodes.at(i) = std::make_unique< Node >(_apvts, i);
     }
 
@@ -59,7 +59,7 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
     assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
 
-    for (size_t i = 0; i < GraphicEqGlobals::getNumPeakBands(); ++i) {
+    for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         assignFloatParam(peakBands.at(i).peakFreqParam,
                          EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i));
         assignFloatParam(peakBands.at(i).peakGainParam,
@@ -111,11 +111,7 @@ ResponseCurve::paint(juce::Graphics& g)
     std::array< juce::Path, 9 >            paths;
 
     auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude) {
-        return juce::jmap< float >(magnitude,
-                                   GraphicEqGlobals::getNegativeInf(),
-                                   GraphicEqGlobals::getMaxDecibels(),
-                                   responseCurveMin,
-                                   responseCurveMax);
+        return juce::jmap< float >(magnitude, GraphicEq::MIN_DB, GraphicEq::MAX_DB, responseCurveMin, responseCurveMax);
     };
 
     // Plotting the paths for each band
@@ -163,8 +159,8 @@ ResponseCurve::paint(juce::Graphics& g)
         }
 
         auto normalizedFrequency = juce::mapFromLog10< float >(peakBands.at(i).peakFreqParam->get(),
-                                                               GraphicEqGlobals::getMinFrequency(),
-                                                               GraphicEqGlobals::getMaxFrequency());
+                                                               GraphicEq::MIN_HZ,
+                                                               GraphicEq::MAX_HZ);
 
         auto xRaw = boundsX + static_cast< int >(std::floor(boundsWidth * normalizedFrequency));
         // Clamp the upper bounds for the x coordinate so that it can't go out of the vector bounds.
@@ -199,14 +195,10 @@ ResponseCurve::mouseDrag(const juce::MouseEvent& event)
 
     if (xCoord >= 0 && xCoord <= boundsWidth && yCoord >= 0 && yCoord <= boundsHeight) {
         auto xFrequency = mapToLog10< float >(static_cast< float >(xCoord) / boundsWidth,
-                                              GraphicEqGlobals::getMinFrequency(),
-                                              GraphicEqGlobals::getMaxFrequency());
+                                              GraphicEq::MIN_HZ,
+                                              GraphicEq::MAX_HZ);
 
-        auto yDecibels = juce::jmap< float >(yCoord,
-                                             0,
-                                             boundsHeight,
-                                             GraphicEqGlobals::getMaxDecibels(),
-                                             GraphicEqGlobals::getNegativeInf());
+        auto yDecibels = juce::jmap< float >(yCoord, 0, boundsHeight, GraphicEq::MAX_DB, GraphicEq::MIN_DB);
 
         size_t closestNode      = 0;
         auto   shortestDistance = boundsWidth;
@@ -280,7 +272,7 @@ ResponseCurve::getMagnitudes(int boundsWidth)
 
     enum MagIdx { P0, P1, P2, P3, P4, P5, LC, HC, ALL };
 
-    std::array< juce::dsp::IIR::Filter< float >::CoefficientsPtr, GraphicEqGlobals::getNumPeakBands() > peakCoefficients;
+    std::array< juce::dsp::IIR::Filter< float >::CoefficientsPtr, GraphicEq::NUM_PEAK_BANDS > peakCoefficients;
 
     peakCoefficients[0] = monoChain.get< FilterUtils::ChainPositions::Peak_0 >().coefficients;
     peakCoefficients[1] = monoChain.get< FilterUtils::ChainPositions::Peak_1 >().coefficients;
@@ -293,18 +285,16 @@ ResponseCurve::getMagnitudes(int boundsWidth)
     auto& highCut = monoChain.get< FilterUtils::ChainPositions::HighCut >();
 
     for (auto i = 0; i < boundsWidth; ++i) {
-        std::array< double, GraphicEqGlobals::getNumPeakBands() > peakMags;
+        std::array< double, GraphicEq::NUM_PEAK_BANDS > peakMags;
         peakMags.fill(1.0);
 
         double magLC  = 1.0;
         double magHC  = 1.0;
         double magALL = 1.0;
 
-        auto freq = mapToLog10< double >(static_cast< double >(i) / boundsWidth,
-                                         GraphicEqGlobals::getMinFrequency(),
-                                         GraphicEqGlobals::getMaxFrequency());
+        auto freq = mapToLog10< double >(static_cast< double >(i) / boundsWidth, GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
 
-        for (size_t peakBand = 0; peakBand < GraphicEqGlobals::getNumPeakBands(); ++peakBand) {
+        for (size_t peakBand = 0; peakBand < GraphicEq::NUM_PEAK_BANDS; ++peakBand) {
             if (peakBands.at(peakBand).peakEnabledParam != nullptr && peakCoefficients.at(peakBand) != nullptr
                 && peakBands.at(peakBand).peakEnabledParam->get()) {
                 peakMags.at(peakBand) *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
@@ -350,7 +340,7 @@ ResponseCurve::getMagnitudes(int boundsWidth)
             }
         }
 
-        for (size_t peakBand = 0; peakBand < GraphicEqGlobals::getNumPeakBands(); ++peakBand) {
+        for (size_t peakBand = 0; peakBand < GraphicEq::NUM_PEAK_BANDS; ++peakBand) {
             magnitudes.at(peakBand).at(i) = juce::Decibels::gainToDecibels(peakMags.at(peakBand));
         }
 

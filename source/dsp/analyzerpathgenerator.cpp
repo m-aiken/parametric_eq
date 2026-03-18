@@ -1,4 +1,5 @@
 #include "AnalyzerPathGenerator.h"
+#include "GraphicEqGlobals.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -7,14 +8,9 @@ void
 AnalyzerPathGenerator::generatePath(const std::vector< float >& renderData,
                                     juce::Rectangle< float >    fftBounds,
                                     int                         fftSize,
-                                    float                       binWidth,
-                                    float                       negativeInfinity,
-                                    float                       maxDb)
+                                    float                       binWidth)
 {
     auto numBins = static_cast< int >(fftSize * 0.5);
-
-    const float minFreq = GraphicEqGlobals::getMinFrequency();
-    const float maxFreq = GraphicEqGlobals::getMaxFrequency();
 
     auto fftBoundsBottom = fftBounds.getBottom();
     auto fftBoundsY      = fftBounds.getY();
@@ -23,7 +19,7 @@ AnalyzerPathGenerator::generatePath(const std::vector< float >& renderData,
     juce::Path path;
     path.preallocateSpace(3 * static_cast< int >(fftBoundsWidth));
 
-    auto yCoord = juce::jmap< float >(renderData[0], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
+    auto yCoord = juce::jmap< float >(renderData[0], GraphicEq::MIN_DB, GraphicEq::MAX_DB, fftBoundsBottom, fftBoundsY);
     if (std::isnan(yCoord) || std::isinf(yCoord)) {
         yCoord = fftBoundsBottom;
     }
@@ -35,11 +31,11 @@ AnalyzerPathGenerator::generatePath(const std::vector< float >& renderData,
     const int pathResolution = 2;
 
     for (auto i = 1; i < numBins + 1; i += pathResolution) {
-        yCoord = juce::jmap< float >(renderData[i], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
+        yCoord = juce::jmap< float >(renderData[i], GraphicEq::MIN_DB, GraphicEq::MAX_DB, fftBoundsBottom, fftBoundsY);
 
         if (!std::isnan(yCoord) && !std::isinf(yCoord)) {
             auto binFreq     = i * binWidth;
-            auto normalizedX = juce::mapFromLog10(binFreq, minFreq, maxFreq);
+            auto normalizedX = juce::mapFromLog10(binFreq, GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
             auto xCoord      = std::floor(normalizedX * fftBoundsWidth);
 
             if (xCoord - lastXCoord >= pathResolution && xCoord <= fftBoundsWidth) {

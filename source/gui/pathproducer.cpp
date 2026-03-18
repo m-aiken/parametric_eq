@@ -14,7 +14,7 @@ PathProducer::PathProducer(double _sampleRate, MonoBufferFifo< juce::AudioBuffer
     // TODO - initialising these 2 might not be necessary ultimately.
     // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
     bufferForGenerator.setSize(1, getFFTSize());
-    renderData.resize(getFFTSize(), GraphicEqGlobals::getNegativeInf());
+    renderData.resize(getFFTSize(), GraphicEq::MIN_DB);
 
     startThread();
 }
@@ -90,7 +90,7 @@ PathProducer::run()
 **
 */
 void
-PathProducer::changeOrder(GraphicEqGlobals::FFTOrder order)
+PathProducer::changeOrder(GraphicEq::FFTOrder order)
 {
     if (fftDataGenerator == nullptr || singleChannelSampleFifo == nullptr) {
         return;
@@ -102,7 +102,7 @@ PathProducer::changeOrder(GraphicEqGlobals::FFTOrder order)
 
     auto fftSize = getFFTSize();
     renderData.clear();
-    renderData.resize(static_cast< size_t >(fftSize * 2), negativeInfinity.load());
+    renderData.resize(static_cast< size_t >(fftSize * 2), GraphicEq::MIN_DB);
     bufferForGenerator.setSize(1, fftSize);
 
     while (!singleChannelSampleFifo->isPrepared()) {
@@ -197,16 +197,6 @@ PathProducer::toggleProcessing(bool toggleState)
 **
 */
 void
-PathProducer::changePathRange(float negativeInfinityDb, float maxDb)
-{
-    negativeInfinity.store(negativeInfinityDb);
-    maxDecibels.store(maxDb);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
 PathProducer::updateRenderData(std::vector< float >&       renData,
                                const std::vector< float >& fftData,
                                int                         numBins,
@@ -217,7 +207,7 @@ PathProducer::updateRenderData(std::vector< float >&       renData,
             auto previousValue = renData[i];
             auto candidate     = fftData[i];
             auto finalValue    = juce::jmax(candidate, previousValue - decayRate);
-            renData[i]         = juce::jlimit(negativeInfinity.load(), maxDecibels.load(), finalValue);
+            renData[i]         = juce::jlimit(GraphicEq::MIN_DB, GraphicEq::MAX_DB, finalValue);
         }
     }
 }

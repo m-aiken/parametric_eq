@@ -45,7 +45,7 @@ void
 GraphicEqEditor::paint(juce::Graphics& g)
 {
     g.fillAll(ColourPalette::MainBackground);
-    g.setFont(GraphicEqGlobals::getFont());
+    g.setFont(GraphicEq::FONT);
     g.setColour(ColourPalette::Text);
 
     const auto& analyzer_bounds = analyzer_container_.getBounds();
@@ -78,7 +78,7 @@ GraphicEqEditor::resized()
     const auto& bounds        = getLocalBounds();
     const auto& bounds_width  = bounds.getWidth();
     const auto& bounds_height = bounds.getHeight();
-    const auto& padding       = GraphicEqGlobals::getFont().getHeight();
+    const auto& padding       = GraphicEq::FONT.getHeight();
 
     const auto analyzer_bounds = juce::Rectangle< int >(padding * 3,
                                                         padding * 6,
@@ -116,17 +116,15 @@ GraphicEqEditor::timerCallback()
 /*static*/ void
 GraphicEqEditor::drawDbLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds)
 {
-    const auto&    text_height = g.getCurrentFont().getHeight();
-    constexpr auto max_db      = GraphicEqGlobals::getMaxDecibels();
-    constexpr auto min_db      = GraphicEqGlobals::getNegativeInf();
+    const auto& text_height = g.getCurrentFont().getHeight();
 
     const auto db_scale_y      = label_bounds.getY();
     const auto db_scale_height = label_bounds.getHeight();
     const auto db_scale_width  = label_bounds.getWidth();
     const auto db_scale_x      = label_bounds.getX();
 
-    for (auto db = min_db; db <= max_db; db += 12) {
-        const auto y_coord  = juce::jmap< int >(db, min_db, max_db, db_scale_height, 0);
+    for (auto db = GraphicEq::MIN_DB; db <= GraphicEq::MAX_DB; db += 12) {
+        const auto y_coord  = juce::jmap< int >(db, GraphicEq::MIN_DB, GraphicEq::MAX_DB, db_scale_height, 0);
         const auto text_y   = y_coord + db_scale_y - (text_height * 0.5);
         auto       dbString = juce::String(db);
 
@@ -148,9 +146,6 @@ GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, const juce::Rectangle< i
 {
     static const std::vector< float > freqs { 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f };
 
-    constexpr float min_freq = GraphicEqGlobals::getMinFrequency();
-    constexpr float max_freq = GraphicEqGlobals::getMaxFrequency();
-
     const auto bounds_x     = label_bounds.getX();
     const auto bounds_y     = label_bounds.getY();
     const auto bounds_width = label_bounds.getWidth();
@@ -159,7 +154,7 @@ GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, const juce::Rectangle< i
     const auto text_width  = text_height * 2.5;
 
     for (auto i = 1; i < freqs.size() - 1; ++i) {
-        const auto normalized_x = juce::mapFromLog10< float >(freqs[i], min_freq, max_freq);
+        const auto normalized_x = juce::mapFromLog10< float >(freqs[i], GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
         const auto label_x      = bounds_x + bounds_width * normalized_x;
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";

@@ -3,15 +3,10 @@
 #include <JuceHeader.h>
 
 #include "Fifo.h"
-#include "GraphicEqGlobals.h"
 
 struct AnalyzerPathGenerator {
-    void generatePath(const std::vector< float >& renderData,
-                      juce::Rectangle< float >    fftBounds,
-                      int                         fftSize,
-                      float                       binWidth,
-                      float                       negativeInfinity = GraphicEqGlobals::getNegativeInf(),
-                      float                       maxDb            = GraphicEqGlobals::getMaxDecibels());
+    void
+    generatePath(const std::vector< float >& renderData, juce::Rectangle< float > fftBounds, int fftSize, float binWidth);
 
     int  getNumPathsAvailable() const;
     bool getPath(juce::Path& path);

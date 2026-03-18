@@ -77,7 +77,7 @@ addCutParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
     layout.add(std::make_unique< juce::AudioParameterFloat >(
         params.at(LOW_CUT_FREQ),
         params.at(LOW_CUT_FREQ),
-        juce::NormalisableRange(GraphicEqGlobals::getMinFrequency(), GraphicEqGlobals::getMaxFrequency(), 1.f, 0.2f),
+        juce::NormalisableRange(GraphicEq::MIN_HZ, GraphicEq::MAX_HZ, 1.f, 0.2f),
         50.f));
 
     layout.add(
@@ -89,7 +89,7 @@ addCutParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
     layout.add(std::make_unique< juce::AudioParameterFloat >(
         params.at(HIGH_CUT_FREQ),
         params.at(HIGH_CUT_FREQ),
-        juce::NormalisableRange(GraphicEqGlobals::getMinFrequency(), GraphicEqGlobals::getMaxFrequency(), 1.f, 1.f),
+        juce::NormalisableRange(GraphicEq::MIN_HZ, GraphicEq::MAX_HZ, 1.f, 1.f),
         15000.f));
 
     layout.add(std::make_unique< juce::AudioParameterChoice >(params.at(HIGH_CUT_SLOPE),
@@ -107,14 +107,12 @@ addCutParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
 inline void
 addPeakParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
 {
-    auto freqNormalisableRange =
-        juce::NormalisableRange(GraphicEqGlobals::getMinFrequency(), GraphicEqGlobals::getMaxFrequency(), 1.f, 1.f);
-    auto gainNormalisableRange =
-        juce::NormalisableRange(GraphicEqGlobals::getNegativeInf(), GraphicEqGlobals::getMaxDecibels(), 0.5f, 1.f);
+    auto freqNormalisableRange = juce::NormalisableRange(GraphicEq::MIN_HZ, GraphicEq::MAX_HZ, 1.f, 1.f);
+    auto gainNormalisableRange = juce::NormalisableRange(GraphicEq::MIN_DB, GraphicEq::MAX_DB, 0.5f, 1.f);
 
     std::vector< float > defaultFreqs { 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f };
 
-    for (int i = 0; i < GraphicEqGlobals::getNumPeakBands(); ++i) {
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         layout.add(std::make_unique< juce::AudioParameterFloat >(getPeakControlParamName(PeakControl::FREQUENCY, i),
                                                                  getPeakControlParamName(PeakControl::FREQUENCY, i),
                                                                  freqNormalisableRange,

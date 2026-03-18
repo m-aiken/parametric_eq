@@ -154,8 +154,8 @@ SpectrumAnalyzer::updateOrder(float value)
     }
 
     auto denormalizedVal = static_cast< int >(std::floor(juce::jmap< float >(value, 0.f, 1.f, 11.f, 13.f)));
-    leftPathProducer->changeOrder(static_cast< GraphicEqGlobals::FFTOrder >(denormalizedVal));
-    rightPathProducer->changeOrder(static_cast< GraphicEqGlobals::FFTOrder >(denormalizedVal));
+    leftPathProducer->changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
+    rightPathProducer->changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
 }
 
 /*---------------------------------------------------------------------------

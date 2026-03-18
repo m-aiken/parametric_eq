@@ -25,7 +25,7 @@ FftDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer< float >& a
     juce::FloatVectorOperations::multiply(fftData.data(), 1.f / static_cast< float >(numBins), numBins + 1);
 
     for (auto i = 0; i < numBins + 1; ++i) {
-        fftData[i] = juce::Decibels::gainToDecibels(fftData[i], GraphicEqGlobals::getNegativeInf());
+        fftData[i] = juce::Decibels::gainToDecibels(fftData[i], GraphicEq::MIN_DB);
     }
 
     fftDataFifo.push(fftData);
@@ -35,7 +35,7 @@ FftDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer< float >& a
 **
 */
 void
-FftDataGenerator::changeOrder(GraphicEqGlobals::FFTOrder newOrder)
+FftDataGenerator::changeOrder(GraphicEq::FFTOrder newOrder)
 {
     order      = newOrder;
     forwardFFT = std::make_unique< juce::dsp::FFT >(order);

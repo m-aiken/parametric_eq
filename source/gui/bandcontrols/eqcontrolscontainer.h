@@ -16,5 +16,5 @@ private:
     std::unique_ptr< CutControl > lowCutControl;
     std::unique_ptr< CutControl > highCutControl;
 
-    std::array< std::unique_ptr< PeakControl >, GraphicEqGlobals::getNumPeakBands() > peakControls;
+    std::array< std::unique_ptr< PeakControl >, GraphicEq::NUM_PEAK_BANDS > peakControls;
 };

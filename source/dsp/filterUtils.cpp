@@ -136,16 +136,16 @@ FilterUtils::makeLowPassFilter(juce::AudioParameterFloat*  freqParam,
 **
 */
 void
-FilterUtils::updateBandEnablements(MonoChain&                                                   monoChain,
-                                   juce::AudioParameterBool*                                    lcEnabledParam,
-                                   juce::AudioParameterBool*                                    hcEnabledParam,
-                                   std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() >& peakBands)
+FilterUtils::updateBandEnablements(MonoChain&                                         monoChain,
+                                   juce::AudioParameterBool*                          lcEnabledParam,
+                                   juce::AudioParameterBool*                          hcEnabledParam,
+                                   std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >& peakBands)
 {
     if (lcEnabledParam == nullptr || hcEnabledParam == nullptr) {
         return;
     }
 
-    for (size_t i = 0; i < GraphicEqGlobals::getNumPeakBands(); ++i) {
+    for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         if (peakBands.at(i).peakEnabledParam == nullptr) {
             return;
         }

@@ -40,10 +40,10 @@ public:
 
     juce::AudioProcessorValueTreeState& getApvts();
 
-    MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoL { GraphicEqGlobals::Channel::Left };
-    MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoR { GraphicEqGlobals::Channel::Right };
-    MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoL { GraphicEqGlobals::Channel::Left };
-    MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoR { GraphicEqGlobals::Channel::Right };
+    MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoL { GraphicEq::Channel::Left };
+    MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoR { GraphicEq::Channel::Right };
+    MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoL { GraphicEq::Channel::Left };
+    MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoR { GraphicEq::Channel::Right };
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -65,7 +65,7 @@ private:
     juce::AudioParameterFloat*  high_cut_freq_param_ { nullptr };
     juce::AudioParameterChoice* high_cut_slope_param_ { nullptr };
 
-    std::array< PeakBand, GraphicEqGlobals::getNumPeakBands() > peak_bands_;
+    std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS > peak_bands_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };

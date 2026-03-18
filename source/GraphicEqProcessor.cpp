@@ -274,8 +274,8 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
     }
 
     const auto block       = juce::dsp::AudioBlock< float >(buffer);
-    auto       left_block  = block.getSingleChannelBlock(GraphicEqGlobals::Channel::Left);
-    auto       right_block = block.getSingleChannelBlock(GraphicEqGlobals::Channel::Right);
+    auto       left_block  = block.getSingleChannelBlock(GraphicEq::Channel::Left);
+    auto       right_block = block.getSingleChannelBlock(GraphicEq::Channel::Right);
     const auto left_ctx    = juce::dsp::ProcessContextReplacing< float >(left_block);
     const auto right_ctx   = juce::dsp::ProcessContextReplacing< float >(right_block);
 

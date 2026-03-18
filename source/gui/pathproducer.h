@@ -12,7 +12,7 @@ struct PathProducer : juce::Thread {
     ~PathProducer() override;
 
     void   run() override;
-    void   changeOrder(GraphicEqGlobals::FFTOrder order);
+    void   changeOrder(GraphicEq::FFTOrder order);
     int    getFFTSize() const;
     double getBinWidth() const;
     void   pauseThread();
@@ -22,7 +22,6 @@ struct PathProducer : juce::Thread {
     bool pull(juce::Path& path);
     int  getNumAvailableForReading() const;
     void toggleProcessing(bool toggleState);
-    void changePathRange(float negativeInfinityDb, float maxDb);
 
 private:
     MonoBufferFifo< juce::AudioBuffer< float > >* singleChannelSampleFifo;
@@ -41,7 +40,5 @@ private:
     juce::Rectangle< float > fftBounds;
 
     std::atomic< float > decayRateInDbPerSec { 0.f };
-    std::atomic< float > negativeInfinity { GraphicEqGlobals::getNegativeInf() };
-    std::atomic< float > maxDecibels { GraphicEqGlobals::getMaxDecibels() };
     std::atomic< bool >  processingIsEnabled { false };
 };

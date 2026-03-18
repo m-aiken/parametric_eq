@@ -8,7 +8,7 @@
 template < typename BlockType >
 struct MonoBufferFifo {
     using SampleType = typename BlockType::SampleType;
-    explicit MonoBufferFifo(GraphicEqGlobals::Channel ch)
+    explicit MonoBufferFifo(GraphicEq::Channel ch)
         : channelToUse(ch)
     {
         prepared.set(false);
@@ -48,10 +48,10 @@ struct MonoBufferFifo {
     int  getSize() const { return size.get(); }
 
 private:
-    GraphicEqGlobals::Channel channelToUse;
-    int                       fifoIndex = 0;
-    Fifo< BlockType, 20 >     audioBufferFifo;
-    BlockType                 bufferToFill;
-    juce::Atomic< bool >      prepared = false;
-    juce::Atomic< int >       size     = 0;
+    GraphicEq::Channel    channelToUse;
+    int                   fifoIndex = 0;
+    Fifo< BlockType, 20 > audioBufferFifo;
+    BlockType             bufferToFill;
+    juce::Atomic< bool >  prepared = false;
+    juce::Atomic< int >   size     = 0;
 };
