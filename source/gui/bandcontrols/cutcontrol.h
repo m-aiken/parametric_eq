@@ -7,7 +7,9 @@
 #include "CustomRotaryControl.h"
 #include "PowerButton.h"
 
-struct CutControl : juce::Component {
+class CutControl final : public juce::Component
+{
+public:
     CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUtils::ChainPositions& _chainPosition);
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -17,12 +19,12 @@ struct CutControl : juce::Component {
 private:
     FilterUtils::ChainPositions chainPosition;
 
-    std::unique_ptr< PowerButton >                                          powerButton;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::ButtonAttachment > buttonAttachment;
+    PowerButton                                          powerButton;
+    juce::AudioProcessorValueTreeState::ButtonAttachment buttonAttachment;
 
-    std::unique_ptr< CustomRotaryControl > freqSlider;
-    std::unique_ptr< CustomLinearSlider >  slopeSlider;
+    CustomRotaryControl                                  freqSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment freqAttachment;
 
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > freqAttachment;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > slopeAttachment;
+    CustomLinearSlider                                   slopeSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment slopeAttachment;
 };

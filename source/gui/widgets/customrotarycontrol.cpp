@@ -5,9 +5,9 @@
 /*---------------------------------------------------------------------------
 **
 */
-CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter& rap, const juce::String& title)
+CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter* rap, const juce::String& title)
     : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
-    , param(&rap)
+    , param(rap)
 {
     setName(title);
 }

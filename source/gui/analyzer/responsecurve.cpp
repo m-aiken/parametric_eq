@@ -6,9 +6,8 @@
 **
 */
 Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
+    : paramAttachment(_apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum), *this)
 {
-    auto paramId    = EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum);
-    paramAttachment = std::make_unique< juce::AudioProcessorValueTreeState::ButtonAttachment >(_apvts, paramId, *this);
 }
 
 /*---------------------------------------------------------------------------

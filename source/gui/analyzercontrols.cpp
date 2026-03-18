@@ -7,28 +7,19 @@
 **
 */
 AnalyzerControls::AnalyzerControls(juce::AudioProcessorValueTreeState& apvts)
+    : fftOrderSlider(apvts.getParameter(
+          AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points)))
+    , decayRateSlider(apvts.getParameter(
+          AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate)))
+    , fftOrderAttachment(apvts,
+                         AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points),
+                         fftOrderSlider)
+    , decayRateAttachment(apvts,
+                          AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate),
+                          decayRateSlider)
 {
-    const auto& params = AnalyzerProperties::getAnalyzerParams();
-
-    auto fftOrderParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Points));
-    jassert(fftOrderParam != nullptr);
-    fftOrderSlider = std::make_unique< CustomLinearSlider >(*fftOrderParam);
-
-    auto decayRateParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate));
-    jassert(decayRateParam != nullptr);
-    decayRateSlider = std::make_unique< CustomLinearSlider >(*decayRateParam);
-
-    fftOrderAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(
-        apvts,
-        params.at(AnalyzerProperties::ParamNames::Analyzer_Points),
-        *fftOrderSlider);
-    decayRateAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(
-        apvts,
-        params.at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate),
-        *decayRateSlider);
-
-    addAndMakeVisible(*fftOrderSlider);
-    addAndMakeVisible(*decayRateSlider);
+    addAndMakeVisible(fftOrderSlider);
+    addAndMakeVisible(decayRateSlider);
 }
 
 /*---------------------------------------------------------------------------
@@ -61,18 +52,13 @@ AnalyzerControls::paint(juce::Graphics& g)
 void
 AnalyzerControls::resized()
 {
-    if (fftOrderSlider == nullptr || decayRateSlider == nullptr) {
-        return;
-    }
+    const auto& bounds       = getLocalBounds();
+    const auto& sliderWidth  = bounds.getWidth() * 0.4;
+    const auto& sliderHeight = GraphicEq::FONT.getHeight();
+    const auto& padding      = sliderHeight * 0.2;
 
-    auto bounds       = getLocalBounds();
-    auto sliderWidth  = bounds.getWidth() * 0.4;
-    auto sliderHeight = GraphicEq::FONT.getHeight();
-    auto padding      = sliderHeight * 0.2;
-
-    fftOrderSlider->setBounds(0, sliderHeight + padding, sliderWidth, sliderHeight);
-
-    decayRateSlider->setBounds(bounds.getRight() - sliderWidth, sliderHeight + padding, sliderWidth, sliderHeight);
+    fftOrderSlider.setBounds(0, sliderHeight + padding, sliderWidth, sliderHeight);
+    decayRateSlider.setBounds(bounds.getRight() - sliderWidth, sliderHeight + padding, sliderWidth, sliderHeight);
 }
 
 /*---------------------------------------------------------------------------

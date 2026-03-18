@@ -7,48 +7,26 @@
 */
 PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _bandNum)
     : bandNum(_bandNum)
+    , buttonAttachment(apvts,
+                       EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, bandNum),
+                       powerButton)
+    , freqSlider(apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum)),
+                 "Hz")
+    , freqAttachment(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum), freqSlider)
+    , gainSlider(apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum)), "dB")
+    , gainAttachment(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), gainSlider)
+    , qSlider(apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum)), "Q")
+    , qAttachment(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), qSlider)
 {
-    powerButton      = std::make_unique< PowerButton >();
-    buttonAttachment = std::make_unique< juce::AudioProcessorValueTreeState::ButtonAttachment >(
-        apvts,
-        EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, bandNum),
-        *powerButton);
+    powerButton.onClick      = [this]() { setEnablement(); };
+    freqSlider.onValueChange = [this]() { repaint(); };
+    gainSlider.onValueChange = [this]() { repaint(); };
+    qSlider.onValueChange    = [this]() { repaint(); };
 
-    auto freqParam = apvts.getParameter(
-        EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum));
-    jassert(freqParam != nullptr);
-    freqSlider = std::make_unique< CustomRotaryControl >(*freqParam, "Hz");
-
-    auto gainParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum));
-    jassert(gainParam != nullptr);
-    gainSlider = std::make_unique< CustomRotaryControl >(*gainParam, "dB");
-
-    auto qParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum));
-    jassert(qParam != nullptr);
-    qSlider = std::make_unique< CustomRotaryControl >(*qParam, "Q");
-
-    freqAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(
-        apvts,
-        EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum),
-        *freqSlider);
-    gainAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(
-        apvts,
-        EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum),
-        *gainSlider);
-    qAttachment = std::make_unique< juce::AudioProcessorValueTreeState::SliderAttachment >(
-        apvts,
-        EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum),
-        *qSlider);
-
-    powerButton->onClick      = [this]() { setEnablement(); };
-    freqSlider->onValueChange = [this]() { repaint(); };
-    gainSlider->onValueChange = [this]() { repaint(); };
-    qSlider->onValueChange    = [this]() { repaint(); };
-
-    addAndMakeVisible(*powerButton);
-    addAndMakeVisible(*freqSlider);
-    addAndMakeVisible(*gainSlider);
-    addAndMakeVisible(*qSlider);
+    addAndMakeVisible(powerButton);
+    addAndMakeVisible(freqSlider);
+    addAndMakeVisible(gainSlider);
+    addAndMakeVisible(qSlider);
 
     setEnablement();
 }
@@ -88,15 +66,13 @@ PeakControl::paint(juce::Graphics& g)
     auto labelHeight = labelRect.getHeight() / 3;
     auto padding     = GraphicEq::FONT.getHeight();
 
-    auto         dbValue  = (gainSlider != nullptr) ? gainSlider->getValue() : 0;
+    auto         dbValue  = gainSlider.getValue();
     juce::String dbPrefix = dbValue > 0 ? "+" : "";
 
     using ParamPair = std::pair< juce::String, juce::String >;
-    std::array< ParamPair, 3 > paramValues {
-        std::pair { "Hz:", (freqSlider != nullptr) ? juce::String(freqSlider->getValue()) : "**" },
-        std::pair { "dB:", dbPrefix + juce::String(dbValue) },
-        std::pair { "Q:", juce::String((qSlider != nullptr) ? qSlider->getValue() : 1.0) }
-    };
+    std::array< ParamPair, 3 > paramValues { std::pair { "Hz:", juce::String(freqSlider.getValue()) },
+                                             std::pair { "dB:", dbPrefix + juce::String(dbValue) },
+                                             std::pair { "Q:", juce::String(qSlider.getValue()) } };
 
     for (size_t i = 0; i < paramValues.size(); ++i) {
         // label
@@ -125,25 +101,18 @@ PeakControl::paint(juce::Graphics& g)
 void
 PeakControl::resized()
 {
-    if (powerButton == nullptr || freqSlider == nullptr || gainSlider == nullptr || qSlider == nullptr) {
-        return;
-    }
-
     auto bounds         = getLocalBounds();
     auto rotaryBounds   = juce::Rectangle< int >(0, 0, bounds.getWidth(), bounds.getHeight() * 0.5);
     auto padding        = 2;
     auto rotaryDiameter = (rotaryBounds.getWidth() * 0.5) - padding;
 
-    powerButton->setBounds(6, 6, 16, 16);
-
-    freqSlider->setBounds(padding, rotaryDiameter * 0.5, rotaryDiameter, rotaryDiameter);
-
-    gainSlider->setBounds(padding, rotaryBounds.getCentreY() + (rotaryDiameter * 0.5), rotaryDiameter, rotaryDiameter);
-
-    qSlider->setBounds(rotaryBounds.getRight() - rotaryDiameter - padding,
-                       rotaryBounds.getCentreY(),
-                       rotaryDiameter,
-                       rotaryDiameter);
+    powerButton.setBounds(6, 6, 16, 16);
+    freqSlider.setBounds(padding, rotaryDiameter * 0.5, rotaryDiameter, rotaryDiameter);
+    gainSlider.setBounds(padding, rotaryBounds.getCentreY() + (rotaryDiameter * 0.5), rotaryDiameter, rotaryDiameter);
+    qSlider.setBounds(rotaryBounds.getRight() - rotaryDiameter - padding,
+                      rotaryBounds.getCentreY(),
+                      rotaryDiameter,
+                      rotaryDiameter);
 }
 
 /*---------------------------------------------------------------------------
@@ -162,20 +131,16 @@ PeakControl::setNodeIsActive(bool activeState)
 void
 PeakControl::setEnablement()
 {
-    if (powerButton == nullptr || freqSlider == nullptr || gainSlider == nullptr || qSlider == nullptr) {
-        return;
-    }
+    bool toggleState = powerButton.getToggleState();
 
-    bool toggleState = powerButton->getToggleState();
-
-    freqSlider->setEnabled(toggleState);
-    gainSlider->setEnabled(toggleState);
-    qSlider->setEnabled(toggleState);
+    freqSlider.setEnabled(toggleState);
+    gainSlider.setEnabled(toggleState);
+    qSlider.setEnabled(toggleState);
 
     float dim = 0.2f;
-    freqSlider->setAlpha(toggleState ? 1.f : dim);
-    gainSlider->setAlpha(toggleState ? 1.f : dim);
-    qSlider->setAlpha(toggleState ? 1.f : dim);
+    freqSlider.setAlpha(toggleState ? 1.f : dim);
+    gainSlider.setAlpha(toggleState ? 1.f : dim);
+    qSlider.setAlpha(toggleState ? 1.f : dim);
 }
 
 /*---------------------------------------------------------------------------

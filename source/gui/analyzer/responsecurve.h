@@ -6,21 +6,25 @@
 #include "GraphicEqGlobals.h"
 #include "PeakBand.h"
 
-struct Node : juce::ToggleButton {
+class Node final : public juce::ToggleButton
+{
+public:
     Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum);
     void paint(juce::Graphics& g) override;
 
 private:
-    std::unique_ptr< juce::AudioProcessorValueTreeState::ButtonAttachment > paramAttachment;
+    juce::AudioProcessorValueTreeState::ButtonAttachment paramAttachment;
 };
 
 /*---------------------------------------------------------------------------
 **
 */
-struct ResponseCurve
-    : juce::Component
-    , juce::AudioProcessorParameter::Listener
-    , juce::Timer {
+class ResponseCurve final
+    : public juce::Component
+    , public juce::AudioProcessorParameter::Listener
+    , public juce::Timer
+{
+public:
     ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate);
     ~ResponseCurve();
 

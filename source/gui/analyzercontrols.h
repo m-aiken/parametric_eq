@@ -4,14 +4,16 @@
 
 #include "CustomLinearSlider.h"
 
-struct AnalyzerControls : juce::Component {
-    AnalyzerControls(juce::AudioProcessorValueTreeState& apvts);
+class AnalyzerControls final : public juce::Component
+{
+public:
+    explicit AnalyzerControls(juce::AudioProcessorValueTreeState& apvts);
     void paint(juce::Graphics& g) override;
     void resized() override;
 
 private:
-    std::unique_ptr< CustomLinearSlider >                                   fftOrderSlider;
-    std::unique_ptr< CustomLinearSlider >                                   decayRateSlider;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > fftOrderAttachment;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > decayRateAttachment;
+    CustomLinearSlider                                   fftOrderSlider;
+    CustomLinearSlider                                   decayRateSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment fftOrderAttachment;
+    juce::AudioProcessorValueTreeState::SliderAttachment decayRateAttachment;
 };

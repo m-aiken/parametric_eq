@@ -6,15 +6,17 @@
 #include "GraphicEqGlobals.h"
 #include "PeakControl.h"
 
-struct EqControlsContainer : juce::Component {
-    EqControlsContainer(juce::AudioProcessorValueTreeState& apvts);
+class EqControlsContainer final : public juce::Component
+{
+public:
+    explicit EqControlsContainer(juce::AudioProcessorValueTreeState& apvts);
     void resized() override;
 
     void setBandHasNodeSelection(size_t activeNodeIndex);
 
 private:
-    std::unique_ptr< CutControl > lowCutControl;
-    std::unique_ptr< CutControl > highCutControl;
+    CutControl lowCutControl;
+    CutControl highCutControl;
 
     std::array< std::unique_ptr< PeakControl >, GraphicEq::NUM_PEAK_BANDS > peakControls;
 };

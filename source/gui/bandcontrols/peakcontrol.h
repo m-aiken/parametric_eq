@@ -5,7 +5,9 @@
 #include "CustomRotaryControl.h"
 #include "PowerButton.h"
 
-struct PeakControl : juce::Component {
+class PeakControl final : public juce::Component
+{
+public:
     PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _bandNum);
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -17,13 +19,15 @@ private:
     int  bandNum;
     bool nodeIsActive { false };
 
-    std::unique_ptr< PowerButton >                                          powerButton;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::ButtonAttachment > buttonAttachment;
+    PowerButton                                          powerButton;
+    juce::AudioProcessorValueTreeState::ButtonAttachment buttonAttachment;
 
-    std::unique_ptr< CustomRotaryControl >                                  freqSlider;
-    std::unique_ptr< CustomRotaryControl >                                  gainSlider;
-    std::unique_ptr< CustomRotaryControl >                                  qSlider;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > freqAttachment;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > gainAttachment;
-    std::unique_ptr< juce::AudioProcessorValueTreeState::SliderAttachment > qAttachment;
+    CustomRotaryControl                                  freqSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment freqAttachment;
+
+    CustomRotaryControl                                  gainSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment gainAttachment;
+
+    CustomRotaryControl                                  qSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment qAttachment;
 };

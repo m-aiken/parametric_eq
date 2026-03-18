@@ -11,42 +11,31 @@ SpectrumAnalyzer::SpectrumAnalyzer(double                                       
                                    const juce::Colour&                           fillColour)
     : sampleRate(_sampleRate)
     , colour(fillColour)
+    , leftPathProducer(_sampleRate, leftScsf)
+    , rightPathProducer(_sampleRate, rightScsf)
+    , analyzerOrderParamListener(*apvts.getParameter(AnalyzerProperties::getAnalyzerParams().at(
+                                     AnalyzerProperties::ParamNames::Analyzer_Points)),
+                                 [this](const auto& newOrder) { updateOrder(newOrder); })
+    , analyzerDecayRateParamListener(*apvts.getParameter(AnalyzerProperties::getAnalyzerParams().at(
+                                         AnalyzerProperties::ParamNames::Analyzer_Decay_Rate)),
+                                     [this](const auto& decayRate) { updateDecayRate(decayRate); })
 {
-    leftAnalyzerPath  = std::make_unique< juce::Path >();
-    rightAnalyzerPath = std::make_unique< juce::Path >();
+    auto orderParam = apvts.getParameter(
+        AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points));
 
-    leftPathProducer  = std::make_unique< PathProducer >(_sampleRate, leftScsf);
-    rightPathProducer = std::make_unique< PathProducer >(_sampleRate, rightScsf);
-
-    const auto& params = AnalyzerProperties::getAnalyzerParams();
-
-    auto initListener = [&](auto& listener, const auto& paramName, const auto& lambda) {
-        auto param = apvts.getParameter(params.at(paramName));
-        if (param != nullptr) {
-            listener = std::make_unique< ParamListener< float > >(*param, lambda);
-        }
-    };
-
-    initListener(analyzerOrderParamListener,
-                 AnalyzerProperties::ParamNames::Analyzer_Points,
-                 [this](const auto& newOrder) { updateOrder(newOrder); });
-
-    initListener(analyzerDecayRateParamListener,
-                 AnalyzerProperties::ParamNames::Analyzer_Decay_Rate,
-                 [this](const auto& decayRate) { updateDecayRate(decayRate); });
-
-    auto orderParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Points));
     if (orderParam != nullptr) {
         updateOrder(orderParam->getValue());
     }
 
-    auto decayRateParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate));
+    auto decayRateParam = apvts.getParameter(
+        AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate));
+
     if (decayRateParam != nullptr) {
         updateDecayRate(decayRateParam->convertFrom0to1(decayRateParam->getValue()));
     }
 
-    leftPathProducer->toggleProcessing(true);
-    rightPathProducer->toggleProcessing(true);
+    leftPathProducer.toggleProcessing(true);
+    rightPathProducer.toggleProcessing(true);
 
     animate();
 }
@@ -57,18 +46,14 @@ SpectrumAnalyzer::SpectrumAnalyzer(double                                       
 void
 SpectrumAnalyzer::paint(juce::Graphics& g)
 {
-    if (leftAnalyzerPath == nullptr || rightAnalyzerPath == nullptr) {
-        return;
-    }
-
     auto bounds = getLocalBounds();
 
-    leftAnalyzerPath->applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
-    rightAnalyzerPath->applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
+    leftAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
+    rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
 
     g.setColour(colour);
-    g.fillPath(*leftAnalyzerPath);
-    g.fillPath(*rightAnalyzerPath);
+    g.fillPath(leftAnalyzerPath);
+    g.fillPath(rightAnalyzerPath);
 }
 
 /*---------------------------------------------------------------------------
@@ -77,13 +62,9 @@ SpectrumAnalyzer::paint(juce::Graphics& g)
 void
 SpectrumAnalyzer::resized()
 {
-    if (leftPathProducer == nullptr || rightPathProducer == nullptr) {
-        return;
-    }
-
     auto bounds = getLocalBounds();
-    leftPathProducer->setFFTRectBounds(bounds.toFloat());
-    rightPathProducer->setFFTRectBounds(bounds.toFloat());
+    leftPathProducer.setFFTRectBounds(bounds.toFloat());
+    rightPathProducer.setFFTRectBounds(bounds.toFloat());
 }
 
 /*---------------------------------------------------------------------------
@@ -92,24 +73,19 @@ SpectrumAnalyzer::resized()
 void
 SpectrumAnalyzer::timerCallback()
 {
-    if (leftAnalyzerPath == nullptr || rightAnalyzerPath == nullptr || leftPathProducer == nullptr
-        || rightPathProducer == nullptr) {
-        return;
-    }
-
     if (!active) {
-        leftAnalyzerPath->clear();
-        rightAnalyzerPath->clear();
+        leftAnalyzerPath.clear();
+        rightAnalyzerPath.clear();
         stopTimer();
     }
     else {
-        if (leftPathProducer->getNumAvailableForReading() > 0) {
-            while (leftPathProducer->pull(*leftAnalyzerPath)) {
+        if (leftPathProducer.getNumAvailableForReading() > 0) {
+            while (leftPathProducer.pull(leftAnalyzerPath)) {
             }  // get most recent
         }
 
-        if (rightPathProducer->getNumAvailableForReading() > 0) {
-            while (rightPathProducer->pull(*rightAnalyzerPath)) {
+        if (rightPathProducer.getNumAvailableForReading() > 0) {
+            while (rightPathProducer.pull(rightAnalyzerPath)) {
             }  // get most recent
         }
     }
@@ -135,12 +111,8 @@ SpectrumAnalyzer::setActive(bool activeState)
 void
 SpectrumAnalyzer::updateDecayRate(float decayRate)
 {
-    if (leftPathProducer == nullptr || rightPathProducer == nullptr) {
-        return;
-    }
-
-    leftPathProducer->setDecayRate(decayRate);
-    rightPathProducer->setDecayRate(decayRate);
+    leftPathProducer.setDecayRate(decayRate);
+    rightPathProducer.setDecayRate(decayRate);
 }
 
 /*---------------------------------------------------------------------------
@@ -149,13 +121,9 @@ SpectrumAnalyzer::updateDecayRate(float decayRate)
 void
 SpectrumAnalyzer::updateOrder(float value)
 {
-    if (leftPathProducer == nullptr || rightPathProducer == nullptr) {
-        return;
-    }
-
     auto denormalizedVal = static_cast< int >(std::floor(juce::jmap< float >(value, 0.f, 1.f, 11.f, 13.f)));
-    leftPathProducer->changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
-    rightPathProducer->changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
+    leftPathProducer.changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
+    rightPathProducer.changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
 }
 
 /*---------------------------------------------------------------------------

@@ -3,9 +3,9 @@
 /*---------------------------------------------------------------------------
 **
 */
-CustomLinearSlider::CustomLinearSlider(juce::RangedAudioParameter& rap)
+CustomLinearSlider::CustomLinearSlider(juce::RangedAudioParameter* rap)
     : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::NoTextBox)
-    , param(&rap)
+    , param(rap)
 {
 }
 

@@ -6,9 +6,11 @@
 #include "ParamListener.h"
 #include "PathProducer.h"
 
-struct SpectrumAnalyzer
-    : juce::Component
-    , juce::Timer {
+class SpectrumAnalyzer final
+    : public juce::Component
+    , public juce::Timer
+{
+public:
     SpectrumAnalyzer(double                                        _sampleRate,
                      MonoBufferFifo< juce::AudioBuffer< float > >& leftScsf,
                      MonoBufferFifo< juce::AudioBuffer< float > >& rightScsf,
@@ -21,12 +23,12 @@ struct SpectrumAnalyzer
     void timerCallback() override;
 
 private:
-    double                          sampleRate;
-    juce::Colour                    colour;
-    std::unique_ptr< juce::Path >   leftAnalyzerPath;
-    std::unique_ptr< juce::Path >   rightAnalyzerPath;
-    std::unique_ptr< PathProducer > leftPathProducer;
-    std::unique_ptr< PathProducer > rightPathProducer;
+    double       sampleRate;
+    juce::Colour colour;
+    juce::Path   leftAnalyzerPath;
+    juce::Path   rightAnalyzerPath;
+    PathProducer leftPathProducer;
+    PathProducer rightPathProducer;
     //    bool         active { false };
     bool active { true };  // TODO for test only
 
@@ -35,6 +37,6 @@ private:
     void updateOrder(float value);
     void animate();
 
-    std::unique_ptr< ParamListener< float > > analyzerOrderParamListener;
-    std::unique_ptr< ParamListener< float > > analyzerDecayRateParamListener;
+    ParamListener< float > analyzerOrderParamListener;
+    ParamListener< float > analyzerDecayRateParamListener;
 };
