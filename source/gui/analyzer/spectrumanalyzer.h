@@ -37,4 +37,6 @@ private:
     void animate();
 
     ParamListener< float > analyzerOrderParamListener;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumAnalyzer)
 };

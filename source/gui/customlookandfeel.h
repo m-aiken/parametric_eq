@@ -2,7 +2,9 @@
 
 #include <JuceHeader.h>
 
-struct CustomLookAndFeel : juce::LookAndFeel_V4 {
+class CustomLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
     void drawRotarySlider(juce::Graphics& g,
                           int             x,
                           int             y,
@@ -29,4 +31,6 @@ struct CustomLookAndFeel : juce::LookAndFeel_V4 {
                           bool shouldDrawButtonAsHighlighted,
                           bool shouldDrawButtonAsDown) override;
     */
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };

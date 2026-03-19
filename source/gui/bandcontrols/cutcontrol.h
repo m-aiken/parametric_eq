@@ -28,4 +28,6 @@ private:
     std::unique_ptr< ButtonAttachment >                          powerAttachment;
     std::unique_ptr< SliderAttachment >                          freqAttachment;
     std::unique_ptr< SliderAttachment >                          slopeAttachment;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CutControl)
 };

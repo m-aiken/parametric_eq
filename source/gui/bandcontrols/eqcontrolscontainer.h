@@ -19,4 +19,6 @@ private:
     CutControl highCutControl;
 
     std::array< std::unique_ptr< PeakControl >, GraphicEq::NUM_PEAK_BANDS > peakControls;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EqControlsContainer)
 };

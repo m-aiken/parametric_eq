@@ -14,6 +14,8 @@ public:
 
 private:
     juce::AudioProcessorValueTreeState::ButtonAttachment paramAttachment;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Node)
 };
 
 /*---------------------------------------------------------------------------
@@ -71,4 +73,6 @@ private:
     std::array< juce::Value, GraphicEq::NUM_PEAK_BANDS >             yValues;
 
     size_t activeNode;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ResponseCurve)
 };

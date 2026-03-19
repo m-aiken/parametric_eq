@@ -26,4 +26,6 @@ private:
     SpectrumAnalyzer spectrumAnalyzerPreEq;
     SpectrumAnalyzer spectrumAnalyzerPostEq;
     ResponseCurve    responseCurve;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalyzerContainer)
 };

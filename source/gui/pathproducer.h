@@ -43,4 +43,6 @@ private:
     std::atomic< bool > processingIsEnabled { false };
 
     static constexpr float DECAY_RATE_DB_PER_SECOND = 30.f;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PathProducer)
 };

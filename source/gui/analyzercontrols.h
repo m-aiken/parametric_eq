@@ -14,4 +14,6 @@ public:
 private:
     CustomLinearSlider                                   fftOrderSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment fftOrderAttachment;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalyzerControls)
 };
