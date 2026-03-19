@@ -16,22 +16,12 @@ SpectrumAnalyzer::SpectrumAnalyzer(double                                       
     , analyzerOrderParamListener(*apvts.getParameter(AnalyzerProperties::getAnalyzerParams().at(
                                      AnalyzerProperties::ParamNames::Analyzer_Points)),
                                  [this](const auto& newOrder) { updateOrder(newOrder); })
-    , analyzerDecayRateParamListener(*apvts.getParameter(AnalyzerProperties::getAnalyzerParams().at(
-                                         AnalyzerProperties::ParamNames::Analyzer_Decay_Rate)),
-                                     [this](const auto& decayRate) { updateDecayRate(decayRate); })
 {
     auto orderParam = apvts.getParameter(
         AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points));
 
     if (orderParam != nullptr) {
         updateOrder(orderParam->getValue());
-    }
-
-    auto decayRateParam = apvts.getParameter(
-        AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate));
-
-    if (decayRateParam != nullptr) {
-        updateDecayRate(decayRateParam->convertFrom0to1(decayRateParam->getValue()));
     }
 
     leftPathProducer.toggleProcessing(true);
@@ -103,16 +93,6 @@ SpectrumAnalyzer::setActive(bool activeState)
     if (active && !isTimerRunning()) {
         animate();
     }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-SpectrumAnalyzer::updateDecayRate(float decayRate)
-{
-    leftPathProducer.setDecayRate(decayRate);
-    rightPathProducer.setDecayRate(decayRate);
 }
 
 /*---------------------------------------------------------------------------

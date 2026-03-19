@@ -7,7 +7,7 @@
 namespace AnalyzerProperties
 {
 
-enum ParamNames { Analyzer_Points, Analyzer_Decay_Rate };
+enum ParamNames { Analyzer_Points };
 
 /*---------------------------------------------------------------------------
 **
@@ -15,8 +15,7 @@ enum ParamNames { Analyzer_Points, Analyzer_Decay_Rate };
 inline const std::map< ParamNames, juce::String >&
 getAnalyzerParams()
 {
-    static std::map< ParamNames, juce::String > paramNamesMap = { { Analyzer_Points, "Analyzer Points" },
-                                                                  { Analyzer_Decay_Rate, "Analyzer Decay Rate" } };
+    static std::map< ParamNames, juce::String > paramNamesMap = { { Analyzer_Points, "Analyzer Points" } };
 
     return paramNamesMap;
 }
@@ -49,11 +48,6 @@ addAnalyzerParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
                                                                                   fftOrders.at(GraphicEq::order4096),
                                                                                   fftOrders.at(GraphicEq::order8192) },
                                                               0));
-
-    layout.add(std::make_unique< juce::AudioParameterFloat >(params.at(Analyzer_Decay_Rate),
-                                                             params.at(Analyzer_Decay_Rate),
-                                                             juce::NormalisableRange< float >(0.f, 30.f, 0.1f, 1.f),
-                                                             30.f));
 }
 
 }  // namespace AnalyzerProperties

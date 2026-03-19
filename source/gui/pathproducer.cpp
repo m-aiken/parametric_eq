@@ -74,7 +74,7 @@ PathProducer::run()
             if (fftDataGenerator->getFFTData(fftData)) {
                 auto fftSize   = getFFTSize();
                 auto numBins   = static_cast< int >(fftSize * 0.5);
-                auto decayRate = decayRateInDbPerSec.load() / 60.f;
+                auto decayRate = DECAY_RATE_DB_PER_SECOND / 60.f;
 
                 updateRenderData(renderData, fftData, numBins, decayRate);
 
@@ -155,15 +155,6 @@ PathProducer::setFFTRectBounds(juce::Rectangle< float > bounds)
     }
 
     startThread();
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-PathProducer::setDecayRate(float decayRate)
-{
-    decayRateInDbPerSec.store(decayRate);
 }
 
 /*---------------------------------------------------------------------------

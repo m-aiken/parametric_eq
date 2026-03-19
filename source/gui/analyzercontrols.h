@@ -13,7 +13,5 @@ public:
 
 private:
     CustomLinearSlider                                   fftOrderSlider;
-    CustomLinearSlider                                   decayRateSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment fftOrderAttachment;
-    juce::AudioProcessorValueTreeState::SliderAttachment decayRateAttachment;
 };

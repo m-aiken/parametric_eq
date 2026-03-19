@@ -33,10 +33,8 @@ private:
     bool active { true };  // TODO for test only
 
     void setActive(bool activeState);
-    void updateDecayRate(float decayRate);
     void updateOrder(float value);
     void animate();
 
     ParamListener< float > analyzerOrderParamListener;
-    ParamListener< float > analyzerDecayRateParamListener;
 };

@@ -7,7 +7,9 @@
 #include "MonoBufferFifo.h"
 #include "GraphicEqGlobals.h"
 
-struct PathProducer : juce::Thread {
+class PathProducer final : public juce::Thread
+{
+public:
     PathProducer(double _sampleRate, MonoBufferFifo< juce::AudioBuffer< float > >& scsf);
     ~PathProducer() override;
 
@@ -18,7 +20,6 @@ struct PathProducer : juce::Thread {
     void   pauseThread();
     void   setFFTRectBounds(juce::Rectangle< float > bounds);
 
-    void setDecayRate(float decayRate);
     bool pull(juce::Path& path);
     int  getNumAvailableForReading() const;
     void toggleProcessing(bool toggleState);
@@ -39,6 +40,7 @@ private:
     double                   sampleRate;
     juce::Rectangle< float > fftBounds;
 
-    std::atomic< float > decayRateInDbPerSec { 0.f };
-    std::atomic< bool >  processingIsEnabled { false };
+    std::atomic< bool > processingIsEnabled { false };
+
+    static constexpr float DECAY_RATE_DB_PER_SECOND = 30.f;
 };
