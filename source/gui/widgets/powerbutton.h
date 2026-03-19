@@ -5,6 +5,8 @@
 class PowerButton final : public juce::ToggleButton
 {
 public:
+    PowerButton() = default;
+
     void paint(juce::Graphics& g) override;
     void mouseEnter(const juce::MouseEvent& e) override;
 
