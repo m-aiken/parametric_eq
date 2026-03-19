@@ -44,7 +44,7 @@ PeakControl::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds();
 
-    g.setFont(GraphicEq::FONT);
+    g.setFont(GraphicEq::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::Text);
 
@@ -64,7 +64,7 @@ PeakControl::paint(juce::Graphics& g)
     auto labelRectY  = labelRect.getY();
     auto labelWidth  = labelRect.getWidth() * 0.5;
     auto labelHeight = labelRect.getHeight() / 3;
-    auto padding     = GraphicEq::FONT.getHeight();
+    auto padding     = GraphicEq::getFont().getHeight();
 
     auto         dbValue  = gainSlider.getValue();
     juce::String dbPrefix = dbValue > 0 ? "+" : "";

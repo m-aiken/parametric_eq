@@ -20,9 +20,9 @@ AnalyzerControls::paint(juce::Graphics& g)
 {
     auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
-    auto sliderHeight = GraphicEq::FONT.getHeight();
+    auto sliderHeight = GraphicEq::getFont().getHeight();
 
-    g.setFont(GraphicEq::FONT);
+    g.setFont(GraphicEq::getFont());
     g.setColour(ColourPalette::Text);
 
     g.drawFittedText("Resolution (low <--> high)", 0, 0, sliderWidth, sliderHeight, juce::Justification::centred, 1);
@@ -36,7 +36,7 @@ AnalyzerControls::resized()
 {
     const auto& bounds       = getLocalBounds();
     const auto& sliderWidth  = bounds.getWidth() * 0.4;
-    const auto& sliderHeight = GraphicEq::FONT.getHeight();
+    const auto& sliderHeight = GraphicEq::getFont().getHeight();
     const auto& padding      = sliderHeight * 0.2;
 
     fftOrderSlider.setBounds(0, sliderHeight + padding, sliderWidth, sliderHeight);

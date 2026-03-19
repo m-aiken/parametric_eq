@@ -45,7 +45,7 @@ void
 GraphicEqEditor::paint(juce::Graphics& g)
 {
     g.fillAll(ColourPalette::MainBackground);
-    g.setFont(GraphicEq::FONT);
+    g.setFont(GraphicEq::getFont());
     g.setColour(ColourPalette::Text);
 
     const auto& analyzer_bounds = analyzer_container_.getBounds();
@@ -78,7 +78,7 @@ GraphicEqEditor::resized()
     const auto& bounds        = getLocalBounds();
     const auto& bounds_width  = bounds.getWidth();
     const auto& bounds_height = bounds.getHeight();
-    const auto& padding       = GraphicEq::FONT.getHeight();
+    const auto& padding       = GraphicEq::getFont().getHeight();
 
     const auto analyzer_bounds = juce::Rectangle< int >(padding * 3,
                                                         padding * 6,

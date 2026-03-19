@@ -17,7 +17,11 @@ inline constexpr int   NUM_PEAK_BANDS = 6;
 inline constexpr float BORDER_CORNER_RADIUS = 5.f;
 inline constexpr float BORDER_THICKNESS     = 2.f;
 
-inline const juce::Font FONT = juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 10.f, juce::Font::plain);
+inline juce::Font
+getFont()
+{
+    return juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 10.f, juce::Font::plain);
+}
 
 enum Channel {
     Left,

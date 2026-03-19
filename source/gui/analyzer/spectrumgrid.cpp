@@ -15,8 +15,7 @@ SpectrumGrid::paint(juce::Graphics& g)
     const auto& boundsBottom = bounds.getBottom();
     const auto& boundsRight  = bounds.getRight();
 
-    g.setFont(GraphicEq::FONT);
-
+    g.setFont(GraphicEq::getFont());
     g.setColour(ColourPalette::Text.withAlpha(0.2f));
 
     // dB markers

@@ -38,7 +38,7 @@ CutControl::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
 
-    g.setFont(GraphicEq::FONT);
+    g.setFont(GraphicEq::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::Text);
 
@@ -93,7 +93,7 @@ CutControl::resized()
 {
     auto bounds   = getLocalBounds();
     auto diameter = (bounds.getWidth() * 0.55);
-    auto padding  = GraphicEq::FONT.getHeight();
+    auto padding  = GraphicEq::getFont().getHeight();
 
     powerButton->setBounds(6, 6, 16, 16);
     freqSlider->setBounds(bounds.getCentreX() - (diameter * 0.5),

@@ -27,7 +27,7 @@ CustomRotaryControl::paint(juce::Graphics& g)
 
     auto range = param->getNormalisableRange();
 
-    g.setFont(GraphicEq::FONT);
+    g.setFont(GraphicEq::getFont());
     g.setColour(ColourPalette::RotaryText);
 
     auto valueToDraw = juce::jmap< float >(getValue(), range.start, range.end, startAngle, endAngle);
@@ -48,7 +48,7 @@ CustomRotaryControl::paint(juce::Graphics& g)
 
     juce::Rectangle< float > r;
 
-    r.setSize(g.getCurrentFont().getStringWidth(getName()), GraphicEq::FONT.getHeight());
+    r.setSize(g.getCurrentFont().getStringWidth(getName()), GraphicEq::getFont().getHeight());
     r.setCentre(center);
     g.drawFittedText(getName(), r.toNearestInt(), juce::Justification::centred, 1);
 }
@@ -63,7 +63,7 @@ CustomRotaryControl::getRotaryBounds() const
 
     auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 
-    size -= GraphicEq::FONT.getHeight() * 0.6;
+    size -= GraphicEq::getFont().getHeight() * 0.6;
 
     juce::Rectangle< int > r;
     r.setSize(size, size);
