@@ -19,12 +19,13 @@ public:
 private:
     FilterUtils::ChainPositions chainPosition;
 
-    PowerButton                                          powerButton;
-    juce::AudioProcessorValueTreeState::ButtonAttachment buttonAttachment;
+    std::unique_ptr< PowerButton >         powerButton;
+    std::unique_ptr< CustomRotaryControl > freqSlider;
+    std::unique_ptr< CustomLinearSlider >  slopeSlider;
 
-    CustomRotaryControl                                  freqSlider;
-    juce::AudioProcessorValueTreeState::SliderAttachment freqAttachment;
-
-    CustomLinearSlider                                   slopeSlider;
-    juce::AudioProcessorValueTreeState::SliderAttachment slopeAttachment;
+    typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
+    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+    std::unique_ptr< ButtonAttachment >                          powerAttachment;
+    std::unique_ptr< SliderAttachment >                          freqAttachment;
+    std::unique_ptr< SliderAttachment >                          slopeAttachment;
 };

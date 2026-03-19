@@ -1,4 +1,3 @@
-#include "AnalyzerProperties.h"
 #include "EqProperties.h"
 #include "GraphicEqEditor.h"
 #include "GraphicEqProcessor.h"
@@ -30,14 +29,13 @@ GraphicEqProcessor::GraphicEqProcessor()
         }
     };
 
-    const auto& eq_params = EqProperties::getCutParams();
-    assign_bool_param(low_cut_enabled_param_, eq_params.at(EqProperties::CutControls::LOW_CUT_ENABLED));
-    assign_float_param(low_cut_freq_param_, eq_params.at(EqProperties::CutControls::LOW_CUT_FREQ));
-    assign_choice_param(low_cut_slope_param_, eq_params.at(EqProperties::CutControls::LOW_CUT_SLOPE));
+    assign_bool_param(low_cut_enabled_param_, GraphicEq::LOW_CUT_ENABLED.id_);
+    assign_float_param(low_cut_freq_param_, GraphicEq::LOW_CUT_FREQ.id_);
+    assign_choice_param(low_cut_slope_param_, GraphicEq::LOW_CUT_SLOPE.id_);
 
-    assign_bool_param(high_cut_enabled_param_, eq_params.at(EqProperties::CutControls::HIGH_CUT_ENABLED));
-    assign_float_param(high_cut_freq_param_, eq_params.at(EqProperties::CutControls::HIGH_CUT_FREQ));
-    assign_choice_param(high_cut_slope_param_, eq_params.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
+    assign_bool_param(high_cut_enabled_param_, GraphicEq::HIGH_CUT_ENABLED.id_);
+    assign_float_param(high_cut_freq_param_, GraphicEq::HIGH_CUT_FREQ.id_);
+    assign_choice_param(high_cut_slope_param_, GraphicEq::HIGH_CUT_SLOPE.id_);
 
     for (size_t i = 0; i < peak_bands_.size(); ++i) {
         assign_float_param(peak_bands_.at(i).peakFreqParam,

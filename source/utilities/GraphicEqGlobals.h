@@ -39,6 +39,12 @@ struct ParamInfo {
     juce::String gui_text_;
 };
 
-inline const ParamInfo ANALYSER_POINTS = { "FFT Order", "Analyzer Points" };
+inline const ParamInfo ANALYSER_POINTS  = { "FFT Order", "Analyzer Points" };
+inline const ParamInfo LOW_CUT_FREQ     = { "Low Cut Freq", "Low Cut Freq" };
+inline const ParamInfo LOW_CUT_SLOPE    = { "Low Cut Slope", "Low Cut Slope" };
+inline const ParamInfo LOW_CUT_ENABLED  = { "Low Cut Enabled", "Low Cut Enabled" };
+inline const ParamInfo HIGH_CUT_FREQ    = { "High Cut Freq", "High Cut Freq" };
+inline const ParamInfo HIGH_CUT_SLOPE   = { "High Cut Slope", "High Cut Slope" };
+inline const ParamInfo HIGH_CUT_ENABLED = { "High Cut Enabled", "High Cut Enabled" };
 
 }  // namespace GraphicEq

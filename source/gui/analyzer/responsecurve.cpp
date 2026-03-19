@@ -32,31 +32,30 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     }
 
     auto assignBoolParam = [&](auto& target, auto& paramName) {
-        auto param = dynamic_cast< juce::AudioParameterBool* >(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
+        if (auto* param = dynamic_cast< juce::AudioParameterBool* >(apvts.getParameter(paramName)); param != nullptr) {
+            target = param;
+        }
     };
 
     auto assignFloatParam = [&](auto& target, auto& paramName) {
-        auto param = dynamic_cast< juce::AudioParameterFloat* >(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
+        if (auto* param = dynamic_cast< juce::AudioParameterFloat* >(apvts.getParameter(paramName)); param != nullptr) {
+            target = param;
+        }
     };
 
     auto assignChoiceParam = [&](auto& target, auto& paramName) {
-        auto param = dynamic_cast< juce::AudioParameterChoice* >(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
+        if (auto* param = dynamic_cast< juce::AudioParameterChoice* >(apvts.getParameter(paramName)); param != nullptr) {
+            target = param;
+        }
     };
 
-    const auto& eqParams = EqProperties::getCutParams();
-    assignBoolParam(lowCutEnabledParam, eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED));
-    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ));
-    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE));
+    assignBoolParam(lowCutEnabledParam, GraphicEq::LOW_CUT_ENABLED.id_);
+    assignFloatParam(lowCutFreqParam, GraphicEq::LOW_CUT_FREQ.id_);
+    assignChoiceParam(lowCutSlopeParam, GraphicEq::LOW_CUT_SLOPE.id_);
 
-    assignBoolParam(highCutEnabledParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED));
-    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
-    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
+    assignBoolParam(highCutEnabledParam, GraphicEq::HIGH_CUT_ENABLED.id_);
+    assignFloatParam(highCutFreqParam, GraphicEq::HIGH_CUT_FREQ.id_);
+    assignChoiceParam(highCutSlopeParam, GraphicEq::HIGH_CUT_SLOPE.id_);
 
     for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         assignFloatParam(peakBands.at(i).peakFreqParam,
@@ -382,15 +381,13 @@ ResponseCurve::addListeners()
         return;
     }
 
-    const auto& eqParams = EqProperties::getCutParams();
+    apvts.getParameter(GraphicEq::LOW_CUT_FREQ.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_SLOPE.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_ENABLED.id_)->addListener(this);
 
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED))->addListener(this);
-
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED))->addListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_FREQ.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_)->addListener(this);
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))->addListener(this);
@@ -410,15 +407,13 @@ ResponseCurve::removeListeners()
         return;
     }
 
-    const auto& eqParams = EqProperties::getCutParams();
+    apvts.getParameter(GraphicEq::LOW_CUT_FREQ.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_SLOPE.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_ENABLED.id_)->removeListener(this);
 
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED))->removeListener(this);
-
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED))->removeListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_FREQ.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_)->removeListener(this);
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))
@@ -439,15 +434,13 @@ ResponseCurve::allControlPtrsValid()
 {
     bool ok = true;
 
-    const auto& eqParams = EqProperties::getCutParams();
+    ok &= apvts.getParameter(GraphicEq::LOW_CUT_FREQ.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::LOW_CUT_SLOPE.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::LOW_CUT_ENABLED.id_) != nullptr;
 
-    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ)) != nullptr;
-    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE)) != nullptr;
-    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED)) != nullptr;
-
-    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ)) != nullptr;
-    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE)) != nullptr;
-    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED)) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::HIGH_CUT_FREQ.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_) != nullptr;
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         ok &= apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))

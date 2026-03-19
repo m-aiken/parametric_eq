@@ -1,5 +1,4 @@
 #include "AnalyzerControls.h"
-#include "AnalyzerProperties.h"
 #include "ColourPalette.h"
 #include "GraphicEqGlobals.h"
 
@@ -7,11 +6,8 @@
 **
 */
 AnalyzerControls::AnalyzerControls(juce::AudioProcessorValueTreeState& apvts)
-    : fftOrderSlider(apvts.getParameter(
-          AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points)))
-    , fftOrderAttachment(apvts,
-                         AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points),
-                         fftOrderSlider)
+    : fftOrderSlider(apvts.getParameter(GraphicEq::ANALYSER_POINTS.id_))
+    , fftOrderAttachment(apvts, GraphicEq::ANALYSER_POINTS.id_, fftOrderSlider)
 {
     addAndMakeVisible(fftOrderSlider);
 }

@@ -1,4 +1,3 @@
-#include "AnalyzerProperties.h"
 #include "SpectrumAnalyzer.h"
 
 /*---------------------------------------------------------------------------
@@ -13,12 +12,10 @@ SpectrumAnalyzer::SpectrumAnalyzer(double                                       
     , colour(fillColour)
     , leftPathProducer(_sampleRate, leftScsf)
     , rightPathProducer(_sampleRate, rightScsf)
-    , analyzerOrderParamListener(*apvts.getParameter(AnalyzerProperties::getAnalyzerParams().at(
-                                     AnalyzerProperties::ParamNames::Analyzer_Points)),
+    , analyzerOrderParamListener(*apvts.getParameter(GraphicEq::ANALYSER_POINTS.id_),
                                  [this](const auto& newOrder) { updateOrder(newOrder); })
 {
-    auto orderParam = apvts.getParameter(
-        AnalyzerProperties::getAnalyzerParams().at(AnalyzerProperties::ParamNames::Analyzer_Points));
+    auto orderParam = apvts.getParameter(GraphicEq::ANALYSER_POINTS.id_);
 
     if (orderParam != nullptr) {
         updateOrder(orderParam->getValue());
