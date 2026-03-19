@@ -346,7 +346,14 @@ GraphicEqProcessor::createParameterLayout()
 
     EqProperties::addCutParams(layout);
     EqProperties::addPeakParams(layout);
-    AnalyzerProperties::addAnalyzerParams(layout);
+
+    layout.add(
+        std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(GraphicEq::ANALYSER_POINTS.id_, 1),
+                                                       GraphicEq::ANALYSER_POINTS.id_,
+                                                       juce::StringArray(GraphicEq::FTT_ORDERS.at(GraphicEq::order2048),
+                                                                         GraphicEq::FTT_ORDERS.at(GraphicEq::order4096),
+                                                                         GraphicEq::FTT_ORDERS.at(GraphicEq::order8192)),
+                                                       0));
 
     return layout;
 }

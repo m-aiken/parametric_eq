@@ -66,7 +66,6 @@ set(PROJECT_HEADERS
         source/utilities/GraphicEqGlobals.h
         source/utilities/TailwindColours.h
         source/dsp/AnalyzerPathGenerator.h
-        source/dsp/AnalyzerProperties.h
         source/dsp/EqProperties.h
         source/dsp/FftDataGenerator.h
         source/dsp/Fifo.h
