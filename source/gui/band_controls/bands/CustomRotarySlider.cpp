@@ -1,13 +1,16 @@
 #include "ColourPalette.h"
-#include "CustomRotaryControl.h"
+#include "CustomRotarySlider.h"
 #include "GraphicEqGlobals.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter* rap, const juce::String& title)
+CustomRotarySlider::CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts,
+                                       const juce::String&                 parameter_id,
+                                       const juce::String&                 title)
     : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
-    , param(rap)
+    , slider_attachment_(apvts, parameter_id, *this)
+    , param(apvts.getParameter(parameter_id))
 {
     setName(title);
 }
@@ -16,7 +19,7 @@ CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter* rap, const 
 **
 */
 void
-CustomRotaryControl::paint(juce::Graphics& g)
+CustomRotarySlider::paint(juce::Graphics& g)
 {
     if (param == nullptr) {
         return;
@@ -57,7 +60,7 @@ CustomRotaryControl::paint(juce::Graphics& g)
 **
 */
 juce::Rectangle< int >
-CustomRotaryControl::getRotaryBounds() const
+CustomRotarySlider::getRotaryBounds() const
 {
     auto bounds = getLocalBounds();
 
@@ -71,6 +74,16 @@ CustomRotaryControl::getRotaryBounds() const
     r.setY(bounds.getCentreY() - (size * 0.5));
 
     return r;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+CustomRotarySlider::setEnablement(const bool enable)
+{
+    setEnabled(enable);
+    setAlpha(enable ? GraphicEq::WIDGET_ALPHA_FULL : GraphicEq::WIDGET_ALPHA_DIM);
 }
 
 /*---------------------------------------------------------------------------

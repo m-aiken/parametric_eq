@@ -1,4 +1,5 @@
 #include "CustomLinearSlider.h"
+#include "GraphicEqGlobals.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -38,6 +39,16 @@ CustomLinearSlider::paint(juce::Graphics& g)
                                       bounds.getRight(),                            // max slider position
                                       juce::Slider::SliderStyle::LinearHorizontal,  // slider style
                                       *this);                                       // slider
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+CustomLinearSlider::setEnablement(const bool enable)
+{
+    setEnabled(enable);
+    setAlpha(enable ? GraphicEq::WIDGET_ALPHA_FULL : GraphicEq::WIDGET_ALPHA_DIM);
 }
 
 /*---------------------------------------------------------------------------

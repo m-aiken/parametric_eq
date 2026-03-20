@@ -9,6 +9,8 @@ public:
 
     void paint(juce::Graphics& g) override;
 
+    void setEnablement(const bool enable);
+
 private:
     juce::RangedAudioParameter* param;
 

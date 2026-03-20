@@ -48,14 +48,15 @@ set(PROJECT_SOURCES
         source/gui/analyzer/SpectrumAnalyzer.cpp
         source/gui/analyzer/SpectrumGrid.cpp
         source/gui/AnalyzerControls.cpp
-        source/gui/bandcontrols/CutControl.cpp
-        source/gui/bandcontrols/EqControlsContainer.cpp
-        source/gui/bandcontrols/PeakControl.cpp
+        source/gui/band_controls/EqControls.cpp
+        source/gui/band_controls/bands/CustomRotarySlider.cpp
+        source/gui/band_controls/bands/CutBandControls.cpp
+        source/gui/band_controls/bands/EqBandBase.cpp
+        source/gui/band_controls/bands/PeakBandControls.cpp
+        source/gui/band_controls/bands/TextToggleButton.cpp
         source/gui/CustomLookAndFeel.cpp
         source/gui/PathProducer.cpp
         source/gui/widgets/CustomLinearSlider.cpp
-        source/gui/widgets/CustomRotaryControl.cpp
-        source/gui/widgets/PowerButton.cpp
 )
 
 set(PROJECT_HEADERS
@@ -77,15 +78,16 @@ set(PROJECT_HEADERS
         source/gui/analyzer/Spectrumanalyzer.h
         source/gui/analyzer/Spectrumgrid.h
         source/gui/Analyzercontrols.h
-        source/gui/bandcontrols/Cutcontrol.h
-        source/gui/bandcontrols/EqControlsContainer.h
-        source/gui/bandcontrols/PeakControl.h
+        source/gui/band_controls/EqControls.h
+        source/gui/band_controls/bands/CustomRotarySlider.h
+        source/gui/band_controls/bands/CutBandControls.h
+        source/gui/band_controls/bands/EqBandBase.h
+        source/gui/band_controls/bands/PeakBandControls.h
+        source/gui/band_controls/bands/TextToggleButton.h
         source/gui/CustomLookAndFeel.h
         source/gui/ParamListener.h
         source/gui/PathProducer.h
         source/gui/widgets/CustomLinearSlider.h
-        source/gui/widgets/CustomRotaryControl.h
-        source/gui/widgets/PowerButton.h
 )
 
 target_sources(${PROJECT_NAME}
@@ -101,7 +103,8 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyzer
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/bandcontrols
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/widgets
 )
 

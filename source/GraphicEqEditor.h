@@ -5,7 +5,7 @@
 #include "AnalyzerContainer.h"
 #include "AnalyzerControls.h"
 #include "CustomLookAndFeel.h"
-#include "EqControlsContainer.h"
+#include "EqControls.h"
 #include "GraphicEqProcessor.h"
 
 class GraphicEqEditor final
@@ -27,9 +27,9 @@ public:
 private:
     GraphicEqProcessor& processor_ref_;
 
-    AnalyzerControls    analyzer_controls_;
-    AnalyzerContainer   analyzer_container_;
-    EqControlsContainer eq_controls_;
+    AnalyzerControls  analyzer_controls_;
+    AnalyzerContainer analyzer_container_;
+    EqControls        eq_controls_;
 
     size_t active_node_;
 
