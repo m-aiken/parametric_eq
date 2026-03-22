@@ -8,7 +8,6 @@
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
-    , analyzer_controls_(processor_ref_.getApvts())
     , analyzer_container_(processor_ref_.getApvts(),
                           processor_ref_.getSampleRate(),
                           processor_ref_.preEqMonoFifoL,
@@ -20,7 +19,6 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
 {
     setLookAndFeel(&lnf_);
 
-    addAndMakeVisible(analyzer_controls_);
     addAndMakeVisible(analyzer_container_);
     addAndMakeVisible(eq_controls_);
 
@@ -75,27 +73,25 @@ GraphicEqEditor::paint(juce::Graphics& g)
 void
 GraphicEqEditor::resized()
 {
-    const auto& bounds        = getLocalBounds();
-    const auto& bounds_width  = bounds.getWidth();
-    const auto& bounds_height = bounds.getHeight();
-    const auto& padding       = GraphicEq::getFont().getHeight();
+    using Track = juce::Grid::TrackInfo;
+    using Fr    = juce::Grid::Fr;
 
-    const auto analyzer_bounds = juce::Rectangle< int >(padding * 3,
-                                                        padding * 6,
-                                                        bounds_width - (padding * 6),
-                                                        static_cast< int >(
-                                                            std::floor((bounds_height * 0.6) - (padding * 2))));
+    juce::Grid grid;
 
-    const auto analyzer_width = analyzer_bounds.getWidth();
+    grid.autoColumns = Track(Fr(100));
 
-    analyzer_controls_.setBounds(bounds.getCentreX() - (analyzer_width * 0.25), padding, analyzer_width * 0.5, padding * 3);
+    grid.templateRows = {
+        Track(Fr(60)),  //! Analyser.
+        Track(Fr(40)),  //! Band controls.
+    };
 
-    analyzer_container_.setBounds(analyzer_bounds);
+    grid.items.add(juce::GridItem(analyzer_container_));
+    grid.items.add(juce::GridItem(eq_controls_));
 
-    eq_controls_.setBounds(bounds.getCentreX() - (analyzer_width * 0.5),
-                           analyzer_container_.getBottom() + padding,
-                           analyzer_width,
-                           bounds.getBottom() - analyzer_container_.getBottom() - (padding * 2));
+    const auto& full_bounds = getLocalBounds();
+    const auto& padding     = GraphicEq::getFont().getHeight();
+    grid.performLayout(full_bounds.withSizeKeepingCentre(full_bounds.getWidth() - (padding * 6),
+                                                         full_bounds.getHeight() - (padding * 4)));
 }
 
 /*---------------------------------------------------------------------------

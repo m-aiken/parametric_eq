@@ -47,7 +47,6 @@ set(PROJECT_SOURCES
         source/gui/analyzer/ResponseCurve.cpp
         source/gui/analyzer/SpectrumAnalyzer.cpp
         source/gui/analyzer/SpectrumGrid.cpp
-        source/gui/AnalyzerControls.cpp
         source/gui/band_controls/EqControls.cpp
         source/gui/band_controls/bands/CustomRotarySlider.cpp
         source/gui/band_controls/bands/CutBandControls.cpp
@@ -56,7 +55,6 @@ set(PROJECT_SOURCES
         source/gui/band_controls/bands/TextToggleButton.cpp
         source/gui/CustomLookAndFeel.cpp
         source/gui/PathProducer.cpp
-        source/gui/widgets/CustomLinearSlider.cpp
 )
 
 set(PROJECT_HEADERS
@@ -77,7 +75,6 @@ set(PROJECT_HEADERS
         source/gui/analyzer/Responsecurve.h
         source/gui/analyzer/Spectrumanalyzer.h
         source/gui/analyzer/Spectrumgrid.h
-        source/gui/Analyzercontrols.h
         source/gui/band_controls/EqControls.h
         source/gui/band_controls/bands/CustomRotarySlider.h
         source/gui/band_controls/bands/CutBandControls.h
@@ -87,7 +84,6 @@ set(PROJECT_HEADERS
         source/gui/CustomLookAndFeel.h
         source/gui/ParamListener.h
         source/gui/PathProducer.h
-        source/gui/widgets/CustomLinearSlider.h
 )
 
 target_sources(${PROJECT_NAME}
@@ -105,7 +101,6 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyzer
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/widgets
 )
 
 target_compile_definitions(${PROJECT_NAME}

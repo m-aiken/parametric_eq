@@ -3,7 +3,6 @@
 #include <JuceHeader.h>
 
 #include "AnalyzerContainer.h"
-#include "AnalyzerControls.h"
 #include "CustomLookAndFeel.h"
 #include "EqControls.h"
 #include "GraphicEqProcessor.h"
@@ -27,7 +26,6 @@ public:
 private:
     GraphicEqProcessor& processor_ref_;
 
-    AnalyzerControls  analyzer_controls_;
     AnalyzerContainer analyzer_container_;
     EqControls        eq_controls_;
 
