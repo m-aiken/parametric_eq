@@ -63,7 +63,14 @@ EqBandBase::getControlSectionBounds() const
     const auto width  = full_bounds.getWidth();
     const auto height = static_cast< int >(full_bounds.getHeight() * (CONTROL_SECTION / 100.0));
 
-    return { x, y, width, height };
+    const auto initial_rect = juce::Rectangle< int >(x, y, width, height);
+
+    // We want a square that's centered in the initial rectangle.
+    // Apply some reduction factor for padding.
+    constexpr auto reduction_factor = 0.9;
+    const auto     min_diameter     = static_cast< int >(std::min(width, height) * reduction_factor);
+
+    return initial_rect.withSizeKeepingCentre(min_diameter, min_diameter);
 }
 
 /*---------------------------------------------------------------------------

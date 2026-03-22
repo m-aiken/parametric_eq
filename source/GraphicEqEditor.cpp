@@ -81,8 +81,8 @@ GraphicEqEditor::resized()
     grid.autoColumns = Track(Fr(100));
 
     grid.templateRows = {
-        Track(Fr(60)),  //! Analyser.
-        Track(Fr(40)),  //! Band controls.
+        Track(Fr(70)),  //! Analyser.
+        Track(Fr(30)),  //! Band controls.
     };
 
     grid.items.add(juce::GridItem(analyzer_container_));
