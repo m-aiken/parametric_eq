@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "EqProperties.h"
 #include "ResponseCurve.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -16,7 +16,7 @@ Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
 void
 Node::paint(juce::Graphics& g)
 {
-    g.setColour(getToggleState() ? ColourPalette::NodeOn : ColourPalette::NodeOff);
+    g.setColour(getToggleState() ? Theme::NODE_ON : Theme::NODE_OFF);
     g.fillEllipse(getLocalBounds().toFloat());
 }
 
@@ -126,13 +126,13 @@ ResponseCurve::paint(juce::Graphics& g)
     }
 
     // Drawing the bolder outline
-    g.setColour(ColourPalette::ResponseCurve);
+    g.setColour(Theme::RESPONSE_CURVE);
     for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
         g.strokePath(paths.at(pathIdx), juce::PathStrokeType(1.f));
     }
 
     // Drawing the faded fill
-    g.setColour(ColourPalette::ResponseCurve.withAlpha(0.2f));
+    g.setColour(Theme::RESPONSE_CURVE.withAlpha(0.2f));
     for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
         g.fillPath(paths.at(pathIdx));
     }
@@ -147,7 +147,7 @@ ResponseCurve::paint(juce::Graphics& g)
         }
     }
 
-    g.setColour(ColourPalette::ResponseCurveAvg);
+    g.setColour(Theme::RESPONSE_CURVE_AVG);
     g.strokePath(paths.at(paths.size() - 1), juce::PathStrokeType(1.f));
 
     // Drawing the nodes
@@ -170,7 +170,7 @@ ResponseCurve::paint(juce::Graphics& g)
     }
 
     // Vertical lines on both ends of the container to hide the edge of the response curve
-    g.setColour(ColourPalette::MainBackground);
+    g.setColour(Theme::MAIN_BACKGROUND);
     auto lineThickness = 3.f;
 
     g.drawLine(0, 0, 0, bounds.getBottom(), lineThickness);

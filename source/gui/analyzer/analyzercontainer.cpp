@@ -1,5 +1,5 @@
 #include "AnalyzerContainer.h"
-#include "ColourPalette.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -10,8 +10,8 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&        
                                      MonoBufferFifo< juce::AudioBuffer< float > >& preEqBufferR,
                                      MonoBufferFifo< juce::AudioBuffer< float > >& postEqBufferL,
                                      MonoBufferFifo< juce::AudioBuffer< float > >& postEqBufferR)
-    : spectrumAnalyzerPreEq(sampleRate, preEqBufferL, preEqBufferR, apvts, ColourPalette::AnalyzerPreEq.withAlpha(0.1f))
-    , spectrumAnalyzerPostEq(sampleRate, postEqBufferL, postEqBufferR, apvts, ColourPalette::AnalyzerPostEq.withAlpha(0.25f))
+    : spectrumAnalyzerPreEq(sampleRate, preEqBufferL, preEqBufferR, apvts, Theme::ANALYSER_PRE_EQ)
+    , spectrumAnalyzerPostEq(sampleRate, postEqBufferL, postEqBufferR, apvts, Theme::ANALYSER_POST_EQ)
     , responseCurve(apvts, sampleRate)
 {
     addAndMakeVisible(backgroundGrid);

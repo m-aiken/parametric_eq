@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "EqProperties.h"
 #include "PeakBandControls.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -49,7 +49,7 @@ PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, co
 void
 PeakBandControls::paint(juce::Graphics& g)
 {
-    g.fillAll(node_is_active_ ? ColourPalette::PeakBandFocus : ColourPalette::MainBackground);
+    g.fillAll(node_is_active_ ? Theme::PEAK_BAND_FOCUS : Theme::MAIN_BACKGROUND);
 }
 
 /*---------------------------------------------------------------------------

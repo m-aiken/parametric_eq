@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "GraphicEqEditor.h"
 #include "GraphicEqGlobals.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -42,9 +42,9 @@ GraphicEqEditor::~GraphicEqEditor()
 void
 GraphicEqEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(ColourPalette::MainBackground);
-    g.setFont(GraphicEq::getFont());
-    g.setColour(ColourPalette::Text);
+    g.fillAll(Theme::MAIN_BACKGROUND);
+    g.setFont(Theme::getFont());
+    g.setColour(Theme::TEXT);
 
     const auto& analyzer_bounds = analyzer_container_.getBounds();
 
@@ -89,7 +89,7 @@ GraphicEqEditor::resized()
     grid.items.add(juce::GridItem(eq_controls_));
 
     const auto& full_bounds = getLocalBounds();
-    const auto& padding     = GraphicEq::getFont().getHeight();
+    const auto& padding     = Theme::getFont().getHeight();
     grid.performLayout(full_bounds.withSizeKeepingCentre(full_bounds.getWidth() - (padding * 6),
                                                          full_bounds.getHeight() - (padding * 4)));
 }

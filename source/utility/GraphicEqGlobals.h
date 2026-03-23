@@ -20,12 +20,6 @@ inline constexpr float BORDER_THICKNESS     = 2.f;
 static constexpr float WIDGET_ALPHA_FULL = 1.f;
 static constexpr float WIDGET_ALPHA_DIM  = 0.2f;
 
-inline juce::Font
-getFont()
-{
-    return juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 10.f, juce::Font::plain);
-}
-
 enum Channel {
     Left,
     Right,

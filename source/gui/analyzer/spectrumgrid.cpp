@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "GraphicEqGlobals.h"
 #include "SpectrumGrid.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -15,8 +15,8 @@ SpectrumGrid::paint(juce::Graphics& g)
     const auto& boundsBottom = bounds.getBottom();
     const auto& boundsRight  = bounds.getRight();
 
-    g.setFont(GraphicEq::getFont());
-    g.setColour(ColourPalette::Text.withAlpha(0.2f));
+    g.setFont(Theme::getFont());
+    g.setColour(Theme::ANALYSER_GRID.withAlpha(0.2f));
 
     // dB markers
     for (auto i = GraphicEq::MIN_DB; i <= GraphicEq::MAX_DB; i += 12) {
@@ -36,7 +36,7 @@ SpectrumGrid::paint(juce::Graphics& g)
                                  || i == 10000 ?
                              0.2f :
                              0.07f;
-            g.setColour(ColourPalette::Text.withAlpha(alpha));
+            g.setColour(Theme::ANALYSER_GRID.withAlpha(alpha));
             auto normalizedX = juce::mapFromLog10< float >(i, GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
             auto freqLineX   = boundsX + boundsWidth * normalizedX;
             g.drawVerticalLine(freqLineX, boundsY, boundsBottom);

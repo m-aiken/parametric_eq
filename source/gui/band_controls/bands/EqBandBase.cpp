@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "EqBandBase.h"
 #include "GraphicEqGlobals.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -8,8 +8,8 @@
 /*static*/ void
 EqBandBase::initialiseLabel(juce::Label& label)
 {
-    label.setFont(GraphicEq::getFont());
-    label.setColour(juce::Label::ColourIds::textColourId, ColourPalette::Text);
+    label.setFont(Theme::getFont());
+    label.setColour(juce::Label::ColourIds::textColourId, Theme::TEXT);
     label.setJustificationType(juce::Justification::centred);
 }
 

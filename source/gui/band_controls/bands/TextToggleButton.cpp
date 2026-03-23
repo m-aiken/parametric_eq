@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "GraphicEqGlobals.h"
 #include "TextToggleButton.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -19,9 +19,11 @@ TextToggleButton::TextToggleButton(juce::AudioProcessorValueTreeState& apvts,
 void
 TextToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_highlighted, bool should_draw_button_as_down)
 {
+    juce::ignoreUnused(should_draw_button_as_highlighted, should_draw_button_as_down);
+
     const bool on = getToggleState();
-    g.setFont(GraphicEq::getFont());
-    g.setColour(ColourPalette::Text.withAlpha(on ? GraphicEq::WIDGET_ALPHA_FULL : GraphicEq::WIDGET_ALPHA_DIM));
+    g.setFont(Theme::getFont());
+    g.setColour(Theme::TEXT.withAlpha(on ? GraphicEq::WIDGET_ALPHA_FULL : GraphicEq::WIDGET_ALPHA_DIM));
     g.drawFittedText(getButtonText(), getLocalBounds(), juce::Justification::centred, 1);
 }
 

@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "CustomRotarySlider.h"
 #include "GraphicEqGlobals.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -30,8 +30,8 @@ CustomRotarySlider::paint(juce::Graphics& g)
 
     auto range = param->getNormalisableRange();
 
-    g.setFont(GraphicEq::getFont());
-    g.setColour(ColourPalette::RotaryText);
+    g.setFont(Theme::getFont());
+    g.setColour(Theme::TEXT);
 
     auto valueToDraw = juce::jmap< float >(getValue(), range.start, range.end, startAngle, endAngle);
 
@@ -51,7 +51,7 @@ CustomRotarySlider::paint(juce::Graphics& g)
 
     juce::Rectangle< float > r;
 
-    r.setSize(g.getCurrentFont().getStringWidth(getName()), GraphicEq::getFont().getHeight());
+    r.setSize(g.getCurrentFont().getStringWidth(getName()), Theme::getFont().getHeight());
     r.setCentre(center);
     g.drawFittedText(getName(), r.toNearestInt(), juce::Justification::centred, 1);
 }
@@ -66,7 +66,7 @@ CustomRotarySlider::getRotaryBounds() const
 
     auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 
-    size -= GraphicEq::getFont().getHeight() * 0.6;
+    size -= Theme::getFont().getHeight() * 0.6;
 
     juce::Rectangle< int > r;
     r.setSize(size, size);

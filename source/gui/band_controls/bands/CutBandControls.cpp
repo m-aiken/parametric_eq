@@ -1,6 +1,6 @@
-#include "ColourPalette.h"
 #include "CutBandControls.h"
 #include "EqProperties.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -35,11 +35,11 @@ CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts,
     addAndMakeVisible(freq_value_label_);
     addAndMakeVisible(slope_value_label_);
 
-    freq_value_label_.setFont(GraphicEq::getFont());
-    freq_value_label_.setColour(juce::Label::ColourIds::textColourId, ColourPalette::Text);
+    freq_value_label_.setFont(Theme::getFont());
+    freq_value_label_.setColour(juce::Label::ColourIds::textColourId, Theme::TEXT);
     freq_value_label_.setJustificationType(juce::Justification::centred);
-    slope_value_label_.setFont(GraphicEq::getFont());
-    slope_value_label_.setColour(juce::Label::ColourIds::textColourId, ColourPalette::Text);
+    slope_value_label_.setFont(Theme::getFont());
+    slope_value_label_.setColour(juce::Label::ColourIds::textColourId, Theme::TEXT);
     slope_value_label_.setJustificationType(juce::Justification::centred);
 
     setFreqLabelText();

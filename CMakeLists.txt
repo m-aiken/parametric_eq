@@ -53,7 +53,8 @@ set(PROJECT_SOURCES
         source/gui/band_controls/bands/EqBandBase.cpp
         source/gui/band_controls/bands/PeakBandControls.cpp
         source/gui/band_controls/bands/TextToggleButton.cpp
-        source/gui/CustomLookAndFeel.cpp
+        source/gui/look_and_feel/Theme.cpp
+        source/gui/look_and_feel/CustomLookAndFeel.cpp
         source/gui/PathProducer.cpp
 )
 
@@ -61,9 +62,6 @@ set(PROJECT_HEADERS
         PRIVATE
         source/GraphicEqEditor.h
         source/GraphicEqProcessor.h
-        source/utilities/ColourPalette.h
-        source/utilities/GraphicEqGlobals.h
-        source/utilities/TailwindColours.h
         source/dsp/AnalyzerPathGenerator.h
         source/dsp/EqProperties.h
         source/dsp/FftDataGenerator.h
@@ -81,9 +79,11 @@ set(PROJECT_HEADERS
         source/gui/band_controls/bands/EqBandBase.h
         source/gui/band_controls/bands/PeakBandControls.h
         source/gui/band_controls/bands/TextToggleButton.h
-        source/gui/CustomLookAndFeel.h
+        source/gui/look_and_feel/CustomLookAndFeel.h
+        source/gui/look_and_feel/Theme.h
         source/gui/ParamListener.h
         source/gui/PathProducer.h
+        source/utility/GraphicEqGlobals.h
 )
 
 target_sources(${PROJECT_NAME}
@@ -95,12 +95,13 @@ target_sources(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/source
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/utilities
         ${CMAKE_CURRENT_SOURCE_DIR}/source/dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyzer
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/look_and_feel
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/utility
 )
 
 target_compile_definitions(${PROJECT_NAME}
