@@ -49,7 +49,8 @@ PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, co
 void
 PeakBandControls::paint(juce::Graphics& g)
 {
-    g.fillAll(node_is_active_ ? Theme::PEAK_BAND_FOCUS : Theme::MAIN_BACKGROUND);
+    g.setColour(node_is_active_ ? Theme::PEAK_BAND_FOCUS : Theme::MAIN_BACKGROUND);
+    g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
 }
 
 /*---------------------------------------------------------------------------

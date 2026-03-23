@@ -14,12 +14,6 @@ inline constexpr int   MIN_BAND_INDEX = 0;
 inline constexpr int   MAX_BAND_INDEX = 7;
 inline constexpr int   NUM_PEAK_BANDS = 6;
 
-inline constexpr float BORDER_CORNER_RADIUS = 5.f;
-inline constexpr float BORDER_THICKNESS     = 2.f;
-
-static constexpr float WIDGET_ALPHA_FULL = 1.f;
-static constexpr float WIDGET_ALPHA_DIM  = 0.2f;
-
 enum Channel {
     Left,
     Right,

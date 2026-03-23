@@ -83,7 +83,7 @@ void
 CustomRotarySlider::setEnablement(const bool enable)
 {
     setEnabled(enable);
-    setAlpha(enable ? GraphicEq::WIDGET_ALPHA_FULL : GraphicEq::WIDGET_ALPHA_DIM);
+    setAlpha(enable ? Theme::ENABLED_ALPHA : Theme::DISABLED_ALPHA);
 }
 
 /*---------------------------------------------------------------------------

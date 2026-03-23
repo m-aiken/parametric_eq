@@ -1,4 +1,5 @@
 #include "EqControls.h"
+#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
@@ -50,9 +51,11 @@ EqControls::resized()
 
     grid.items.add(juce::GridItem(high_cut_control_));
 
-    grid.setGap(juce::Grid::Px(4));
+    grid.setGap(juce::Grid::Px(Theme::UI_PADDING));
 
-    grid.performLayout(getLocalBounds());
+    const auto& bounds = getLocalBounds();
+    grid.performLayout(
+        bounds.withSizeKeepingCentre(bounds.getWidth() - Theme::UI_PADDING, bounds.getHeight() - Theme::UI_PADDING));
 }
 
 /*---------------------------------------------------------------------------

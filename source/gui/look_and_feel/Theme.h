@@ -25,6 +25,13 @@ public:
     static const juce::Colour ANALYSER_PRE_EQ;
     static const juce::Colour ANALYSER_POST_EQ;
     static const juce::Colour PEAK_BAND_FOCUS;
+    static const juce::Colour TEXT_BUTTON_BG_STD;
+    static const juce::Colour TEXT_BUTTON_BG_HOVER;
+
+    static constexpr float ENABLED_ALPHA  = 1.f;
+    static constexpr float DISABLED_ALPHA = 0.2f;
+    static constexpr int   UI_PADDING     = 4;
+    static constexpr float BORDER_RADIUS  = 4.f;
 
     static juce::Font getFont();
 

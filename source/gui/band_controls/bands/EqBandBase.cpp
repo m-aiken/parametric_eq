@@ -45,7 +45,11 @@ EqBandBase::getEnablementButtonBounds() const
     const auto width  = full_bounds.getWidth();
     const auto height = static_cast< int >(full_bounds.getHeight() * (ENABLEMENT_BUTTON / 100.0));
 
-    return { x, y, width, height };
+    const auto initial_rect = juce::Rectangle< int >(x, y, width, height);
+
+    // We want a rectangle reduces by some amount of padding.
+    constexpr auto padding = (Theme::UI_PADDING * 2);
+    return initial_rect.withSizeKeepingCentre(initial_rect.getWidth() - padding, initial_rect.getHeight() - padding);
 }
 
 /*---------------------------------------------------------------------------
