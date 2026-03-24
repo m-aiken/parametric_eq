@@ -20,9 +20,6 @@ public:
 
     void timerCallback() override;
 
-    static void drawDbLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds);
-    static void drawFrequencyLabels(juce::Graphics& g, const juce::Rectangle< int >& label_bounds);
-
 private:
     GraphicEqProcessor& processor_ref_;
 
