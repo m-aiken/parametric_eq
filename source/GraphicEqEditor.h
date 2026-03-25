@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "AnalyzerContainer.h"
+#include "AnalyserContainer.h"
 #include "CustomLookAndFeel.h"
 #include "EqControls.h"
 #include "GraphicEqProcessor.h"
@@ -23,7 +23,7 @@ public:
 private:
     GraphicEqProcessor& processor_ref_;
 
-    AnalyzerContainer analyzer_container_;
+    AnalyserContainer analyser_;
     EqControls        eq_controls_;
 
     size_t active_node_;

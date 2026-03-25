@@ -43,10 +43,10 @@ set(PROJECT_SOURCES
         source/dsp/AnalyzerPathGenerator.cpp
         source/dsp/FftDataGenerator.cpp
         source/dsp/FilterUtils.cpp
-        source/gui/analyzer/AnalyzerContainer.cpp
-        source/gui/analyzer/ResponseCurve.cpp
-        source/gui/analyzer/SpectrumAnalyzer.cpp
-        source/gui/analyzer/SpectrumGrid.cpp
+        source/gui/analyser/AnalyserContainer.cpp
+        source/gui/analyser/ResponseCurve.cpp
+        source/gui/analyser/SpectrumAnalyser.cpp
+        source/gui/analyser/SpectrumGrid.cpp
         source/gui/band_controls/EqControls.cpp
         source/gui/band_controls/bands/CustomRotarySlider.cpp
         source/gui/band_controls/bands/CutBandControls.cpp
@@ -69,10 +69,10 @@ set(PROJECT_HEADERS
         source/dsp/Filterutils.h
         source/dsp/MonoBufferFifo.h
         source/dsp/Peakband.h
-        source/gui/analyzer/Analyzercontainer.h
-        source/gui/analyzer/Responsecurve.h
-        source/gui/analyzer/Spectrumanalyzer.h
-        source/gui/analyzer/Spectrumgrid.h
+        source/gui/analyser/AnalyserContainer.h
+        source/gui/analyser/ResponseCurve.h
+        source/gui/analyser/SpectrumAnalyser.h
+        source/gui/analyser/SpectrumGrid.h
         source/gui/band_controls/EqControls.h
         source/gui/band_controls/bands/CustomRotarySlider.h
         source/gui/band_controls/bands/CutBandControls.h
@@ -97,7 +97,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/source/dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyzer
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyser
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/look_and_feel

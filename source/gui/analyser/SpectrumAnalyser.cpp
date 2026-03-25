@@ -1,9 +1,9 @@
-#include "SpectrumAnalyzer.h"
+#include "SpectrumAnalyser.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-SpectrumAnalyzer::SpectrumAnalyzer(double                                        _sampleRate,
+SpectrumAnalyser::SpectrumAnalyser(double                                        _sampleRate,
                                    MonoBufferFifo< juce::AudioBuffer< float > >& leftScsf,
                                    MonoBufferFifo< juce::AudioBuffer< float > >& rightScsf,
                                    juce::AudioProcessorValueTreeState&           apvts,
@@ -31,7 +31,7 @@ SpectrumAnalyzer::SpectrumAnalyzer(double                                       
 **
 */
 void
-SpectrumAnalyzer::paint(juce::Graphics& g)
+SpectrumAnalyser::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
 
@@ -47,7 +47,7 @@ SpectrumAnalyzer::paint(juce::Graphics& g)
 **
 */
 void
-SpectrumAnalyzer::resized()
+SpectrumAnalyser::resized()
 {
     auto bounds = getLocalBounds();
     leftPathProducer.setFFTRectBounds(bounds.toFloat());
@@ -58,7 +58,7 @@ SpectrumAnalyzer::resized()
 **
 */
 void
-SpectrumAnalyzer::timerCallback()
+SpectrumAnalyser::timerCallback()
 {
     if (!active) {
         leftAnalyzerPath.clear();
@@ -84,7 +84,7 @@ SpectrumAnalyzer::timerCallback()
 **
 */
 void
-SpectrumAnalyzer::setActive(bool activeState)
+SpectrumAnalyser::setActive(bool activeState)
 {
     active = activeState;
     if (active && !isTimerRunning()) {
@@ -96,7 +96,7 @@ SpectrumAnalyzer::setActive(bool activeState)
 **
 */
 void
-SpectrumAnalyzer::updateOrder(float value)
+SpectrumAnalyser::updateOrder(float value)
 {
     auto denormalizedVal = static_cast< int >(std::floor(juce::jmap< float >(value, 0.f, 1.f, 11.f, 13.f)));
     leftPathProducer.changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
@@ -107,7 +107,7 @@ SpectrumAnalyzer::updateOrder(float value)
 **
 */
 void
-SpectrumAnalyzer::animate()
+SpectrumAnalyser::animate()
 {
     startTimerHz(60);
 }

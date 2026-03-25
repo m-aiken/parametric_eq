@@ -6,12 +6,12 @@
 #include "ParamListener.h"
 #include "PathProducer.h"
 
-class SpectrumAnalyzer final
+class SpectrumAnalyser final
     : public juce::Component
     , public juce::Timer
 {
 public:
-    SpectrumAnalyzer(double                                        _sampleRate,
+    SpectrumAnalyser(double                                        _sampleRate,
                      MonoBufferFifo< juce::AudioBuffer< float > >& leftScsf,
                      MonoBufferFifo< juce::AudioBuffer< float > >& rightScsf,
                      juce::AudioProcessorValueTreeState&           apvts,
@@ -38,5 +38,5 @@ private:
 
     ParamListener< float > analyzerOrderParamListener;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumAnalyzer)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumAnalyser)
 };

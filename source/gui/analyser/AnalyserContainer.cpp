@@ -1,14 +1,14 @@
-#include "AnalyzerContainer.h"
+#include "AnalyserContainer.h"
 #include "Theme.h"
 
-/*static*/ const std::vector< float > AnalyzerContainer::HZ_LIST = {
+/*static*/ const std::vector< float > AnalyserContainer::HZ_LIST = {
     20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f,
 };
 
 /*---------------------------------------------------------------------------
 **
 */
-AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&           apvts,
+AnalyserContainer::AnalyserContainer(juce::AudioProcessorValueTreeState&           apvts,
                                      double                                        sample_rate,
                                      MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_l,
                                      MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_r,
@@ -28,7 +28,7 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&        
 **
 */
 void
-AnalyzerContainer::paint(juce::Graphics& g)
+AnalyserContainer::paint(juce::Graphics& g)
 {
     const auto& bounds = getLocalBounds();
 
@@ -43,7 +43,7 @@ AnalyzerContainer::paint(juce::Graphics& g)
 **
 */
 void
-AnalyzerContainer::resized()
+AnalyserContainer::resized()
 {
     const auto& bounds = getLocalBounds();
 
@@ -57,7 +57,7 @@ AnalyzerContainer::resized()
 **
 */
 size_t
-AnalyzerContainer::getActiveNodeIndex()
+AnalyserContainer::getActiveNodeIndex()
 {
     return response_curve_.getActiveNodeIndex();
 }
@@ -66,7 +66,7 @@ AnalyzerContainer::getActiveNodeIndex()
 **
 */
 /*static*/ void
-AnalyzerContainer::drawDbLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds)
+AnalyserContainer::drawDbLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds)
 {
     const auto& text_height   = static_cast< int >(g.getCurrentFont().getHeight());
     const auto& bounds_width  = bounds.getWidth();
@@ -86,7 +86,7 @@ AnalyzerContainer::drawDbLabels(const juce::Graphics& g, const juce::Rectangle< 
 **
 */
 /*static*/ void
-AnalyzerContainer::drawFrequencyLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds)
+AnalyserContainer::drawFrequencyLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds)
 {
     const auto& text_height  = static_cast< int >(Theme::getFont().getHeight());
     const auto& bounds_y     = bounds.getY();

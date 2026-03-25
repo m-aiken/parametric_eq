@@ -4,14 +4,14 @@
 
 #include "MonoBufferFifo.h"
 #include "ResponseCurve.h"
-#include "SpectrumAnalyzer.h"
+#include "SpectrumAnalyser.h"
 #include "SpectrumGrid.h"
 #include "Theme.h"
 
-class AnalyzerContainer final : public juce::Component
+class AnalyserContainer final : public juce::Component
 {
 public:
-    AnalyzerContainer(juce::AudioProcessorValueTreeState&           apvts,
+    AnalyserContainer(juce::AudioProcessorValueTreeState&           apvts,
                       double                                        sample_rate,
                       MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_l,
                       MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_r,
@@ -33,9 +33,9 @@ private:
     static const std::vector< float > HZ_LIST;
 
     SpectrumGrid     background_grid_;
-    SpectrumAnalyzer waveform_pre_eq_;
-    SpectrumAnalyzer waveform_post_eq_;
+    SpectrumAnalyser waveform_pre_eq_;
+    SpectrumAnalyser waveform_post_eq_;
     ResponseCurve    response_curve_;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalyzerContainer)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalyserContainer)
 };
