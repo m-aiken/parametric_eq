@@ -15,7 +15,7 @@ CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts,
 
     band_enablement_button_ = std::make_unique< TextToggleButton >(apvts, enabled_id, low_cut ? "LOW CUT" : "HIGH CUT");
     freq_slider_            = std::make_unique< CustomRotarySlider >(apvts, freq_id, "Hz");
-    slope_slider_           = std::make_unique< CustomRotarySlider >(apvts, slope_id, "dB/Oct");
+    slope_slider_           = std::make_unique< CustomRotarySlider >(apvts, slope_id, "dB");
 
     band_enablement_button_->onClick = [this]() { setSubWidgetEnablement(); };
 
