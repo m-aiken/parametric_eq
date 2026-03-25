@@ -1,54 +1,59 @@
 #include "FftDataGenerator.h"
+#include "GraphicEqGlobals.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-void
-FftDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer< float >& audioData)
+FftDataGenerator::FftDataGenerator()
+    : forward_fft_(FFT_ORDER)
+    , windowing_func_(FFT_SIZE, juce::dsp::WindowingFunction< float >::blackmanHarris)
 {
-    const auto fftSize = getFFTSize();
+    fft_data_.clear();
+    fft_data_.resize(FFT_SIZE * 2, 0.f);
 
-    std::fill(fftData.begin(), fftData.end(), 0.f);
-
-    auto* bufferReadIdx = audioData.getReadPointer(0);
-    std::copy(bufferReadIdx, bufferReadIdx + fftSize, fftData.begin());
-
-    if (window != nullptr) {
-        window->multiplyWithWindowingTable(fftData.data(), static_cast< size_t >(fftSize));
-    }
-
-    if (forwardFFT != nullptr) {
-        forwardFFT->performFrequencyOnlyForwardTransform(fftData.data(), true);
-    }
-
-    auto numBins = static_cast< int >(fftSize * 0.5);
-    juce::FloatVectorOperations::multiply(fftData.data(), 1.f / static_cast< float >(numBins), numBins + 1);
-
-    for (auto i = 0; i < numBins + 1; ++i) {
-        fftData[i] = juce::Decibels::gainToDecibels(fftData[i], GraphicEq::MIN_DB);
-    }
-
-    fftDataFifo.push(fftData);
+    fft_data_fifo_.prepare(fft_data_.size());
 }
 
 /*---------------------------------------------------------------------------
 **
 */
 void
-FftDataGenerator::changeOrder(GraphicEq::FFTOrder newOrder)
+FftDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer< float >& audio_data)
 {
-    order      = newOrder;
-    forwardFFT = std::make_unique< juce::dsp::FFT >(order);
+    std::fill(fft_data_.begin(), fft_data_.end(), 0.f);
 
-    auto fftSize = getFFTSize();
-    window =
-        std::make_unique< juce::dsp::WindowingFunction< float > >(fftSize,
-                                                                  juce::dsp::WindowingFunction< float >::blackmanHarris);
+    auto* bufferReadIdx = audio_data.getReadPointer(0);
+    std::copy(bufferReadIdx, bufferReadIdx + FFT_SIZE, fft_data_.begin());
 
-    fftData.clear();
-    fftData.resize(static_cast< size_t >(fftSize * 2), 0.f);
+    windowing_func_.multiplyWithWindowingTable(fft_data_.data(), static_cast< size_t >(FFT_SIZE));
 
-    fftDataFifo.prepare(fftData.size());
+    forward_fft_.performFrequencyOnlyForwardTransform(fft_data_.data(), true);
+
+    juce::FloatVectorOperations::multiply(fft_data_.data(), 1.f / static_cast< float >(NUM_BINS), NUM_BINS + 1);
+
+    for (auto i = 0; i < NUM_BINS + 1; ++i) {
+        fft_data_[i] = juce::Decibels::gainToDecibels(fft_data_[i], GraphicEq::MIN_DB);
+    }
+
+    fft_data_fifo_.push(fft_data_);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+int
+FftDataGenerator::getNumAvailableFFTDataBlocks() const
+{
+    return fft_data_fifo_.getNumAvailableForReading();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+bool
+FftDataGenerator::getFFTData(std::vector< float >& data)
+{
+    return fft_data_fifo_.pull(data);
 }
 
 /*---------------------------------------------------------------------------

@@ -40,10 +40,10 @@ public:
 
     juce::AudioProcessorValueTreeState& getApvts();
 
-    MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoL { GraphicEq::Channel::Left };
-    MonoBufferFifo< juce::AudioBuffer< float > > preEqMonoFifoR { GraphicEq::Channel::Right };
-    MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoL { GraphicEq::Channel::Left };
-    MonoBufferFifo< juce::AudioBuffer< float > > postEqMonoFifoR { GraphicEq::Channel::Right };
+    MonoBufferFifo preEqMonoFifoL { GraphicEq::Channel::Left };
+    MonoBufferFifo preEqMonoFifoR { GraphicEq::Channel::Right };
+    MonoBufferFifo postEqMonoFifoL { GraphicEq::Channel::Left };
+    MonoBufferFifo postEqMonoFifoR { GraphicEq::Channel::Right };
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

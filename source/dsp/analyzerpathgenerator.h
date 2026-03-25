@@ -12,5 +12,5 @@ struct AnalyzerPathGenerator {
     bool getPath(juce::Path& path);
 
 private:
-    Fifo< juce::Path, 20 > pathFifo;
+    Fifo< juce::Path, 2 > pathFifo;
 };

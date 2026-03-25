@@ -19,22 +19,11 @@ enum Channel {
     Right,
 };
 
-enum FFTOrder {
-    order2048 = 11,
-    order4096 = 12,
-    order8192 = 13,
-};
-
-inline const std::map< GraphicEq::FFTOrder, juce::String > FTT_ORDERS = { { order2048, "2048" },
-                                                                          { order4096, "4096" },
-                                                                          { order8192, "8192" } };
-
 struct ParamInfo {
     juce::String id_;
     juce::String gui_text_;
 };
 
-inline const ParamInfo ANALYSER_POINTS  = { "FFT Order", "Analyzer Points" };
 inline const ParamInfo LOW_CUT_FREQ     = { "Low Cut Freq", "Low Cut Freq" };
 inline const ParamInfo LOW_CUT_SLOPE    = { "Low Cut Slope", "Low Cut Slope" };
 inline const ParamInfo LOW_CUT_ENABLED  = { "Low Cut Enabled", "Low Cut Enabled" };

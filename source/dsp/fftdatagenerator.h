@@ -3,21 +3,29 @@
 #include <JuceHeader.h>
 
 #include "Fifo.h"
-#include "GraphicEqGlobals.h"
 
-struct FftDataGenerator {
-    // TODO should this have a constructor to initialise forwardFFT and window?
-    void produceFFTDataForRendering(const juce::AudioBuffer< float >& audioData);
-    void changeOrder(GraphicEq::FFTOrder newOrder);
-    int  getFFTSize() const { return 1 << order; }
-    int  getNumAvailableFFTDataBlocks() const { return fftDataFifo.getNumAvailableForReading(); }
-    bool getFFTData(std::vector< float >& data) { return fftDataFifo.pull(data); }
+class FftDataGenerator
+{
+public:
+    FftDataGenerator();
+
+    void produceFFTDataForRendering(const juce::AudioBuffer< float >& audio_data);
+    int  getNumAvailableFFTDataBlocks() const;
+    bool getFFTData(std::vector< float >& data);
+
+    enum {
+        SIZE_2048 = 11,
+        SIZE_4096 = 12,
+        SIZE_8192 = 13,
+    };
+
+    static constexpr int FFT_ORDER = SIZE_8192;
+    static constexpr int FFT_SIZE  = 1 << FFT_ORDER;
+    static constexpr int NUM_BINS  = FFT_SIZE / 2;
 
 private:
-    GraphicEq::FFTOrder                                      order;
-    std::vector< float >                                     fftData;
-    std::unique_ptr< juce::dsp::FFT >                        forwardFFT;
-    std::unique_ptr< juce::dsp::WindowingFunction< float > > window;
-
-    Fifo< std::vector< float >, 20 > fftDataFifo;
+    juce::dsp::FFT                        forward_fft_;
+    juce::dsp::WindowingFunction< float > windowing_func_;
+    std::vector< float >                  fft_data_;
+    Fifo< std::vector< float >, 2 >       fft_data_fifo_;
 };

@@ -5,53 +5,55 @@
 #include "Fifo.h"
 #include "GraphicEqGlobals.h"
 
-template < typename BlockType >
-struct MonoBufferFifo {
-    using SampleType = typename BlockType::SampleType;
-    explicit MonoBufferFifo(GraphicEq::Channel ch)
-        : channelToUse(ch)
+class MonoBufferFifo
+{
+public:
+    explicit MonoBufferFifo(const GraphicEq::Channel ch)
+        : channel_(ch)
+        , fifo_index_(0)
+        , prepared_(false)
+        , size_(0)
     {
-        prepared.set(false);
     }
 
-    void update(const BlockType& buffer)
+    void update(const juce::AudioBuffer< float >& buffer)
     {
         for (auto i = 0; i < buffer.getNumSamples(); ++i) {
-            pushNextSampleIntoFifo(buffer.getSample(channelToUse, i));
+            pushNextSampleIntoFifo(buffer.getSample(channel_, i));
         }
     }
 
-    void pushNextSampleIntoFifo(SampleType sample)
+    void pushNextSampleIntoFifo(float sample)
     {
-        if (fifoIndex == getSize()) {
-            audioBufferFifo.push(bufferToFill);
-            fifoIndex = 0;
+        if (fifo_index_ == getSize()) {
+            audio_buffer_fifo_.push(buffer_to_fill_);
+            fifo_index_ = 0;
         }
 
-        bufferToFill.setSample(0, fifoIndex, sample);
-        ++fifoIndex;
+        buffer_to_fill_.setSample(0, fifo_index_, sample);
+        ++fifo_index_;
     }
 
-    void prepare(int bufferSize)
+    void prepare(int buffer_size)
     {
-        prepared.set(false);
-        size.set(bufferSize);
-        audioBufferFifo.prepare(bufferSize, 1);
-        bufferToFill.setSize(1, bufferSize);
-        fifoIndex = 0;
-        prepared.set(true);
+        prepared_.set(false);
+        size_.set(buffer_size);
+        audio_buffer_fifo_.prepare(buffer_size, 1);
+        buffer_to_fill_.setSize(1, buffer_size);
+        fifo_index_ = 0;
+        prepared_.set(true);
     }
 
-    int  getNumCompleteBuffersAvailable() const { return audioBufferFifo.getNumAvailableForReading(); }
-    bool getAudioBuffer(BlockType& buf) { return audioBufferFifo.pull(buf); }
-    bool isPrepared() const { return prepared.get(); }
-    int  getSize() const { return size.get(); }
+    int  getNumCompleteBuffersAvailable() const { return audio_buffer_fifo_.getNumAvailableForReading(); }
+    bool getAudioBuffer(juce::AudioBuffer< float >& buffer) { return audio_buffer_fifo_.pull(buffer); }
+    bool isPrepared() const { return prepared_.get(); }
+    int  getSize() const { return size_.get(); }
 
 private:
-    GraphicEq::Channel    channelToUse;
-    int                   fifoIndex = 0;
-    Fifo< BlockType, 20 > audioBufferFifo;
-    BlockType             bufferToFill;
-    juce::Atomic< bool >  prepared = false;
-    juce::Atomic< int >   size     = 0;
+    GraphicEq::Channel                    channel_;
+    int                                   fifo_index_;
+    Fifo< juce::AudioBuffer< float >, 2 > audio_buffer_fifo_;
+    juce::AudioBuffer< float >            buffer_to_fill_;
+    juce::Atomic< bool >                  prepared_;
+    juce::Atomic< int >                   size_;
 };

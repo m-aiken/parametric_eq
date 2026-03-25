@@ -3,26 +3,16 @@
 /*---------------------------------------------------------------------------
 **
 */
-SpectrumAnalyser::SpectrumAnalyser(double                                        _sampleRate,
-                                   MonoBufferFifo< juce::AudioBuffer< float > >& leftScsf,
-                                   MonoBufferFifo< juce::AudioBuffer< float > >& rightScsf,
-                                   juce::AudioProcessorValueTreeState&           apvts,
-                                   const juce::Colour&                           fillColour)
-    : sampleRate(_sampleRate)
-    , colour(fillColour)
-    , leftPathProducer(_sampleRate, leftScsf)
-    , rightPathProducer(_sampleRate, rightScsf)
-    , analyzerOrderParamListener(*apvts.getParameter(GraphicEq::ANALYSER_POINTS.id_),
-                                 [this](const auto& newOrder) { updateOrder(newOrder); })
+SpectrumAnalyser::SpectrumAnalyser(const double        sample_rate,
+                                   MonoBufferFifo&     left_scsf,
+                                   MonoBufferFifo&     right_scsf,
+                                   const juce::Colour& colour)
+    : colour_(colour)
+    , left_path_producer_(sample_rate, left_scsf)
+    , right_path_producer_(sample_rate, right_scsf)
 {
-    auto orderParam = apvts.getParameter(GraphicEq::ANALYSER_POINTS.id_);
-
-    if (orderParam != nullptr) {
-        updateOrder(orderParam->getValue());
-    }
-
-    leftPathProducer.toggleProcessing(true);
-    rightPathProducer.toggleProcessing(true);
+    left_path_producer_.toggleProcessing(true);
+    right_path_producer_.toggleProcessing(true);
 
     animate();
 }
@@ -33,14 +23,14 @@ SpectrumAnalyser::SpectrumAnalyser(double                                       
 void
 SpectrumAnalyser::paint(juce::Graphics& g)
 {
-    auto bounds = getLocalBounds();
+    const auto& bounds = getLocalBounds();
 
-    leftAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
-    rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
+    left_analyser_path_.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
+    right_analyser_path_.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
 
-    g.setColour(colour);
-    g.fillPath(leftAnalyzerPath);
-    g.fillPath(rightAnalyzerPath);
+    g.setColour(colour_);
+    g.fillPath(left_analyser_path_);
+    g.fillPath(right_analyser_path_);
 }
 
 /*---------------------------------------------------------------------------
@@ -49,9 +39,10 @@ SpectrumAnalyser::paint(juce::Graphics& g)
 void
 SpectrumAnalyser::resized()
 {
-    auto bounds = getLocalBounds();
-    leftPathProducer.setFFTRectBounds(bounds.toFloat());
-    rightPathProducer.setFFTRectBounds(bounds.toFloat());
+    const auto& bounds = getLocalBounds();
+
+    left_path_producer_.setFFTRectBounds(bounds.toFloat());
+    right_path_producer_.setFFTRectBounds(bounds.toFloat());
 }
 
 /*---------------------------------------------------------------------------
@@ -60,47 +51,17 @@ SpectrumAnalyser::resized()
 void
 SpectrumAnalyser::timerCallback()
 {
-    if (!active) {
-        leftAnalyzerPath.clear();
-        rightAnalyzerPath.clear();
-        stopTimer();
+    if (left_path_producer_.getNumAvailableForReading() > 0) {
+        while (left_path_producer_.pull(left_analyser_path_)) {
+        }  // get most recent
     }
-    else {
-        if (leftPathProducer.getNumAvailableForReading() > 0) {
-            while (leftPathProducer.pull(leftAnalyzerPath)) {
-            }  // get most recent
-        }
 
-        if (rightPathProducer.getNumAvailableForReading() > 0) {
-            while (rightPathProducer.pull(rightAnalyzerPath)) {
-            }  // get most recent
-        }
+    if (right_path_producer_.getNumAvailableForReading() > 0) {
+        while (right_path_producer_.pull(right_analyser_path_)) {
+        }  // get most recent
     }
 
     repaint();
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-SpectrumAnalyser::setActive(bool activeState)
-{
-    active = activeState;
-    if (active && !isTimerRunning()) {
-        animate();
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-SpectrumAnalyser::updateOrder(float value)
-{
-    auto denormalizedVal = static_cast< int >(std::floor(juce::jmap< float >(value, 0.f, 1.f, 11.f, 13.f)));
-    leftPathProducer.changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
-    rightPathProducer.changeOrder(static_cast< GraphicEq::FFTOrder >(denormalizedVal));
 }
 
 /*---------------------------------------------------------------------------

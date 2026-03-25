@@ -3,7 +3,6 @@
 #include <JuceHeader.h>
 
 #include "MonoBufferFifo.h"
-#include "ParamListener.h"
 #include "PathProducer.h"
 
 class SpectrumAnalyser final
@@ -11,11 +10,10 @@ class SpectrumAnalyser final
     , public juce::Timer
 {
 public:
-    SpectrumAnalyser(double                                        _sampleRate,
-                     MonoBufferFifo< juce::AudioBuffer< float > >& leftScsf,
-                     MonoBufferFifo< juce::AudioBuffer< float > >& rightScsf,
-                     juce::AudioProcessorValueTreeState&           apvts,
-                     const juce::Colour&                           fillColour);
+    SpectrumAnalyser(const double        sample_rate,
+                     MonoBufferFifo&     left_scsf,
+                     MonoBufferFifo&     right_scsf,
+                     const juce::Colour& colour);
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -23,20 +21,13 @@ public:
     void timerCallback() override;
 
 private:
-    double       sampleRate;
-    juce::Colour colour;
-    juce::Path   leftAnalyzerPath;
-    juce::Path   rightAnalyzerPath;
-    PathProducer leftPathProducer;
-    PathProducer rightPathProducer;
-    //    bool         active { false };
-    bool active { true };  // TODO for test only
-
-    void setActive(bool activeState);
-    void updateOrder(float value);
     void animate();
 
-    ParamListener< float > analyzerOrderParamListener;
+    juce::Colour colour_;
+    juce::Path   left_analyser_path_;
+    juce::Path   right_analyser_path_;
+    PathProducer left_path_producer_;
+    PathProducer right_path_producer_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumAnalyser)
 };

@@ -11,12 +11,12 @@
 class AnalyserContainer final : public juce::Component
 {
 public:
-    AnalyserContainer(juce::AudioProcessorValueTreeState&           apvts,
-                      double                                        sample_rate,
-                      MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_l,
-                      MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_r,
-                      MonoBufferFifo< juce::AudioBuffer< float > >& post_eq_buffer_l,
-                      MonoBufferFifo< juce::AudioBuffer< float > >& post_eq_buffer_r);
+    AnalyserContainer(juce::AudioProcessorValueTreeState& apvts,
+                      const double                        sample_rate,
+                      MonoBufferFifo&                     pre_eq_buffer_l,
+                      MonoBufferFifo&                     pre_eq_buffer_r,
+                      MonoBufferFifo&                     post_eq_buffer_l,
+                      MonoBufferFifo&                     post_eq_buffer_r);
 
     void paint(juce::Graphics& g) override;
     void resized() override;

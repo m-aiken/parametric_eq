@@ -3,18 +3,14 @@
 /*---------------------------------------------------------------------------
 **
 */
-PathProducer::PathProducer(double _sampleRate, MonoBufferFifo< juce::AudioBuffer< float > >& scsf)
+PathProducer::PathProducer(double _sampleRate, MonoBufferFifo& scsf)
     : juce::Thread("PathProducerThread")
-    , singleChannelSampleFifo(&scsf)
+    , singleChannelSampleFifo(scsf)
     , sampleRate(_sampleRate)
 {
-    fftDataGenerator = std::make_unique< FftDataGenerator >();
-    pathGenerator    = std::make_unique< AnalyzerPathGenerator >();
-
-    // TODO - initialising these 2 might not be necessary ultimately.
-    // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
-    bufferForGenerator.setSize(1, getFFTSize());
-    renderData.resize(getFFTSize(), GraphicEq::MIN_DB);
+    renderData.clear();
+    renderData.resize(static_cast< size_t >(FftDataGenerator::FFT_SIZE * 2), GraphicEq::MIN_DB);
+    bufferForGenerator.setSize(1, FftDataGenerator::FFT_SIZE);
 
     startThread();
 }
@@ -34,23 +30,19 @@ PathProducer::~PathProducer()
 void
 PathProducer::run()
 {
-    if (singleChannelSampleFifo == nullptr || fftDataGenerator == nullptr || pathGenerator == nullptr) {
-        return;
-    }
-
     while (!threadShouldExit()) {
         if (!processingIsEnabled.load()) {
             wait(10);
             continue;
         }
 
-        while (singleChannelSampleFifo->getNumCompleteBuffersAvailable() > 0) {
+        while (singleChannelSampleFifo.getNumCompleteBuffersAvailable() > 0) {
             juce::AudioBuffer< float > tempBuffer;
 
             if (threadShouldExit())
                 break;
 
-            if (singleChannelSampleFifo->getAudioBuffer(tempBuffer)) {
+            if (singleChannelSampleFifo.getAudioBuffer(tempBuffer)) {
                 auto size     = juce::jmin(tempBuffer.getNumSamples(), bufferForGenerator.getNumSamples());
                 auto readPtr  = bufferForGenerator.getReadPointer(0, size);
                 auto writePtr = bufferForGenerator.getWritePointer(0, 0);
@@ -61,24 +53,25 @@ PathProducer::run()
                     tempBuffer.getReadPointer(0, 0),
                     size);
 
-                fftDataGenerator->produceFFTDataForRendering(bufferForGenerator);
+                fftDataGenerator.produceFFTDataForRendering(bufferForGenerator);
             }
         }
 
-        while (fftDataGenerator->getNumAvailableFFTDataBlocks() > 0) {
+        while (fftDataGenerator.getNumAvailableFFTDataBlocks() > 0) {
             std::vector< float > fftData;
 
             if (threadShouldExit())
                 break;
 
-            if (fftDataGenerator->getFFTData(fftData)) {
-                auto fftSize   = getFFTSize();
-                auto numBins   = static_cast< int >(fftSize * 0.5);
+            if (fftDataGenerator.getFFTData(fftData)) {
                 auto decayRate = DECAY_RATE_DB_PER_SECOND / 60.f;
 
-                updateRenderData(renderData, fftData, numBins, decayRate);
+                updateRenderData(fftData, decayRate);
 
-                pathGenerator->generatePath(renderData, fftBounds, fftSize, static_cast< float >(getBinWidth()));
+                pathGenerator.generatePath(renderData,
+                                           fftBounds,
+                                           FftDataGenerator::FFT_SIZE,
+                                           static_cast< float >(getBinWidth()));
             }
         }
 
@@ -89,48 +82,10 @@ PathProducer::run()
 /*---------------------------------------------------------------------------
 **
 */
-void
-PathProducer::changeOrder(GraphicEq::FFTOrder order)
-{
-    if (fftDataGenerator == nullptr || singleChannelSampleFifo == nullptr) {
-        return;
-    }
-
-    pauseThread();
-
-    fftDataGenerator->changeOrder(order);
-
-    auto fftSize = getFFTSize();
-    renderData.clear();
-    renderData.resize(static_cast< size_t >(fftSize * 2), GraphicEq::MIN_DB);
-    bufferForGenerator.setSize(1, fftSize);
-
-    while (!singleChannelSampleFifo->isPrepared()) {
-        wait(5);
-    }
-
-    if (!fftBounds.isEmpty()) {
-        startThread();
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-int
-PathProducer::getFFTSize() const
-{
-    // TODO is 0 a good default value for this?
-    return (fftDataGenerator != nullptr) ? fftDataGenerator->getFFTSize() : 0;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
 double
 PathProducer::getBinWidth() const
 {
-    return sampleRate / static_cast< double >(getFFTSize());
+    return sampleRate / static_cast< double >(FftDataGenerator::FFT_SIZE);
 }
 
 /*---------------------------------------------------------------------------
@@ -146,7 +101,7 @@ PathProducer::pauseThread()
 **
 */
 void
-PathProducer::setFFTRectBounds(juce::Rectangle< float > bounds)
+PathProducer::setFFTRectBounds(const juce::Rectangle< float >& bounds)
 {
     pauseThread();
 
@@ -163,7 +118,7 @@ PathProducer::setFFTRectBounds(juce::Rectangle< float > bounds)
 bool
 PathProducer::pull(juce::Path& path)
 {
-    return (pathGenerator != nullptr) && pathGenerator->getPath(path);
+    return pathGenerator.getPath(path);
 }
 
 /*---------------------------------------------------------------------------
@@ -172,7 +127,7 @@ PathProducer::pull(juce::Path& path)
 int
 PathProducer::getNumAvailableForReading() const
 {
-    return (pathGenerator != nullptr) ? pathGenerator->getNumPathsAvailable() : 0;
+    return pathGenerator.getNumPathsAvailable();
 }
 
 /*---------------------------------------------------------------------------
@@ -188,17 +143,14 @@ PathProducer::toggleProcessing(bool toggleState)
 **
 */
 void
-PathProducer::updateRenderData(std::vector< float >&       renData,
-                               const std::vector< float >& fftData,
-                               int                         numBins,
-                               float                       decayRate)
+PathProducer::updateRenderData(const std::vector< float >& fftData, float decayRate)
 {
     if (decayRate >= 0.f) {
-        for (auto i = 0; i < numBins; ++i) {
-            auto previousValue = renData[i];
+        for (auto i = 0; i < FftDataGenerator::NUM_BINS; ++i) {
+            auto previousValue = renderData[i];
             auto candidate     = fftData[i];
             auto finalValue    = juce::jmax(candidate, previousValue - decayRate);
-            renData[i]         = juce::jlimit(GraphicEq::MIN_DB, GraphicEq::MAX_DB, finalValue);
+            renderData[i]      = juce::jlimit(GraphicEq::MIN_DB, GraphicEq::MAX_DB, finalValue);
         }
     }
 }

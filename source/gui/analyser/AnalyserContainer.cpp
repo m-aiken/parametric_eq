@@ -8,14 +8,14 @@
 /*---------------------------------------------------------------------------
 **
 */
-AnalyserContainer::AnalyserContainer(juce::AudioProcessorValueTreeState&           apvts,
-                                     double                                        sample_rate,
-                                     MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_l,
-                                     MonoBufferFifo< juce::AudioBuffer< float > >& pre_eq_buffer_r,
-                                     MonoBufferFifo< juce::AudioBuffer< float > >& post_eq_buffer_l,
-                                     MonoBufferFifo< juce::AudioBuffer< float > >& post_eq_buffer_r)
-    : waveform_pre_eq_(sample_rate, pre_eq_buffer_l, pre_eq_buffer_r, apvts, Theme::ANALYSER_PRE_EQ)
-    , waveform_post_eq_(sample_rate, post_eq_buffer_l, post_eq_buffer_r, apvts, Theme::ANALYSER_POST_EQ)
+AnalyserContainer::AnalyserContainer(juce::AudioProcessorValueTreeState& apvts,
+                                     const double                        sample_rate,
+                                     MonoBufferFifo&                     pre_eq_buffer_l,
+                                     MonoBufferFifo&                     pre_eq_buffer_r,
+                                     MonoBufferFifo&                     post_eq_buffer_l,
+                                     MonoBufferFifo&                     post_eq_buffer_r)
+    : waveform_pre_eq_(sample_rate, pre_eq_buffer_l, pre_eq_buffer_r, Theme::ANALYSER_PRE_EQ)
+    , waveform_post_eq_(sample_rate, post_eq_buffer_l, post_eq_buffer_r, Theme::ANALYSER_POST_EQ)
     , response_curve_(apvts, sample_rate)
 {
     addAndMakeVisible(background_grid_);
