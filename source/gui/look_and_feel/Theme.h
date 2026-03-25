@@ -15,6 +15,7 @@ private:
 public:
     static const juce::Colour MAIN_BACKGROUND;
     static const juce::Colour TEXT;
+    static const juce::Colour ANALYSER_TEXT;
     static const juce::Colour ROTARY_FILL;
     static const juce::Colour ROTARY_THUMB;
     static const juce::Colour RESPONSE_CURVE;

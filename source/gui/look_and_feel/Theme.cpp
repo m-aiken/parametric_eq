@@ -15,6 +15,7 @@
 */
 /*static*/ const juce::Colour Theme::MAIN_BACKGROUND      = PARCHMENT;
 /*static*/ const juce::Colour Theme::TEXT                 = DARK_GREY;
+/*static*/ const juce::Colour Theme::ANALYSER_TEXT        = DARK_GREY.withAlpha(0.7f);
 /*static*/ const juce::Colour Theme::ROTARY_FILL          = RED;
 /*static*/ const juce::Colour Theme::ROTARY_THUMB         = DARK_GREY;
 /*static*/ const juce::Colour Theme::RESPONSE_CURVE       = RED;

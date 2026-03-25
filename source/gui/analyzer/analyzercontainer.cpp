@@ -33,7 +33,7 @@ AnalyzerContainer::paint(juce::Graphics& g)
     const auto& bounds = getLocalBounds();
 
     g.setFont(Theme::getFont());
-    g.setColour(Theme::TEXT);
+    g.setColour(Theme::ANALYSER_TEXT);
 
     drawDbLabels(g, { Theme::UI_PADDING, 0, TEXT_WIDTH, bounds.getHeight() });
     drawFrequencyLabels(g, { 0, Theme::UI_PADDING, bounds.getWidth(), static_cast< int >(Theme::getFont().getHeight()) });
