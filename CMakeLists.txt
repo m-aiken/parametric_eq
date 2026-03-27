@@ -81,7 +81,6 @@ set(PROJECT_HEADERS
         source/gui/band_controls/bands/TextToggleButton.h
         source/gui/look_and_feel/CustomLookAndFeel.h
         source/gui/look_and_feel/Theme.h
-        source/gui/ParamListener.h
         source/gui/PathProducer.h
         source/utility/GraphicEqGlobals.h
 )
