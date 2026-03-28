@@ -43,19 +43,20 @@ set(PROJECT_SOURCES
         source/dsp/AnalyzerPathGenerator.cpp
         source/dsp/FftDataGenerator.cpp
         source/dsp/FilterUtils.cpp
-        source/gui/analyser/AnalyserContainer.cpp
-        source/gui/analyser/ResponseCurve.cpp
-        source/gui/analyser/SpectrumAnalyser.cpp
-        source/gui/analyser/SpectrumGrid.cpp
         source/gui/band_controls/EqControls.cpp
         source/gui/band_controls/bands/CustomRotarySlider.cpp
         source/gui/band_controls/bands/CutBandControls.cpp
         source/gui/band_controls/bands/EqBandBase.cpp
         source/gui/band_controls/bands/PeakBandControls.cpp
         source/gui/band_controls/bands/TextToggleButton.cpp
+        source/gui/graph/Graph.cpp
+        source/gui/graph/GraphBackground.cpp
+        source/gui/graph/GraphControlLayer.cpp
+        source/gui/graph/GraphNode.cpp
+        source/gui/graph/GraphPathProducer.cpp
+        source/gui/graph/GraphWaveform.cpp
         source/gui/look_and_feel/Theme.cpp
         source/gui/look_and_feel/CustomLookAndFeel.cpp
-        source/gui/PathProducer.cpp
 )
 
 set(PROJECT_HEADERS
@@ -69,19 +70,20 @@ set(PROJECT_HEADERS
         source/dsp/Filterutils.h
         source/dsp/MonoBufferFifo.h
         source/dsp/Peakband.h
-        source/gui/analyser/AnalyserContainer.h
-        source/gui/analyser/ResponseCurve.h
-        source/gui/analyser/SpectrumAnalyser.h
-        source/gui/analyser/SpectrumGrid.h
         source/gui/band_controls/EqControls.h
         source/gui/band_controls/bands/CustomRotarySlider.h
         source/gui/band_controls/bands/CutBandControls.h
         source/gui/band_controls/bands/EqBandBase.h
         source/gui/band_controls/bands/PeakBandControls.h
         source/gui/band_controls/bands/TextToggleButton.h
+        source/gui/graph/Graph.h
+        source/gui/graph/GraphBackground.h
+        source/gui/graph/GraphControlLayer.h
+        source/gui/graph/GraphNode.h
+        source/gui/graph/GraphPathProducer.h
+        source/gui/graph/GraphWaveform.h
         source/gui/look_and_feel/CustomLookAndFeel.h
         source/gui/look_and_feel/Theme.h
-        source/gui/PathProducer.h
         source/utility/GraphicEqGlobals.h
 )
 
@@ -96,9 +98,9 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source
         ${CMAKE_CURRENT_SOURCE_DIR}/source/dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/analyser
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/graph
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/look_and_feel
         ${CMAKE_CURRENT_SOURCE_DIR}/source/utility
 )

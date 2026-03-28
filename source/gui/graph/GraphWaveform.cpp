@@ -1,12 +1,12 @@
-#include "SpectrumAnalyser.h"
+#include "GraphWaveform.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-SpectrumAnalyser::SpectrumAnalyser(const double        sample_rate,
-                                   MonoBufferFifo&     left_scsf,
-                                   MonoBufferFifo&     right_scsf,
-                                   const juce::Colour& colour)
+GraphWaveform::GraphWaveform(const double        sample_rate,
+                             MonoBufferFifo&     left_scsf,
+                             MonoBufferFifo&     right_scsf,
+                             const juce::Colour& colour)
     : colour_(colour)
     , left_path_producer_(sample_rate, left_scsf)
     , right_path_producer_(sample_rate, right_scsf)
@@ -14,14 +14,22 @@ SpectrumAnalyser::SpectrumAnalyser(const double        sample_rate,
     left_path_producer_.toggleProcessing(true);
     right_path_producer_.toggleProcessing(true);
 
-    animate();
+    startTimerHz(60);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+GraphWaveform::~GraphWaveform()
+{
+    stopTimer();
 }
 
 /*---------------------------------------------------------------------------
 **
 */
 void
-SpectrumAnalyser::paint(juce::Graphics& g)
+GraphWaveform::paint(juce::Graphics& g)
 {
     const auto& bounds = getLocalBounds();
 
@@ -37,7 +45,7 @@ SpectrumAnalyser::paint(juce::Graphics& g)
 **
 */
 void
-SpectrumAnalyser::resized()
+GraphWaveform::resized()
 {
     const auto& bounds = getLocalBounds();
 
@@ -49,7 +57,7 @@ SpectrumAnalyser::resized()
 **
 */
 void
-SpectrumAnalyser::timerCallback()
+GraphWaveform::timerCallback()
 {
     if (left_path_producer_.getNumAvailableForReading() > 0) {
         while (left_path_producer_.pull(left_analyser_path_)) {
@@ -62,15 +70,6 @@ SpectrumAnalyser::timerCallback()
     }
 
     repaint();
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-SpectrumAnalyser::animate()
-{
-    startTimerHz(60);
 }
 
 /*---------------------------------------------------------------------------

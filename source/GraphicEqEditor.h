@@ -2,9 +2,9 @@
 
 #include <JuceHeader.h>
 
-#include "AnalyserContainer.h"
 #include "CustomLookAndFeel.h"
 #include "EqControls.h"
+#include "Graph.h"
 #include "GraphicEqProcessor.h"
 
 class GraphicEqEditor final
@@ -23,8 +23,8 @@ public:
 private:
     GraphicEqProcessor& processor_ref_;
 
-    AnalyserContainer analyser_;
-    EqControls        eq_controls_;
+    Graph      graph_;
+    EqControls eq_controls_;
 
     size_t active_node_;
 
