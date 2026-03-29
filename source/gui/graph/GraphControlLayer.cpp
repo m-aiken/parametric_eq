@@ -50,12 +50,13 @@ GraphControlLayer::GraphControlLayer(juce::AudioProcessorValueTreeState& apvts, 
     using namespace EqProperties;
 
     for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        const auto band_num = static_cast< int >(i);
+        auto& [freq_, gain_, q_, enabled_] = peak_bands_.at(i);
+        const auto band_num                = static_cast< int >(i);
 
-        assignFloatParam(peak_bands_.at(i).peakFreqParam, getPeakControlParamName(PeakControl::FREQUENCY, band_num));
-        assignFloatParam(peak_bands_.at(i).peakGainParam, getPeakControlParamName(PeakControl::GAIN, band_num));
-        assignFloatParam(peak_bands_.at(i).peakQParam, getPeakControlParamName(PeakControl::QUALITY, band_num));
-        assignBoolParam(peak_bands_.at(i).peakEnabledParam, getPeakControlParamName(PeakControl::ENABLED, band_num));
+        assignFloatParam(freq_, getPeakControlParamName(PeakControl::FREQUENCY, band_num));
+        assignFloatParam(gain_, getPeakControlParamName(PeakControl::GAIN, band_num));
+        assignFloatParam(q_, getPeakControlParamName(PeakControl::QUALITY, band_num));
+        assignBoolParam(enabled_, getPeakControlParamName(PeakControl::ENABLED, band_num));
 
         addAndMakeVisible(*peak_nodes_.at(i));
 
@@ -155,11 +156,11 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Draw the nodes.
     for (size_t i = 0; i < peak_nodes_.size(); ++i) {
-        if (peak_bands_.at(i).peakFreqParam == nullptr || peak_nodes_.at(i) == nullptr) {
+        if (peak_bands_.at(i).freq_ == nullptr || peak_nodes_.at(i) == nullptr) {
             continue;
         }
 
-        const auto normalized_frequency = juce::mapFromLog10< float >(peak_bands_.at(i).peakFreqParam->get(),
+        const auto normalized_frequency = juce::mapFromLog10< float >(peak_bands_.at(i).freq_->get(),
                                                                       GraphicEq::MIN_HZ,
                                                                       GraphicEq::MAX_HZ);
 
@@ -294,7 +295,7 @@ GraphControlLayer::updateMonoChain()
     FilterUtils::updateBandEnablements(mono_chain_, low_cut_enabled_param_, high_cut_enabled_param_, peak_bands_);
 
     if (low_cut_enabled_param_->get()) {
-        auto coefficients = FilterUtils::makeHighPassFilter(low_cut_freq_param_, low_cut_slope_param_, sample_rate_);
+        const auto coefficients = FilterUtils::makeHighPassFilter(low_cut_freq_param_, low_cut_slope_param_, sample_rate_);
 
         FilterUtils::updateCutCoefficients(mono_chain_,
                                            FilterUtils::ChainPositions::LowCut,
@@ -303,7 +304,7 @@ GraphControlLayer::updateMonoChain()
     }
 
     if (high_cut_enabled_param_->get()) {
-        auto coefficients = FilterUtils::makeLowPassFilter(high_cut_freq_param_, high_cut_slope_param_, sample_rate_);
+        const auto coefficients = FilterUtils::makeLowPassFilter(high_cut_freq_param_, high_cut_slope_param_, sample_rate_);
 
         FilterUtils::updateCutCoefficients(mono_chain_,
                                            FilterUtils::ChainPositions::HighCut,
@@ -314,12 +315,10 @@ GraphControlLayer::updateMonoChain()
     for (size_t i = 0; i < peak_bands_.size(); ++i) {
         const auto& band = peak_bands_.at(i);
 
-        if (band.peakEnabledParam != nullptr && band.peakEnabledParam->get()) {
+        if (band.enabled_ != nullptr && band.enabled_->get()) {
             FilterUtils::updatePeakCoefficients(mono_chain_,
                                                 static_cast< FilterUtils::ChainPositions >(i + 1),
-                                                band.peakFreqParam,
-                                                band.peakQParam,
-                                                band.peakGainParam,
+                                                band,
                                                 sample_rate_);
         }
     }
@@ -359,8 +358,8 @@ GraphControlLayer::updateMagnitudes()
                                                GraphicEq::MAX_HZ);
 
         for (size_t peak_band = 0; peak_band < GraphicEq::NUM_PEAK_BANDS; ++peak_band) {
-            if (peak_bands_.at(peak_band).peakEnabledParam != nullptr && peak_coefficients.at(peak_band) != nullptr
-                && peak_bands_.at(peak_band).peakEnabledParam->get()) {
+            if (peak_bands_.at(peak_band).enabled_ != nullptr && peak_coefficients.at(peak_band) != nullptr
+                && peak_bands_.at(peak_band).enabled_->get()) {
                 peak_mags.at(peak_band) *= peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate_);
                 mag_all *= peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate_);
             }

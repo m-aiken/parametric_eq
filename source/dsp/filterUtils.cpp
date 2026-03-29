@@ -4,161 +4,160 @@
 **
 */
 void
-FilterUtils::updatePeakCoefficients(MonoChain&                 monoChain,
-                                    const ChainPositions&      chainPosition,
-                                    juce::AudioParameterFloat* freqParam,
-                                    juce::AudioParameterFloat* qParam,
-                                    juce::AudioParameterFloat* gainParam,
-                                    double                     sampleRate)
+FilterUtils::updatePeakCoefficients(MonoChain&            mono_chain,
+                                    const ChainPositions& chain_position,
+                                    const PeakBand&       peak_band,
+                                    const double          sample_rate)
 {
-    if (freqParam == nullptr || qParam == nullptr || gainParam == nullptr) {
+    if (peak_band.freq_ == nullptr || peak_band.q_ == nullptr || peak_band.gain_ == nullptr) {
         return;
     }
 
-    auto peakCoefficients = juce::dsp::IIR::Coefficients< float >::makePeakFilter(sampleRate,
-                                                                                  freqParam->get(),
-                                                                                  qParam->get(),
-                                                                                  juce::Decibels::decibelsToGain(
-                                                                                      gainParam->get()));
+    const auto hz   = peak_band.freq_->get();
+    const auto q    = peak_band.q_->get();
+    const auto gain = juce::Decibels::decibelsToGain(peak_band.gain_->get());
 
-    switch (chainPosition) {
-    case ChainPositions::Peak_0:
-    {
-        *monoChain.get< ChainPositions::Peak_0 >().coefficients = *peakCoefficients;
-        break;
-    }
-    case ChainPositions::Peak_1:
-    {
-        *monoChain.get< ChainPositions::Peak_1 >().coefficients = *peakCoefficients;
-        break;
-    }
-    case ChainPositions::Peak_2:
-    {
-        *monoChain.get< ChainPositions::Peak_2 >().coefficients = *peakCoefficients;
-        break;
-    }
-    case ChainPositions::Peak_3:
-    {
-        *monoChain.get< ChainPositions::Peak_3 >().coefficients = *peakCoefficients;
-        break;
-    }
-    case ChainPositions::Peak_4:
-    {
-        *monoChain.get< ChainPositions::Peak_4 >().coefficients = *peakCoefficients;
-        break;
-    }
-    case ChainPositions::Peak_5:
-    {
-        *monoChain.get< ChainPositions::Peak_5 >().coefficients = *peakCoefficients;
-        break;
-    }
-    }
-}
+    const auto coefficients = juce::dsp::IIR::Coefficients< float >::makePeakFilter(sample_rate, hz, q, gain);
 
-/*---------------------------------------------------------------------------
-**
-*/
-void
-FilterUtils::updateCutCoefficients(MonoChain&                  monoChain,
-                                   const ChainPositions&       chainPosition,
-                                   CoefficientsType&           coefficients,
-                                   juce::AudioParameterChoice* slopeParam)
-{
-    if (slopeParam == nullptr) {
-        return;
-    }
-
-    auto& cutFilterChain = chainPosition == ChainPositions::LowCut ? monoChain.get< ChainPositions::LowCut >() :
-                                                                     monoChain.get< ChainPositions::HighCut >();
-    cutFilterChain.setBypassed< Slope_12 >(true);
-    cutFilterChain.setBypassed< Slope_24 >(true);
-    cutFilterChain.setBypassed< Slope_36 >(true);
-    cutFilterChain.setBypassed< Slope_48 >(true);
-
-    switch (slopeParam->getIndex()) {
-    case Slope_48:
-    {
-        *cutFilterChain.template get< Slope_48 >().coefficients = *coefficients[Slope_48];
-        cutFilterChain.setBypassed< Slope_48 >(false);
-    }
-    case Slope_36:
-    {
-        *cutFilterChain.template get< Slope_36 >().coefficients = *coefficients[Slope_36];
-        cutFilterChain.setBypassed< Slope_36 >(false);
-    }
-    case Slope_24:
-    {
-        *cutFilterChain.template get< Slope_24 >().coefficients = *coefficients[Slope_24];
-        cutFilterChain.setBypassed< Slope_24 >(false);
-    }
-    case Slope_12:
-    {
-        *cutFilterChain.template get< Slope_12 >().coefficients = *coefficients[Slope_12];
-        cutFilterChain.setBypassed< Slope_12 >(false);
+    switch (chain_position) {
+    case Peak_0:
+        *mono_chain.get< Peak_0 >().coefficients = *coefficients;
         break;
-    }
+
+    case Peak_1:
+        *mono_chain.get< Peak_1 >().coefficients = *coefficients;
+        break;
+
+    case Peak_2:
+        *mono_chain.get< Peak_2 >().coefficients = *coefficients;
+        break;
+
+    case Peak_3:
+        *mono_chain.get< Peak_3 >().coefficients = *coefficients;
+        break;
+
+    case Peak_4:
+        *mono_chain.get< Peak_4 >().coefficients = *coefficients;
+        break;
+
+    case Peak_5:
+        *mono_chain.get< Peak_5 >().coefficients = *coefficients;
+        break;
+
+    case LowCut:
+    case HighCut:
     default:
-    {
         break;
     }
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-FilterUtils::CoefficientsType
-FilterUtils::makeHighPassFilter(juce::AudioParameterFloat*  freqParam,
-                                juce::AudioParameterChoice* slopeParam,
-                                double                      sampleRate)
-{
-    // TODO nullptr checks (what should be returned by default for FilterUtils::CoefficientsType?)
-    return juce::dsp::FilterDesign< float >::designIIRHighpassHighOrderButterworthMethod(freqParam->get(),
-                                                                                         sampleRate,
-                                                                                         (slopeParam->getIndex() + 1) * 2);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-FilterUtils::CoefficientsType
-FilterUtils::makeLowPassFilter(juce::AudioParameterFloat*  freqParam,
-                               juce::AudioParameterChoice* slopeParam,
-                               double                      sampleRate)
-{
-    // TODO nullptr checks (what should be returned by default for FilterUtils::CoefficientsType?)
-    return juce::dsp::FilterDesign< float >::designIIRLowpassHighOrderButterworthMethod(freqParam->get(),
-                                                                                        sampleRate,
-                                                                                        (slopeParam->getIndex() + 1) * 2);
 }
 
 /*---------------------------------------------------------------------------
 **
 */
 void
-FilterUtils::updateBandEnablements(MonoChain&                                         monoChain,
-                                   juce::AudioParameterBool*                          lcEnabledParam,
-                                   juce::AudioParameterBool*                          hcEnabledParam,
-                                   std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >& peakBands)
+FilterUtils::updateCutCoefficients(MonoChain&                        mono_chain,
+                                   const ChainPositions&             chain_position,
+                                   const CoefficientsType&           coefficients,
+                                   const juce::AudioParameterChoice* slope_param)
 {
-    if (lcEnabledParam == nullptr || hcEnabledParam == nullptr) {
+    if (slope_param == nullptr) {
+        return;
+    }
+
+    auto& filter_chain = chain_position == LowCut ? mono_chain.get< LowCut >() : mono_chain.get< HighCut >();
+
+    filter_chain.setBypassed< Slope_12 >(true);
+    filter_chain.setBypassed< Slope_24 >(true);
+    filter_chain.setBypassed< Slope_36 >(true);
+    filter_chain.setBypassed< Slope_48 >(true);
+
+    // Note, the switch case fall-through is intentional.
+    switch (slope_param->getIndex()) {
+    case Slope_48:
+        *filter_chain.get< Slope_48 >().coefficients = *coefficients[Slope_48];
+        filter_chain.setBypassed< Slope_48 >(false);
+
+    case Slope_36:
+        *filter_chain.get< Slope_36 >().coefficients = *coefficients[Slope_36];
+        filter_chain.setBypassed< Slope_36 >(false);
+
+    case Slope_24:
+        *filter_chain.get< Slope_24 >().coefficients = *coefficients[Slope_24];
+        filter_chain.setBypassed< Slope_24 >(false);
+
+    case Slope_12:
+        *filter_chain.get< Slope_12 >().coefficients = *coefficients[Slope_12];
+        filter_chain.setBypassed< Slope_12 >(false);
+        break;
+
+    default:
+        break;
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+FilterUtils::CoefficientsType
+FilterUtils::makeHighPassFilter(const juce::AudioParameterFloat*  freq_param,
+                                const juce::AudioParameterChoice* slope_param,
+                                const double                      sample_rate)
+{
+    if (freq_param != nullptr && slope_param != nullptr) {
+        const auto hz    = freq_param->get();
+        const auto order = (slope_param->getIndex() + 1) * 2;
+
+        return juce::dsp::FilterDesign< float >::designIIRHighpassHighOrderButterworthMethod(hz, sample_rate, order);
+    }
+
+    return CoefficientsType();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+FilterUtils::CoefficientsType
+FilterUtils::makeLowPassFilter(const juce::AudioParameterFloat*  freq_param,
+                               const juce::AudioParameterChoice* slope_param,
+                               const double                      sample_rate)
+{
+    if (freq_param != nullptr && slope_param != nullptr) {
+        const auto hz    = freq_param->get();
+        const auto order = (slope_param->getIndex() + 1) * 2;
+
+        return juce::dsp::FilterDesign< float >::designIIRLowpassHighOrderButterworthMethod(hz, sample_rate, order);
+    }
+
+    return CoefficientsType();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+FilterUtils::updateBandEnablements(MonoChain&                                               mono_chain,
+                                   const juce::AudioParameterBool*                          lc_enabled_param,
+                                   const juce::AudioParameterBool*                          hc_enabled_param,
+                                   const std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >& peak_bands)
+{
+    if (lc_enabled_param == nullptr || hc_enabled_param == nullptr) {
         return;
     }
 
     for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        if (peakBands.at(i).peakEnabledParam == nullptr) {
+        if (peak_bands.at(i).enabled_ == nullptr) {
             return;
         }
     }
 
-    monoChain.setBypassed< FilterUtils::ChainPositions::LowCut >(!lcEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::HighCut >(!hcEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::Peak_0 >(!peakBands.at(0).peakEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::Peak_1 >(!peakBands.at(1).peakEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::Peak_2 >(!peakBands.at(2).peakEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::Peak_3 >(!peakBands.at(3).peakEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::Peak_4 >(!peakBands.at(4).peakEnabledParam->get());
-    monoChain.setBypassed< FilterUtils::ChainPositions::Peak_5 >(!peakBands.at(5).peakEnabledParam->get());
+    mono_chain.setBypassed< LowCut >(!lc_enabled_param->get());
+    mono_chain.setBypassed< HighCut >(!hc_enabled_param->get());
+    mono_chain.setBypassed< Peak_0 >(!peak_bands.at(0).enabled_->get());
+    mono_chain.setBypassed< Peak_1 >(!peak_bands.at(1).enabled_->get());
+    mono_chain.setBypassed< Peak_2 >(!peak_bands.at(2).enabled_->get());
+    mono_chain.setBypassed< Peak_3 >(!peak_bands.at(3).enabled_->get());
+    mono_chain.setBypassed< Peak_4 >(!peak_bands.at(4).enabled_->get());
+    mono_chain.setBypassed< Peak_5 >(!peak_bands.at(5).enabled_->get());
 }
 
 /*---------------------------------------------------------------------------

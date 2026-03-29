@@ -16,26 +16,26 @@ struct FilterUtils {
 
     enum Slope { Slope_12, Slope_24, Slope_36, Slope_48 };
 
-    static void updatePeakCoefficients(MonoChain&                 monoChain,
-                                       const ChainPositions&      chainPosition,
-                                       juce::AudioParameterFloat* freqParam,
-                                       juce::AudioParameterFloat* qParam,
-                                       juce::AudioParameterFloat* gainParam,
-                                       double                     sampleRate);
+    static void updatePeakCoefficients(MonoChain&            mono_chain,
+                                       const ChainPositions& chain_position,
+                                       const PeakBand&       peak_band,
+                                       const double          sample_rate);
 
-    static void updateCutCoefficients(MonoChain&                  monoChain,
-                                      const ChainPositions&       chainPosition,
-                                      CoefficientsType&           coefficients,
-                                      juce::AudioParameterChoice* slopeParam);
+    static void updateCutCoefficients(MonoChain&                        mono_chain,
+                                      const ChainPositions&             chain_position,
+                                      const CoefficientsType&           coefficients,
+                                      const juce::AudioParameterChoice* slope_param);
 
-    static CoefficientsType
-    makeHighPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate);
+    static CoefficientsType makeHighPassFilter(const juce::AudioParameterFloat*  freq_param,
+                                               const juce::AudioParameterChoice* slope_param,
+                                               const double                      sample_rate);
 
-    static CoefficientsType
-    makeLowPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate);
+    static CoefficientsType makeLowPassFilter(const juce::AudioParameterFloat*  freq_param,
+                                              const juce::AudioParameterChoice* slope_param,
+                                              const double                      sample_rate);
 
-    static void updateBandEnablements(MonoChain&                                         monoChain,
-                                      juce::AudioParameterBool*                          lcEnabledParam,
-                                      juce::AudioParameterBool*                          hcEnabledParam,
-                                      std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >& peakBands);
+    static void updateBandEnablements(MonoChain&                                               mono_chain,
+                                      const juce::AudioParameterBool*                          lc_enabled_param,
+                                      const juce::AudioParameterBool*                          hc_enabled_param,
+                                      const std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >& peak_bands);
 };

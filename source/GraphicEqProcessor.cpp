@@ -37,15 +37,15 @@ GraphicEqProcessor::GraphicEqProcessor()
     assign_float_param(high_cut_freq_param_, GraphicEq::HIGH_CUT_FREQ.id_);
     assign_choice_param(high_cut_slope_param_, GraphicEq::HIGH_CUT_SLOPE.id_);
 
+    using namespace EqProperties;
+
     for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        assign_float_param(peak_bands_.at(i).peakFreqParam,
-                           EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i));
-        assign_float_param(peak_bands_.at(i).peakGainParam,
-                           EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i));
-        assign_float_param(peak_bands_.at(i).peakQParam,
-                           EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
-        assign_bool_param(peak_bands_.at(i).peakEnabledParam,
-                          EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i));
+        auto& [freq_, gain_, q_, enabled_] = peak_bands_.at(i);
+
+        assign_float_param(freq_, getPeakControlParamName(PeakControl::FREQUENCY, i));
+        assign_float_param(gain_, getPeakControlParamName(PeakControl::GAIN, i));
+        assign_float_param(q_, getPeakControlParamName(PeakControl::QUALITY, i));
+        assign_bool_param(enabled_, getPeakControlParamName(PeakControl::ENABLED, i));
     }
 }
 
@@ -171,20 +171,12 @@ GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
     }
 
     for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        if (peak_bands_.at(i).peakEnabledParam != nullptr && peak_bands_.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(left_chain_,
-                                                static_cast< FilterUtils::ChainPositions >(i + 1),
-                                                peak_bands_.at(i).peakFreqParam,
-                                                peak_bands_.at(i).peakQParam,
-                                                peak_bands_.at(i).peakGainParam,
-                                                sample_rate);
+        const auto& band      = peak_bands_.at(i);
+        const auto& chain_pos = static_cast< FilterUtils::ChainPositions >(i + 1);
 
-            FilterUtils::updatePeakCoefficients(right_chain_,
-                                                static_cast< FilterUtils::ChainPositions >(i + 1),
-                                                peak_bands_.at(i).peakFreqParam,
-                                                peak_bands_.at(i).peakQParam,
-                                                peak_bands_.at(i).peakGainParam,
-                                                sample_rate);
+        if (band.enabled_ != nullptr && band.enabled_->get()) {
+            FilterUtils::updatePeakCoefficients(left_chain_, chain_pos, band, sample_rate);
+            FilterUtils::updatePeakCoefficients(right_chain_, chain_pos, band, sample_rate);
         }
     }
 
@@ -254,20 +246,12 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
     }
 
     for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        if (peak_bands_.at(i).peakEnabledParam != nullptr && peak_bands_.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(left_chain_,
-                                                static_cast< FilterUtils::ChainPositions >(i + 1),
-                                                peak_bands_.at(i).peakFreqParam,
-                                                peak_bands_.at(i).peakQParam,
-                                                peak_bands_.at(i).peakGainParam,
-                                                getSampleRate());
+        const auto& band      = peak_bands_.at(i);
+        const auto& chain_pos = static_cast< FilterUtils::ChainPositions >(i + 1);
 
-            FilterUtils::updatePeakCoefficients(right_chain_,
-                                                static_cast< FilterUtils::ChainPositions >(i + 1),
-                                                peak_bands_.at(i).peakFreqParam,
-                                                peak_bands_.at(i).peakQParam,
-                                                peak_bands_.at(i).peakGainParam,
-                                                getSampleRate());
+        if (band.enabled_ != nullptr && band.enabled_->get()) {
+            FilterUtils::updatePeakCoefficients(left_chain_, chain_pos, band, getSampleRate());
+            FilterUtils::updatePeakCoefficients(right_chain_, chain_pos, band, getSampleRate());
         }
     }
 
