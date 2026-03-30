@@ -5,10 +5,10 @@
 /*---------------------------------------------------------------------------
 **
 */
-CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts,
-                                 const FilterUtils::ChainPositions&  chain_position)
+CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState&  apvts,
+                                 const FilterFactory::ChainPositions& chain_position)
 {
-    const bool  low_cut    = chain_position == FilterUtils::ChainPositions::LowCut;
+    const bool  low_cut    = chain_position == FilterFactory::ChainPositions::LowCut;
     const auto& freq_id    = low_cut ? GraphicEq::LOW_CUT_FREQ.id_ : GraphicEq::HIGH_CUT_FREQ.id_;
     const auto& slope_id   = low_cut ? GraphicEq::LOW_CUT_SLOPE.id_ : GraphicEq::HIGH_CUT_SLOPE.id_;
     const auto& enabled_id = low_cut ? GraphicEq::LOW_CUT_ENABLED.id_ : GraphicEq::HIGH_CUT_ENABLED.id_;

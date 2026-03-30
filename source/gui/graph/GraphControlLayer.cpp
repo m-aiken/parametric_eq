@@ -1,69 +1,31 @@
 #include "EqProperties.h"
 #include "GraphControlLayer.h"
+#include "GraphicEqProcessor.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-GraphControlLayer::GraphControlLayer(juce::AudioProcessorValueTreeState& apvts, const double sample_rate)
-    : apvts_(apvts)
-    , sample_rate_(sample_rate)
+GraphControlLayer::GraphControlLayer(GraphicEqProcessor& processor_ref)
+    : processor_ref_(processor_ref)
     , parameters_changed_(false)
     , active_node_(0)
-    , low_cut_enabled_param_(nullptr)
-    , low_cut_freq_param_(nullptr)
-    , low_cut_slope_param_(nullptr)
-    , high_cut_enabled_param_(nullptr)
-    , high_cut_freq_param_(nullptr)
-    , high_cut_slope_param_(nullptr)
 {
+    auto& apvts = processor_ref_.getApvts();
+
     for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        peak_nodes_.at(i) = std::make_unique< GraphNode >(apvts_, i);
+        peak_nodes_.at(i) = std::make_unique< GraphNode >(apvts, i);
     }
-
-    auto assignBoolParam = [&](auto& target, auto& param_name) {
-        if (auto* param = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(param_name)); param != nullptr) {
-            target = param;
-        }
-    };
-
-    auto assignFloatParam = [&](auto& target, auto& param_name) {
-        if (auto* param = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(param_name)); param != nullptr) {
-            target = param;
-        }
-    };
-
-    auto assignChoiceParam = [&](auto& target, auto& param_name) {
-        if (auto* param = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(param_name)); param != nullptr) {
-            target = param;
-        }
-    };
-
-    assignBoolParam(low_cut_enabled_param_, GraphicEq::LOW_CUT_ENABLED.id_);
-    assignFloatParam(low_cut_freq_param_, GraphicEq::LOW_CUT_FREQ.id_);
-    assignChoiceParam(low_cut_slope_param_, GraphicEq::LOW_CUT_SLOPE.id_);
-
-    assignBoolParam(high_cut_enabled_param_, GraphicEq::HIGH_CUT_ENABLED.id_);
-    assignFloatParam(high_cut_freq_param_, GraphicEq::HIGH_CUT_FREQ.id_);
-    assignChoiceParam(high_cut_slope_param_, GraphicEq::HIGH_CUT_SLOPE.id_);
 
     using namespace EqProperties;
 
     for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        auto& [freq_, gain_, q_, enabled_] = peak_bands_.at(i);
-        const auto band_num                = static_cast< int >(i);
-
-        assignFloatParam(freq_, getPeakControlParamName(PeakControl::FREQUENCY, band_num));
-        assignFloatParam(gain_, getPeakControlParamName(PeakControl::GAIN, band_num));
-        assignFloatParam(q_, getPeakControlParamName(PeakControl::QUALITY, band_num));
-        assignBoolParam(enabled_, getPeakControlParamName(PeakControl::ENABLED, band_num));
-
         addAndMakeVisible(*peak_nodes_.at(i));
 
         node_coordinates_.at(i).setXY(0, 0);
 
-        x_values_.at(i).referTo(apvts_.getParameterAsValue(getPeakControlParamName(PeakControl::FREQUENCY, band_num)));
-        y_values_.at(i).referTo(apvts_.getParameterAsValue(getPeakControlParamName(PeakControl::GAIN, band_num)));
+        x_values_.at(i).referTo(apvts.getParameterAsValue(getPeakControlParamName(PeakControl::FREQUENCY, i)));
+        y_values_.at(i).referTo(apvts.getParameterAsValue(getPeakControlParamName(PeakControl::GAIN, i)));
     }
 
     addListeners();
@@ -155,14 +117,13 @@ GraphControlLayer::paint(juce::Graphics& g)
     g.strokePath(paths_.at(paths_.size() - 1), juce::PathStrokeType(1.f));
 
     // Draw the nodes.
-    for (size_t i = 0; i < peak_nodes_.size(); ++i) {
-        if (peak_bands_.at(i).freq_ == nullptr || peak_nodes_.at(i) == nullptr) {
+    for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        if (peak_nodes_.at(i) == nullptr) {
             continue;
         }
 
-        const auto normalized_frequency = juce::mapFromLog10< float >(peak_bands_.at(i).freq_->get(),
-                                                                      GraphicEq::MIN_HZ,
-                                                                      GraphicEq::MAX_HZ);
+        const auto band_frequency = processor_ref_.getBandFrequency(i);
+        const auto normalized_frequency = juce::mapFromLog10< float >(band_frequency, GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
 
         const auto x_raw = bounds_i_x + static_cast< int >(bounds_f_width * normalized_frequency);
         // Clamp the upper bounds for the x coordinate so that it can't go out of the vector bounds.
@@ -288,38 +249,23 @@ GraphControlLayer::getActiveNodeIndex() const
 void
 GraphControlLayer::updateMonoChain()
 {
-    if (low_cut_enabled_param_ == nullptr || high_cut_enabled_param_ == nullptr) {
-        return;
+    const FilterFactory& filter_factory = processor_ref_.getFilterFactory();
+
+    filter_factory.updateBandEnablements(mono_chain_);
+
+    if (processor_ref_.getLowCutEnabled()) {
+        filter_factory.updateCutCoefficients(mono_chain_, FilterFactory::ChainPositions::LowCut);
     }
 
-    FilterUtils::updateBandEnablements(mono_chain_, low_cut_enabled_param_, high_cut_enabled_param_, peak_bands_);
-
-    if (low_cut_enabled_param_->get()) {
-        const auto coefficients = FilterUtils::makeHighPassFilter(low_cut_freq_param_, low_cut_slope_param_, sample_rate_);
-
-        FilterUtils::updateCutCoefficients(mono_chain_,
-                                           FilterUtils::ChainPositions::LowCut,
-                                           coefficients,
-                                           low_cut_slope_param_);
+    if (processor_ref_.getHighCutEnabled()) {
+        filter_factory.updateCutCoefficients(mono_chain_, FilterFactory::ChainPositions::HighCut);
     }
 
-    if (high_cut_enabled_param_->get()) {
-        const auto coefficients = FilterUtils::makeLowPassFilter(high_cut_freq_param_, high_cut_slope_param_, sample_rate_);
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        if (processor_ref_.getBandEnabled(i)) {
+            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
 
-        FilterUtils::updateCutCoefficients(mono_chain_,
-                                           FilterUtils::ChainPositions::HighCut,
-                                           coefficients,
-                                           high_cut_slope_param_);
-    }
-
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        const auto& band = peak_bands_.at(i);
-
-        if (band.enabled_ != nullptr && band.enabled_->get()) {
-            FilterUtils::updatePeakCoefficients(mono_chain_,
-                                                static_cast< FilterUtils::ChainPositions >(i + 1),
-                                                band,
-                                                sample_rate_);
+            filter_factory.updatePeakCoefficients(mono_chain_, chain_pos, i);
         }
     }
 }
@@ -330,19 +276,20 @@ GraphControlLayer::updateMonoChain()
 void
 GraphControlLayer::updateMagnitudes()
 {
-    const int bounds_width = getLocalBounds().getWidth();
+    const int  bounds_width = getLocalBounds().getWidth();
+    const auto sample_rate  = processor_ref_.getSampleRate();
 
     std::array< juce::dsp::IIR::Filter< float >::CoefficientsPtr, GraphicEq::NUM_PEAK_BANDS > peak_coefficients;
 
-    peak_coefficients[0] = mono_chain_.get< FilterUtils::ChainPositions::Peak_0 >().coefficients;
-    peak_coefficients[1] = mono_chain_.get< FilterUtils::ChainPositions::Peak_1 >().coefficients;
-    peak_coefficients[2] = mono_chain_.get< FilterUtils::ChainPositions::Peak_2 >().coefficients;
-    peak_coefficients[3] = mono_chain_.get< FilterUtils::ChainPositions::Peak_3 >().coefficients;
-    peak_coefficients[4] = mono_chain_.get< FilterUtils::ChainPositions::Peak_4 >().coefficients;
-    peak_coefficients[5] = mono_chain_.get< FilterUtils::ChainPositions::Peak_5 >().coefficients;
+    peak_coefficients[0] = mono_chain_.get< FilterFactory::ChainPositions::Peak_0 >().coefficients;
+    peak_coefficients[1] = mono_chain_.get< FilterFactory::ChainPositions::Peak_1 >().coefficients;
+    peak_coefficients[2] = mono_chain_.get< FilterFactory::ChainPositions::Peak_2 >().coefficients;
+    peak_coefficients[3] = mono_chain_.get< FilterFactory::ChainPositions::Peak_3 >().coefficients;
+    peak_coefficients[4] = mono_chain_.get< FilterFactory::ChainPositions::Peak_4 >().coefficients;
+    peak_coefficients[5] = mono_chain_.get< FilterFactory::ChainPositions::Peak_5 >().coefficients;
 
-    auto& low_cut  = mono_chain_.get< FilterUtils::ChainPositions::LowCut >();
-    auto& high_cut = mono_chain_.get< FilterUtils::ChainPositions::HighCut >();
+    auto& low_cut  = mono_chain_.get< FilterFactory::ChainPositions::LowCut >();
+    auto& high_cut = mono_chain_.get< FilterFactory::ChainPositions::HighCut >();
 
     for (auto i = 0; i < bounds_width; ++i) {
         std::array< double, GraphicEq::NUM_PEAK_BANDS > peak_mags { 0.0 };
@@ -358,54 +305,53 @@ GraphControlLayer::updateMagnitudes()
                                                GraphicEq::MAX_HZ);
 
         for (size_t peak_band = 0; peak_band < GraphicEq::NUM_PEAK_BANDS; ++peak_band) {
-            if (peak_bands_.at(peak_band).enabled_ != nullptr && peak_coefficients.at(peak_band) != nullptr
-                && peak_bands_.at(peak_band).enabled_->get()) {
-                peak_mags.at(peak_band) *= peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate_);
-                mag_all *= peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate_);
+            if (processor_ref_.getBandEnabled(peak_band) && peak_coefficients.at(peak_band) != nullptr) {
+                peak_mags.at(peak_band) *= peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate);
+                mag_all *= peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate);
             }
         }
 
-        if (low_cut_enabled_param_ != nullptr && low_cut_enabled_param_->get()) {
+        if (processor_ref_.getLowCutEnabled()) {
             if (!low_cut.isBypassed< 0 >() && low_cut.get< 0 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = low_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_lc *= mag;
                 mag_all *= mag;
             }
             if (!low_cut.isBypassed< 1 >() && low_cut.get< 1 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = low_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_lc *= mag;
                 mag_all *= mag;
             }
             if (!low_cut.isBypassed< 2 >() && low_cut.get< 2 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = low_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_lc *= mag;
                 mag_all *= mag;
             }
             if (!low_cut.isBypassed< 3 >() && low_cut.get< 3 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = low_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_lc *= mag;
                 mag_all *= mag;
             }
         }
 
-        if (high_cut_enabled_param_ != nullptr && high_cut_enabled_param_->get()) {
+        if (processor_ref_.getHighCutEnabled()) {
             if (!high_cut.isBypassed< 0 >() && high_cut.get< 0 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = high_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_hc *= mag;
                 mag_all *= mag;
             }
             if (!high_cut.isBypassed< 1 >() && high_cut.get< 1 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = high_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_hc *= mag;
                 mag_all *= mag;
             }
             if (!high_cut.isBypassed< 2 >() && high_cut.get< 2 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = high_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_hc *= mag;
                 mag_all *= mag;
             }
             if (!high_cut.isBypassed< 3 >() && high_cut.get< 3 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate_);
+                const auto mag = high_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
                 mag_hc *= mag;
                 mag_all *= mag;
             }
@@ -427,28 +373,28 @@ GraphControlLayer::updateMagnitudes()
 void
 GraphControlLayer::addListeners()
 {
+    using namespace GraphicEq;
+    using namespace EqProperties;
+
     if (!allControlPtrsValid()) {
         return;
     }
 
-    using namespace GraphicEq;
-    using namespace EqProperties;
+    auto& apvts = processor_ref_.getApvts();
 
-    apvts_.getParameter(LOW_CUT_FREQ.id_)->addListener(this);
-    apvts_.getParameter(LOW_CUT_SLOPE.id_)->addListener(this);
-    apvts_.getParameter(LOW_CUT_ENABLED.id_)->addListener(this);
+    apvts.getParameter(LOW_CUT_FREQ.id_)->addListener(this);
+    apvts.getParameter(LOW_CUT_SLOPE.id_)->addListener(this);
+    apvts.getParameter(LOW_CUT_ENABLED.id_)->addListener(this);
 
-    apvts_.getParameter(HIGH_CUT_FREQ.id_)->addListener(this);
-    apvts_.getParameter(HIGH_CUT_SLOPE.id_)->addListener(this);
-    apvts_.getParameter(HIGH_CUT_ENABLED.id_)->addListener(this);
+    apvts.getParameter(HIGH_CUT_FREQ.id_)->addListener(this);
+    apvts.getParameter(HIGH_CUT_SLOPE.id_)->addListener(this);
+    apvts.getParameter(HIGH_CUT_ENABLED.id_)->addListener(this);
 
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        const auto band_num = static_cast< int >(i);
-
-        apvts_.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, band_num))->addListener(this);
-        apvts_.getParameter(getPeakControlParamName(PeakControl::GAIN, band_num))->addListener(this);
-        apvts_.getParameter(getPeakControlParamName(PeakControl::QUALITY, band_num))->addListener(this);
-        apvts_.getParameter(getPeakControlParamName(PeakControl::ENABLED, band_num))->addListener(this);
+    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->addListener(this);
+        apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->addListener(this);
+        apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->addListener(this);
+        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->addListener(this);
     }
 }
 
@@ -458,28 +404,28 @@ GraphControlLayer::addListeners()
 void
 GraphControlLayer::removeListeners()
 {
+    using namespace GraphicEq;
+    using namespace EqProperties;
+
     if (!allControlPtrsValid()) {
         return;
     }
 
-    using namespace GraphicEq;
-    using namespace EqProperties;
+    auto& apvts = processor_ref_.getApvts();
 
-    apvts_.getParameter(LOW_CUT_FREQ.id_)->removeListener(this);
-    apvts_.getParameter(LOW_CUT_SLOPE.id_)->removeListener(this);
-    apvts_.getParameter(LOW_CUT_ENABLED.id_)->removeListener(this);
+    apvts.getParameter(LOW_CUT_FREQ.id_)->removeListener(this);
+    apvts.getParameter(LOW_CUT_SLOPE.id_)->removeListener(this);
+    apvts.getParameter(LOW_CUT_ENABLED.id_)->removeListener(this);
 
-    apvts_.getParameter(HIGH_CUT_FREQ.id_)->removeListener(this);
-    apvts_.getParameter(HIGH_CUT_SLOPE.id_)->removeListener(this);
-    apvts_.getParameter(HIGH_CUT_ENABLED.id_)->removeListener(this);
+    apvts.getParameter(HIGH_CUT_FREQ.id_)->removeListener(this);
+    apvts.getParameter(HIGH_CUT_SLOPE.id_)->removeListener(this);
+    apvts.getParameter(HIGH_CUT_ENABLED.id_)->removeListener(this);
 
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        const auto band_num = static_cast< int >(i);
-
-        apvts_.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, band_num))->removeListener(this);
-        apvts_.getParameter(getPeakControlParamName(PeakControl::GAIN, band_num))->removeListener(this);
-        apvts_.getParameter(getPeakControlParamName(PeakControl::QUALITY, band_num))->removeListener(this);
-        apvts_.getParameter(getPeakControlParamName(PeakControl::ENABLED, band_num))->removeListener(this);
+    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->removeListener(this);
+        apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->removeListener(this);
+        apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->removeListener(this);
+        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->removeListener(this);
     }
 }
 
@@ -492,23 +438,22 @@ GraphControlLayer::allControlPtrsValid() const
     using namespace GraphicEq;
     using namespace EqProperties;
 
-    bool ok = true;
+    const auto& apvts = processor_ref_.getApvts();
+    bool        ok    = true;
 
-    ok &= apvts_.getParameter(LOW_CUT_FREQ.id_) != nullptr;
-    ok &= apvts_.getParameter(LOW_CUT_SLOPE.id_) != nullptr;
-    ok &= apvts_.getParameter(LOW_CUT_ENABLED.id_) != nullptr;
+    ok &= apvts.getParameter(LOW_CUT_FREQ.id_) != nullptr;
+    ok &= apvts.getParameter(LOW_CUT_SLOPE.id_) != nullptr;
+    ok &= apvts.getParameter(LOW_CUT_ENABLED.id_) != nullptr;
 
-    ok &= apvts_.getParameter(HIGH_CUT_FREQ.id_) != nullptr;
-    ok &= apvts_.getParameter(HIGH_CUT_SLOPE.id_) != nullptr;
-    ok &= apvts_.getParameter(HIGH_CUT_ENABLED.id_) != nullptr;
+    ok &= apvts.getParameter(HIGH_CUT_FREQ.id_) != nullptr;
+    ok &= apvts.getParameter(HIGH_CUT_SLOPE.id_) != nullptr;
+    ok &= apvts.getParameter(HIGH_CUT_ENABLED.id_) != nullptr;
 
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        const auto band_num = static_cast< int >(i);
-
-        ok &= apvts_.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, band_num)) != nullptr;
-        ok &= apvts_.getParameter(getPeakControlParamName(PeakControl::GAIN, band_num)) != nullptr;
-        ok &= apvts_.getParameter(getPeakControlParamName(PeakControl::QUALITY, band_num)) != nullptr;
-        ok &= apvts_.getParameter(getPeakControlParamName(PeakControl::ENABLED, band_num)) != nullptr;
+    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i)) != nullptr;
+        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i)) != nullptr;
+        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i)) != nullptr;
+        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i)) != nullptr;
     }
 
     return ok;

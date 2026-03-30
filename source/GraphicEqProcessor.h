@@ -2,10 +2,9 @@
 
 #include <JuceHeader.h>
 
-#include "FilterUtils.h"
+#include "FilterFactory.h"
 #include "GraphicEqGlobals.h"
 #include "MonoBufferFifo.h"
-#include "PeakBand.h"
 
 class GraphicEqProcessor final : public juce::AudioProcessor
 {
@@ -39,33 +38,34 @@ public:
     void                        setStateInformation(const void* data, int size_in_bytes) override;
 
     juce::AudioProcessorValueTreeState& getApvts();
+    FilterFactory&                      getFilterFactory();
 
     MonoBufferFifo preEqMonoFifoL { GraphicEq::Channel::Left };
     MonoBufferFifo preEqMonoFifoR { GraphicEq::Channel::Right };
     MonoBufferFifo postEqMonoFifoL { GraphicEq::Channel::Left };
     MonoBufferFifo postEqMonoFifoR { GraphicEq::Channel::Right };
 
+    bool  getLowCutEnabled() const;
+    float getLowCutFrequency() const;
+    int   getLowCutOrder() const;
+
+    bool  getHighCutEnabled() const;
+    float getHighCutFrequency() const;
+    int   getHighCutOrder() const;
+
+    bool  getBandEnabled(const int band_index) const;
+    float getBandFrequency(const int band_index) const;
+    float getBandGain(const int band_index) const;
+    float getBandQ(const int band_index) const;
+
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    void updateCutFilter(const FilterUtils::ChainPositions& chain_position,
-                         juce::AudioParameterFloat*         freq_param,
-                         juce::AudioParameterChoice*        slope_param,
-                         double                             sample_rate);
-
     juce::AudioProcessorValueTreeState apvts_;
+    FilterFactory                      filter_factory_;
 
-    FilterUtils::MonoChain left_chain_;
-    FilterUtils::MonoChain right_chain_;
-
-    juce::AudioParameterBool*   low_cut_enabled_param_ { nullptr };
-    juce::AudioParameterFloat*  low_cut_freq_param_ { nullptr };
-    juce::AudioParameterChoice* low_cut_slope_param_ { nullptr };
-    juce::AudioParameterBool*   high_cut_enabled_param_ { nullptr };
-    juce::AudioParameterFloat*  high_cut_freq_param_ { nullptr };
-    juce::AudioParameterChoice* high_cut_slope_param_ { nullptr };
-
-    std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS > peak_bands_;
+    FilterFactory::MonoChain left_chain_;
+    FilterFactory::MonoChain right_chain_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };

@@ -7,12 +7,7 @@
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
-    , graph_(processor_ref_.getApvts(),
-             processor_ref_.getSampleRate(),
-             processor_ref_.preEqMonoFifoL,
-             processor_ref_.preEqMonoFifoR,
-             processor_ref_.postEqMonoFifoL,
-             processor_ref_.postEqMonoFifoR)
+    , graph_(p)
     , eq_controls_(processor_ref_.getApvts())
     , active_node_(graph_.getActiveNodeIndex())
 {

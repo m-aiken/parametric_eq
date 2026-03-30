@@ -2,10 +2,9 @@
 
 #include <JuceHeader.h>
 
-#include "FilterUtils.h"
+#include "FilterFactory.h"
 #include "GraphNode.h"
 #include "GraphicEqGlobals.h"
-#include "PeakBand.h"
 
 class GraphControlLayer final
     : public juce::Component
@@ -13,7 +12,7 @@ class GraphControlLayer final
     , public juce::Timer
 {
 public:
-    GraphControlLayer(juce::AudioProcessorValueTreeState& apvts, const double sample_rate);
+    explicit GraphControlLayer(GraphicEqProcessor& processor_ref);
     ~GraphControlLayer() override;
 
     void paint(juce::Graphics& g) override;
@@ -48,14 +47,12 @@ private:
     static constexpr int NODE_DIAMETER = 6;
     static constexpr int NODE_RADIUS   = 3;
 
-    juce::AudioProcessorValueTreeState& apvts_;
-    double                              sample_rate_;
-    juce::Atomic< bool >                parameters_changed_;
-    size_t                              active_node_;
+    GraphicEqProcessor&  processor_ref_;
+    juce::Atomic< bool > parameters_changed_;
+    size_t               active_node_;
 
-    FilterUtils::MonoChain mono_chain_;
+    FilterFactory::MonoChain mono_chain_;
 
-    std::array< PeakBand, GraphicEq::NUM_PEAK_BANDS >                     peak_bands_;
     std::array< std::unique_ptr< GraphNode >, GraphicEq::NUM_PEAK_BANDS > peak_nodes_;
     std::array< juce::Point< int >, GraphicEq::NUM_PEAK_BANDS >           node_coordinates_;
     std::array< juce::Value, GraphicEq::NUM_PEAK_BANDS >                  x_values_;
@@ -76,13 +73,6 @@ private:
 
     std::array< juce::Path, NUM_PATHS >            paths_;
     std::array< std::vector< double >, NUM_PATHS > magnitudes_;
-
-    juce::AudioParameterBool*   low_cut_enabled_param_;
-    juce::AudioParameterFloat*  low_cut_freq_param_;
-    juce::AudioParameterChoice* low_cut_slope_param_;
-    juce::AudioParameterBool*   high_cut_enabled_param_;
-    juce::AudioParameterFloat*  high_cut_freq_param_;
-    juce::AudioParameterChoice* high_cut_slope_param_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphControlLayer)
 };

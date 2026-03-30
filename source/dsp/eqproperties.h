@@ -25,11 +25,11 @@ static std::map< PeakControl, juce::String > peakControlMap = { { PeakControl::F
 /*---------------------------------------------------------------------------
 **
 */
-inline const juce::String
-getPeakControlParamName(PeakControl peakControl, const int bandNum)
+inline juce::String
+getPeakControlParamName(const PeakControl& peak_control, const int band_index)
 {
     juce::String str;
-    str << "P" << bandNum << " " << peakControlMap.at(peakControl);
+    str << "P" << band_index << " " << peakControlMap.at(peak_control);
     return str;
 }
 

@@ -10,43 +10,8 @@ GraphicEqProcessor::GraphicEqProcessor()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true))
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
+    , filter_factory_(this)
 {
-    auto assign_bool_param = [&](auto& target, auto& param_name) {
-        if (auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(param_name)); p != nullptr) {
-            target = p;
-        }
-    };
-
-    auto assign_float_param = [&](auto& target, auto& param_name) {
-        if (auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(param_name)); p != nullptr) {
-            target = p;
-        }
-    };
-
-    auto assign_choice_param = [&](auto& target, auto& param_name) {
-        if (auto* p = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(param_name)); p != nullptr) {
-            target = p;
-        }
-    };
-
-    assign_bool_param(low_cut_enabled_param_, GraphicEq::LOW_CUT_ENABLED.id_);
-    assign_float_param(low_cut_freq_param_, GraphicEq::LOW_CUT_FREQ.id_);
-    assign_choice_param(low_cut_slope_param_, GraphicEq::LOW_CUT_SLOPE.id_);
-
-    assign_bool_param(high_cut_enabled_param_, GraphicEq::HIGH_CUT_ENABLED.id_);
-    assign_float_param(high_cut_freq_param_, GraphicEq::HIGH_CUT_FREQ.id_);
-    assign_choice_param(high_cut_slope_param_, GraphicEq::HIGH_CUT_SLOPE.id_);
-
-    using namespace EqProperties;
-
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        auto& [freq_, gain_, q_, enabled_] = peak_bands_.at(i);
-
-        assign_float_param(freq_, getPeakControlParamName(PeakControl::FREQUENCY, i));
-        assign_float_param(gain_, getPeakControlParamName(PeakControl::GAIN, i));
-        assign_float_param(q_, getPeakControlParamName(PeakControl::QUALITY, i));
-        assign_bool_param(enabled_, getPeakControlParamName(PeakControl::ENABLED, i));
-    }
 }
 
 /*---------------------------------------------------------------------------
@@ -159,24 +124,25 @@ GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
     left_chain_.prepare(spec);
     right_chain_.prepare(spec);
 
-    FilterUtils::updateBandEnablements(left_chain_, low_cut_enabled_param_, high_cut_enabled_param_, peak_bands_);
-    FilterUtils::updateBandEnablements(right_chain_, low_cut_enabled_param_, high_cut_enabled_param_, peak_bands_);
+    filter_factory_.updateBandEnablements(left_chain_);
+    filter_factory_.updateBandEnablements(right_chain_);
 
-    if (low_cut_enabled_param_ != nullptr && low_cut_enabled_param_->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::LowCut, low_cut_freq_param_, low_cut_slope_param_, sample_rate);
+    if (getLowCutEnabled()) {
+        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::LowCut);
+        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::LowCut);
     }
 
-    if (high_cut_enabled_param_ != nullptr && high_cut_enabled_param_->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::HighCut, high_cut_freq_param_, high_cut_slope_param_, sample_rate);
+    if (getHighCutEnabled()) {
+        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::HighCut);
+        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::HighCut);
     }
 
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        const auto& band      = peak_bands_.at(i);
-        const auto& chain_pos = static_cast< FilterUtils::ChainPositions >(i + 1);
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        if (getBandEnabled(i)) {
+            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
 
-        if (band.enabled_ != nullptr && band.enabled_->get()) {
-            FilterUtils::updatePeakCoefficients(left_chain_, chain_pos, band, sample_rate);
-            FilterUtils::updatePeakCoefficients(right_chain_, chain_pos, band, sample_rate);
+            filter_factory_.updatePeakCoefficients(left_chain_, chain_pos, i);
+            filter_factory_.updatePeakCoefficients(right_chain_, chain_pos, i);
         }
     }
 
@@ -234,24 +200,27 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
     preEqMonoFifoR.update(buffer);
 
     // Start EQ processing
-    FilterUtils::updateBandEnablements(left_chain_, low_cut_enabled_param_, high_cut_enabled_param_, peak_bands_);
-    FilterUtils::updateBandEnablements(right_chain_, low_cut_enabled_param_, high_cut_enabled_param_, peak_bands_);
+    filter_factory_.updateBandEnablements(left_chain_);
+    filter_factory_.updateBandEnablements(right_chain_);
 
-    if (low_cut_enabled_param_ != nullptr && low_cut_enabled_param_->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::LowCut, low_cut_freq_param_, low_cut_slope_param_, getSampleRate());
+    const auto sample_rate = getSampleRate();
+
+    if (getLowCutEnabled()) {
+        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::LowCut);
+        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::LowCut);
     }
 
-    if (high_cut_enabled_param_ != nullptr && high_cut_enabled_param_->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::HighCut, high_cut_freq_param_, high_cut_slope_param_, getSampleRate());
+    if (getHighCutEnabled()) {
+        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::HighCut);
+        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::HighCut);
     }
 
-    for (size_t i = 0; i < peak_bands_.size(); ++i) {
-        const auto& band      = peak_bands_.at(i);
-        const auto& chain_pos = static_cast< FilterUtils::ChainPositions >(i + 1);
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        if (getBandEnabled(i)) {
+            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
 
-        if (band.enabled_ != nullptr && band.enabled_->get()) {
-            FilterUtils::updatePeakCoefficients(left_chain_, chain_pos, band, getSampleRate());
-            FilterUtils::updatePeakCoefficients(right_chain_, chain_pos, band, getSampleRate());
+            filter_factory_.updatePeakCoefficients(left_chain_, chain_pos, i);
+            filter_factory_.updatePeakCoefficients(right_chain_, chain_pos, i);
         }
     }
 
@@ -321,6 +290,137 @@ GraphicEqProcessor::getApvts()
 /*---------------------------------------------------------------------------
 **
 */
+FilterFactory&
+GraphicEqProcessor::getFilterFactory()
+{
+    return filter_factory_;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+bool
+GraphicEqProcessor::getLowCutEnabled() const
+{
+    const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(GraphicEq::LOW_CUT_ENABLED.id_));
+
+    return (p != nullptr) && p->get();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+float
+GraphicEqProcessor::getLowCutFrequency() const
+{
+    const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(GraphicEq::LOW_CUT_FREQ.id_));
+
+    return (p != nullptr) ? p->get() : 0.f;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+int
+GraphicEqProcessor::getLowCutOrder() const
+{
+    const auto* p = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(GraphicEq::LOW_CUT_SLOPE.id_));
+
+    return (p != nullptr) ? (p->getIndex() + 1) * 2 : 2;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+bool
+GraphicEqProcessor::getHighCutEnabled() const
+{
+    const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_));
+
+    return (p != nullptr) && p->get();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+float
+GraphicEqProcessor::getHighCutFrequency() const
+{
+    const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(GraphicEq::HIGH_CUT_FREQ.id_));
+
+    return (p != nullptr) ? p->get() : 0.f;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+int
+GraphicEqProcessor::getHighCutOrder() const
+{
+    const auto* p = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_));
+
+    return (p != nullptr) ? (p->getIndex() + 1) * 2 : 2;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+bool
+GraphicEqProcessor::getBandEnabled(const int band_index) const
+{
+    using namespace EqProperties;
+
+    const auto& parameter_name = getPeakControlParamName(PeakControl::ENABLED, band_index);
+    const auto* p              = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(parameter_name));
+
+    return (p != nullptr) && p->get();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+float
+GraphicEqProcessor::getBandFrequency(const int band_index) const
+{
+    using namespace EqProperties;
+
+    const auto& parameter_name = getPeakControlParamName(PeakControl::FREQUENCY, band_index);
+    const auto* p              = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_name));
+
+    return (p != nullptr) ? p->get() : 0.f;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+float
+GraphicEqProcessor::getBandGain(const int band_index) const
+{
+    using namespace EqProperties;
+
+    const auto& parameter_name = getPeakControlParamName(PeakControl::GAIN, band_index);
+    const auto* p              = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_name));
+
+    return (p != nullptr) ? juce::Decibels::decibelsToGain(p->get()) : 0.f;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+float
+GraphicEqProcessor::getBandQ(const int band_index) const
+{
+    using namespace EqProperties;
+
+    const auto& parameter_name = getPeakControlParamName(PeakControl::QUALITY, band_index);
+    const auto* p              = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_name));
+
+    return (p != nullptr) ? p->get() : 0.f;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
 juce::AudioProcessorValueTreeState::ParameterLayout
 GraphicEqProcessor::createParameterLayout()
 {
@@ -330,32 +430,6 @@ GraphicEqProcessor::createParameterLayout()
     EqProperties::addPeakParams(layout);
 
     return layout;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphicEqProcessor::updateCutFilter(const FilterUtils::ChainPositions& chain_position,
-                                    juce::AudioParameterFloat*         freq_param,
-                                    juce::AudioParameterChoice*        slope_param,
-                                    double                             sample_rate)
-{
-    if (freq_param == nullptr || slope_param == nullptr) {
-        return;
-    }
-
-    FilterUtils::CoefficientsType coefficients;
-
-    if (chain_position == FilterUtils::ChainPositions::LowCut) {
-        coefficients = FilterUtils::makeHighPassFilter(freq_param, slope_param, sample_rate);
-    }
-    else {
-        coefficients = FilterUtils::makeLowPassFilter(freq_param, slope_param, sample_rate);
-    }
-
-    FilterUtils::updateCutCoefficients(left_chain_, chain_position, coefficients, slope_param);
-    FilterUtils::updateCutCoefficients(right_chain_, chain_position, coefficients, slope_param);
 }
 
 /*---------------------------------------------------------------------------

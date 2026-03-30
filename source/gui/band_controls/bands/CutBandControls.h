@@ -3,13 +3,13 @@
 #include <JuceHeader.h>
 
 #include "EqBandBase.h"
-#include "FilterUtils.h"
+#include "FilterFactory.h"
 #include "TextToggleButton.h"
 
 class CutBandControls final : public EqBandBase
 {
 public:
-    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const FilterUtils::ChainPositions& chain_position);
+    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const FilterFactory::ChainPositions& chain_position);
 
     void resized() override;
 

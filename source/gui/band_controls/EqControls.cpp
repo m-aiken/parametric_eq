@@ -1,12 +1,13 @@
 #include "EqControls.h"
+#include "FilterFactory.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
 EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
-    : low_cut_control_(apvts, FilterUtils::ChainPositions::LowCut)
-    , high_cut_control_(apvts, FilterUtils::ChainPositions::HighCut)
+    : low_cut_control_(apvts, FilterFactory::ChainPositions::LowCut)
+    , high_cut_control_(apvts, FilterFactory::ChainPositions::HighCut)
 {
     addAndMakeVisible(low_cut_control_);
     addAndMakeVisible(high_cut_control_);

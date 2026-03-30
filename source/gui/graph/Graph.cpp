@@ -1,18 +1,20 @@
 #include "Graph.h"
+#include "GraphicEqProcessor.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-Graph::Graph(juce::AudioProcessorValueTreeState& apvts,
-             const double                        sample_rate,
-             MonoBufferFifo&                     pre_eq_buffer_l,
-             MonoBufferFifo&                     pre_eq_buffer_r,
-             MonoBufferFifo&                     post_eq_buffer_l,
-             MonoBufferFifo&                     post_eq_buffer_r)
-    : waveform_pre_eq_(sample_rate, pre_eq_buffer_l, pre_eq_buffer_r, Theme::ANALYSER_PRE_EQ)
-    , waveform_post_eq_(sample_rate, post_eq_buffer_l, post_eq_buffer_r, Theme::ANALYSER_POST_EQ)
-    , control_layer_(apvts, sample_rate)
+Graph::Graph(GraphicEqProcessor& processor_ref)
+    : waveform_pre_eq_(processor_ref.getSampleRate(),
+                       processor_ref.preEqMonoFifoL,
+                       processor_ref.preEqMonoFifoR,
+                       Theme::ANALYSER_PRE_EQ)
+    , waveform_post_eq_(processor_ref.getSampleRate(),
+                        processor_ref.postEqMonoFifoL,
+                        processor_ref.postEqMonoFifoR,
+                        Theme::ANALYSER_POST_EQ)
+    , control_layer_(processor_ref)
 {
     addAndMakeVisible(background_);
     addAndMakeVisible(waveform_pre_eq_);

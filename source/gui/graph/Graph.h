@@ -5,17 +5,11 @@
 #include "GraphBackground.h"
 #include "GraphControlLayer.h"
 #include "GraphWaveform.h"
-#include "MonoBufferFifo.h"
 
 class Graph final : public juce::Component
 {
 public:
-    Graph(juce::AudioProcessorValueTreeState& apvts,
-          const double                        sample_rate,
-          MonoBufferFifo&                     pre_eq_buffer_l,
-          MonoBufferFifo&                     pre_eq_buffer_r,
-          MonoBufferFifo&                     post_eq_buffer_l,
-          MonoBufferFifo&                     post_eq_buffer_r);
+    explicit Graph(GraphicEqProcessor& processor_ref);
 
     void resized() override;
 
