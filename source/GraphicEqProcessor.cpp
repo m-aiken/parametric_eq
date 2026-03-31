@@ -12,6 +12,8 @@ GraphicEqProcessor::GraphicEqProcessor()
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
     , filter_factory_(this)
 {
+    filter_chains_.resize(getTotalNumInputChannels());
+
     using namespace GraphicEq;
     using namespace EqProperties;
 
@@ -162,8 +164,9 @@ GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
         .numChannels      = static_cast< uint32 >(getTotalNumOutputChannels()),
     };
 
-    left_chain_.prepare(spec);
-    right_chain_.prepare(spec);
+    for (auto& chain : filter_chains_) {
+        chain.prepare(spec);
+    }
 
     updateFilterChain();
 
@@ -221,14 +224,14 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
     preEqMonoFifoR.update(buffer);
 
     // Process the EQ.
-    const auto block     = juce::dsp::AudioBlock< float >(buffer);
-    auto       block_l   = block.getSingleChannelBlock(GraphicEq::Channel::Left);
-    auto       block_r   = block.getSingleChannelBlock(GraphicEq::Channel::Right);
-    const auto context_l = juce::dsp::ProcessContextReplacing< float >(block_l);
-    const auto context_r = juce::dsp::ProcessContextReplacing< float >(block_r);
+    const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
 
-    left_chain_.process(context_l);
-    right_chain_.process(context_r);
+    for (int i = 0; i < getTotalNumInputChannels(); ++i) {
+        auto       single_channel_block   = audio_block.getSingleChannelBlock(i);
+        const auto single_channel_context = juce::dsp::ProcessContextReplacing< float >(single_channel_block);
+
+        filter_chains_.at(i).process(single_channel_context);
+    }
 
     // Populate the post-eq fifo with the buffer in its wet state.
     postEqMonoFifoL.update(buffer);
@@ -444,27 +447,23 @@ GraphicEqProcessor::getBandQ(const int band_index) const
 void
 GraphicEqProcessor::updateFilterChain()
 {
-    // Update the enabled/disabled state of each filter in the chain.
-    filter_factory_.updateBandEnablements(left_chain_);
-    filter_factory_.updateBandEnablements(right_chain_);
+    for (auto& chain : filter_chains_) {
+        // Update the enabled/disabled state of each filter in the chain.
+        filter_factory_.updateBandEnablements(chain);
 
-    // Update the coefficients.
-    if (getLowCutEnabled()) {
-        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::LowCut);
-        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::LowCut);
-    }
+        // Update the coefficients.
+        if (getLowCutEnabled()) {
+            filter_factory_.updateCutCoefficients(chain, FilterFactory::ChainPositions::LowCut);
+        }
 
-    if (getHighCutEnabled()) {
-        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::HighCut);
-        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::HighCut);
-    }
+        if (getHighCutEnabled()) {
+            filter_factory_.updateCutCoefficients(chain, FilterFactory::ChainPositions::HighCut);
+        }
 
-    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        if (getBandEnabled(i)) {
-            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
-
-            filter_factory_.updatePeakCoefficients(left_chain_, chain_pos, i);
-            filter_factory_.updatePeakCoefficients(right_chain_, chain_pos, i);
+        for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+            if (getBandEnabled(i)) {
+                filter_factory_.updatePeakCoefficients(chain, static_cast< FilterFactory::ChainPositions >(i + 1), i);
+            }
         }
     }
 }

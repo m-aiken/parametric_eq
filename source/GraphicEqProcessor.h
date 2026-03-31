@@ -71,8 +71,8 @@ private:
     juce::AudioProcessorValueTreeState apvts_;
     FilterFactory                      filter_factory_;
 
-    FilterFactory::FilterChain left_chain_;
-    FilterFactory::FilterChain right_chain_;
+    // vector of filter chains; one per channel.
+    std::vector< FilterFactory::FilterChain > filter_chains_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };
