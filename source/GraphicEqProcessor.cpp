@@ -12,6 +12,47 @@ GraphicEqProcessor::GraphicEqProcessor()
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
     , filter_factory_(this)
 {
+    using namespace GraphicEq;
+    using namespace EqProperties;
+
+    apvts_.getParameter(LOW_CUT_ENABLED.id_)->addListener(this);
+    apvts_.getParameter(LOW_CUT_FREQ.id_)->addListener(this);
+    apvts_.getParameter(LOW_CUT_SLOPE.id_)->addListener(this);
+
+    apvts_.getParameter(HIGH_CUT_ENABLED.id_)->addListener(this);
+    apvts_.getParameter(HIGH_CUT_FREQ.id_)->addListener(this);
+    apvts_.getParameter(HIGH_CUT_SLOPE.id_)->addListener(this);
+
+    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        apvts_.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->addListener(this);
+        apvts_.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->addListener(this);
+        apvts_.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->addListener(this);
+        apvts_.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->addListener(this);
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+GraphicEqProcessor::~GraphicEqProcessor()
+{
+    using namespace GraphicEq;
+    using namespace EqProperties;
+
+    apvts_.getParameter(LOW_CUT_ENABLED.id_)->removeListener(this);
+    apvts_.getParameter(LOW_CUT_FREQ.id_)->removeListener(this);
+    apvts_.getParameter(LOW_CUT_SLOPE.id_)->removeListener(this);
+
+    apvts_.getParameter(HIGH_CUT_ENABLED.id_)->removeListener(this);
+    apvts_.getParameter(HIGH_CUT_FREQ.id_)->removeListener(this);
+    apvts_.getParameter(HIGH_CUT_SLOPE.id_)->removeListener(this);
+
+    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        apvts_.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->removeListener(this);
+        apvts_.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->removeListener(this);
+        apvts_.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->removeListener(this);
+        apvts_.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->removeListener(this);
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -124,27 +165,7 @@ GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
     left_chain_.prepare(spec);
     right_chain_.prepare(spec);
 
-    filter_factory_.updateBandEnablements(left_chain_);
-    filter_factory_.updateBandEnablements(right_chain_);
-
-    if (getLowCutEnabled()) {
-        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::LowCut);
-        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::LowCut);
-    }
-
-    if (getHighCutEnabled()) {
-        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::HighCut);
-        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::HighCut);
-    }
-
-    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        if (getBandEnabled(i)) {
-            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
-
-            filter_factory_.updatePeakCoefficients(left_chain_, chain_pos, i);
-            filter_factory_.updatePeakCoefficients(right_chain_, chain_pos, i);
-        }
-    }
+    updateFilterChain();
 
     preEqMonoFifoL.prepare(samples_per_block);
     preEqMonoFifoR.prepare(samples_per_block);
@@ -195,44 +216,21 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
         buffer.clear(i, 0, buffer.getNumSamples());
     }
 
-    // Populate the pre-eq fifo with the buffer in its dry state
+    // Populate the pre-eq fifo with the buffer in its dry state.
     preEqMonoFifoL.update(buffer);
     preEqMonoFifoR.update(buffer);
 
-    // Start EQ processing
-    filter_factory_.updateBandEnablements(left_chain_);
-    filter_factory_.updateBandEnablements(right_chain_);
+    // Process the EQ.
+    const auto block     = juce::dsp::AudioBlock< float >(buffer);
+    auto       block_l   = block.getSingleChannelBlock(GraphicEq::Channel::Left);
+    auto       block_r   = block.getSingleChannelBlock(GraphicEq::Channel::Right);
+    const auto context_l = juce::dsp::ProcessContextReplacing< float >(block_l);
+    const auto context_r = juce::dsp::ProcessContextReplacing< float >(block_r);
 
-    const auto sample_rate = getSampleRate();
+    left_chain_.process(context_l);
+    right_chain_.process(context_r);
 
-    if (getLowCutEnabled()) {
-        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::LowCut);
-        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::LowCut);
-    }
-
-    if (getHighCutEnabled()) {
-        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::HighCut);
-        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::HighCut);
-    }
-
-    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        if (getBandEnabled(i)) {
-            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
-
-            filter_factory_.updatePeakCoefficients(left_chain_, chain_pos, i);
-            filter_factory_.updatePeakCoefficients(right_chain_, chain_pos, i);
-        }
-    }
-
-    const auto block       = juce::dsp::AudioBlock< float >(buffer);
-    auto       left_block  = block.getSingleChannelBlock(GraphicEq::Channel::Left);
-    auto       right_block = block.getSingleChannelBlock(GraphicEq::Channel::Right);
-    const auto left_ctx    = juce::dsp::ProcessContextReplacing< float >(left_block);
-    const auto right_ctx   = juce::dsp::ProcessContextReplacing< float >(right_block);
-
-    left_chain_.process(left_ctx);
-    right_chain_.process(right_ctx);
-
+    // Populate the post-eq fifo with the buffer in its wet state.
     postEqMonoFifoL.update(buffer);
     postEqMonoFifoR.update(buffer);
 }
@@ -276,6 +274,28 @@ GraphicEqProcessor::setStateInformation(const void* data, int size_in_bytes)
     if (tree.isValid()) {
         apvts_.replaceState(tree);
     }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqProcessor::parameterValueChanged(int parameter_index, float new_value)
+{
+    juce::ignoreUnused(parameter_index, new_value);
+
+    updateFilterChain();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqProcessor::parameterGestureChanged(int parameter_index, bool gesture_is_starting)
+{
+    juce::ignoreUnused(parameter_index, gesture_is_starting);
+
+    // Do nothing. Only implemented because it's a pure virtual method of juce::AudioProcessorParameter::Listener.
 }
 
 /*---------------------------------------------------------------------------
@@ -416,6 +436,37 @@ GraphicEqProcessor::getBandQ(const int band_index) const
     const auto* p              = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_name));
 
     return (p != nullptr) ? p->get() : 0.f;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphicEqProcessor::updateFilterChain()
+{
+    // Update the enabled/disabled state of each filter in the chain.
+    filter_factory_.updateBandEnablements(left_chain_);
+    filter_factory_.updateBandEnablements(right_chain_);
+
+    // Update the coefficients.
+    if (getLowCutEnabled()) {
+        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::LowCut);
+        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::LowCut);
+    }
+
+    if (getHighCutEnabled()) {
+        filter_factory_.updateCutCoefficients(left_chain_, FilterFactory::ChainPositions::HighCut);
+        filter_factory_.updateCutCoefficients(right_chain_, FilterFactory::ChainPositions::HighCut);
+    }
+
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        if (getBandEnabled(i)) {
+            const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
+
+            filter_factory_.updatePeakCoefficients(left_chain_, chain_pos, i);
+            filter_factory_.updatePeakCoefficients(right_chain_, chain_pos, i);
+        }
+    }
 }
 
 /*---------------------------------------------------------------------------

@@ -6,11 +6,13 @@
 #include "GraphicEqGlobals.h"
 #include "MonoBufferFifo.h"
 
-class GraphicEqProcessor final : public juce::AudioProcessor
+class GraphicEqProcessor final
+    : public juce::AudioProcessor
+    , public juce::AudioProcessorParameter::Listener
 {
 public:
     GraphicEqProcessor();
-    ~GraphicEqProcessor() override = default;
+    ~GraphicEqProcessor() override;
 
     const juce::String getName() const override;
 
@@ -37,6 +39,9 @@ public:
     void                        getStateInformation(juce::MemoryBlock& dest_data) override;
     void                        setStateInformation(const void* data, int size_in_bytes) override;
 
+    void parameterValueChanged(int parameter_index, float new_value) override;
+    void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
+
     juce::AudioProcessorValueTreeState& getApvts();
     FilterFactory&                      getFilterFactory();
 
@@ -59,6 +64,8 @@ public:
     float getBandQ(const int band_index) const;
 
 private:
+    void updateFilterChain();
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     juce::AudioProcessorValueTreeState apvts_;
