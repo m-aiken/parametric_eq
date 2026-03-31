@@ -45,10 +45,8 @@ public:
     juce::AudioProcessorValueTreeState& getApvts();
     FilterFactory&                      getFilterFactory();
 
-    MonoBufferFifo preEqMonoFifoL { GraphicEq::Channel::Left };
-    MonoBufferFifo preEqMonoFifoR { GraphicEq::Channel::Right };
-    MonoBufferFifo postEqMonoFifoL { GraphicEq::Channel::Left };
-    MonoBufferFifo postEqMonoFifoR { GraphicEq::Channel::Right };
+    std::vector< std::unique_ptr< MonoBufferFifo > >& getPreEqFftBuffers();
+    std::vector< std::unique_ptr< MonoBufferFifo > >& getPostEqFftBuffers();
 
     bool  getLowCutEnabled() const;
     float getLowCutFrequency() const;
@@ -73,6 +71,12 @@ private:
 
     // vector of filter chains; one per channel.
     std::vector< FilterFactory::FilterChain > filter_chains_;
+
+    // vector of pre-eq ring buffers to be used by the FFT; one per channel.
+    std::vector< std::unique_ptr< MonoBufferFifo > > pre_eq_fft_buffers_;
+
+    // vector of post-eq ring buffers to be used by the FFT; one per channel.
+    std::vector< std::unique_ptr< MonoBufferFifo > > post_eq_fft_buffers_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };

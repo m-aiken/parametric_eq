@@ -7,12 +7,12 @@
 */
 Graph::Graph(GraphicEqProcessor& processor_ref)
     : waveform_pre_eq_(processor_ref.getSampleRate(),
-                       processor_ref.preEqMonoFifoL,
-                       processor_ref.preEqMonoFifoR,
+                       *processor_ref.getPreEqFftBuffers().at(0),
+                       *processor_ref.getPreEqFftBuffers().at(1),
                        Theme::ANALYSER_PRE_EQ)
     , waveform_post_eq_(processor_ref.getSampleRate(),
-                        processor_ref.postEqMonoFifoL,
-                        processor_ref.postEqMonoFifoR,
+                        *processor_ref.getPostEqFftBuffers().at(0),
+                        *processor_ref.getPostEqFftBuffers().at(1),
                         Theme::ANALYSER_POST_EQ)
     , control_layer_(processor_ref)
 {
