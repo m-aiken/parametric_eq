@@ -29,7 +29,7 @@ GraphControlLayer::GraphControlLayer(GraphicEqProcessor& processor_ref)
     }
 
     addListeners();
-    updateMonoChain();
+    updateFilterChain();
     startTimerHz(60);
 }
 
@@ -229,7 +229,7 @@ void
 GraphControlLayer::timerCallback()
 {
     if (parameters_changed_.compareAndSetBool(false, true)) {
-        updateMonoChain();
+        updateFilterChain();
         repaint();
     }
 }
@@ -247,25 +247,25 @@ GraphControlLayer::getActiveNodeIndex() const
 **
 */
 void
-GraphControlLayer::updateMonoChain()
+GraphControlLayer::updateFilterChain()
 {
     const FilterFactory& filter_factory = processor_ref_.getFilterFactory();
 
-    filter_factory.updateBandEnablements(mono_chain_);
+    filter_factory.updateBandEnablements(filter_chain_);
 
     if (processor_ref_.getLowCutEnabled()) {
-        filter_factory.updateCutCoefficients(mono_chain_, FilterFactory::ChainPositions::LowCut);
+        filter_factory.updateCutCoefficients(filter_chain_, FilterFactory::ChainPositions::LowCut);
     }
 
     if (processor_ref_.getHighCutEnabled()) {
-        filter_factory.updateCutCoefficients(mono_chain_, FilterFactory::ChainPositions::HighCut);
+        filter_factory.updateCutCoefficients(filter_chain_, FilterFactory::ChainPositions::HighCut);
     }
 
     for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         if (processor_ref_.getBandEnabled(i)) {
             const auto chain_pos = static_cast< FilterFactory::ChainPositions >(i + 1);
 
-            filter_factory.updatePeakCoefficients(mono_chain_, chain_pos, i);
+            filter_factory.updatePeakCoefficients(filter_chain_, chain_pos, i);
         }
     }
 }
@@ -281,15 +281,15 @@ GraphControlLayer::updateMagnitudes()
 
     std::array< juce::dsp::IIR::Filter< float >::CoefficientsPtr, GraphicEq::NUM_PEAK_BANDS > peak_coefficients;
 
-    peak_coefficients[0] = mono_chain_.get< FilterFactory::ChainPositions::Peak_0 >().coefficients;
-    peak_coefficients[1] = mono_chain_.get< FilterFactory::ChainPositions::Peak_1 >().coefficients;
-    peak_coefficients[2] = mono_chain_.get< FilterFactory::ChainPositions::Peak_2 >().coefficients;
-    peak_coefficients[3] = mono_chain_.get< FilterFactory::ChainPositions::Peak_3 >().coefficients;
-    peak_coefficients[4] = mono_chain_.get< FilterFactory::ChainPositions::Peak_4 >().coefficients;
-    peak_coefficients[5] = mono_chain_.get< FilterFactory::ChainPositions::Peak_5 >().coefficients;
+    peak_coefficients[0] = filter_chain_.get< FilterFactory::ChainPositions::Peak_0 >().coefficients;
+    peak_coefficients[1] = filter_chain_.get< FilterFactory::ChainPositions::Peak_1 >().coefficients;
+    peak_coefficients[2] = filter_chain_.get< FilterFactory::ChainPositions::Peak_2 >().coefficients;
+    peak_coefficients[3] = filter_chain_.get< FilterFactory::ChainPositions::Peak_3 >().coefficients;
+    peak_coefficients[4] = filter_chain_.get< FilterFactory::ChainPositions::Peak_4 >().coefficients;
+    peak_coefficients[5] = filter_chain_.get< FilterFactory::ChainPositions::Peak_5 >().coefficients;
 
-    auto& low_cut  = mono_chain_.get< FilterFactory::ChainPositions::LowCut >();
-    auto& high_cut = mono_chain_.get< FilterFactory::ChainPositions::HighCut >();
+    auto& low_cut  = filter_chain_.get< FilterFactory::ChainPositions::LowCut >();
+    auto& high_cut = filter_chain_.get< FilterFactory::ChainPositions::HighCut >();
 
     for (auto i = 0; i < bounds_width; ++i) {
         std::array< double, GraphicEq::NUM_PEAK_BANDS > peak_mags { 0.0 };

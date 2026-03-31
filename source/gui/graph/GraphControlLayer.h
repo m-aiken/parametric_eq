@@ -25,7 +25,7 @@ public:
     size_t getActiveNodeIndex() const;
 
 private:
-    void updateMonoChain();
+    void updateFilterChain();
     void updateMagnitudes();
 
     template < typename T >
@@ -51,7 +51,7 @@ private:
     juce::Atomic< bool > parameters_changed_;
     size_t               active_node_;
 
-    FilterFactory::MonoChain mono_chain_;
+    FilterFactory::FilterChain filter_chain_;
 
     std::array< std::unique_ptr< GraphNode >, GraphicEq::NUM_PEAK_BANDS > peak_nodes_;
     std::array< juce::Point< int >, GraphicEq::NUM_PEAK_BANDS >           node_coordinates_;

@@ -64,8 +64,8 @@ private:
     juce::AudioProcessorValueTreeState apvts_;
     FilterFactory                      filter_factory_;
 
-    FilterFactory::MonoChain left_chain_;
-    FilterFactory::MonoChain right_chain_;
+    FilterFactory::FilterChain left_chain_;
+    FilterFactory::FilterChain right_chain_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };

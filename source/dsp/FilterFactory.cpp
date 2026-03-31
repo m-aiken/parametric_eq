@@ -13,7 +13,9 @@ FilterFactory::FilterFactory(GraphicEqProcessor* processor_ref)
 **
 */
 void
-FilterFactory::updatePeakCoefficients(MonoChain& mono_chain, const ChainPositions& chain_position, const int band_index) const
+FilterFactory::updatePeakCoefficients(FilterChain&          filter_chain,
+                                      const ChainPositions& chain_position,
+                                      const int             band_index) const
 {
     if (processor_ref_ == nullptr) {
         return;
@@ -28,27 +30,27 @@ FilterFactory::updatePeakCoefficients(MonoChain& mono_chain, const ChainPosition
 
     switch (chain_position) {
     case Peak_0:
-        *mono_chain.get< Peak_0 >().coefficients = *coefficients;
+        *filter_chain.get< Peak_0 >().coefficients = *coefficients;
         break;
 
     case Peak_1:
-        *mono_chain.get< Peak_1 >().coefficients = *coefficients;
+        *filter_chain.get< Peak_1 >().coefficients = *coefficients;
         break;
 
     case Peak_2:
-        *mono_chain.get< Peak_2 >().coefficients = *coefficients;
+        *filter_chain.get< Peak_2 >().coefficients = *coefficients;
         break;
 
     case Peak_3:
-        *mono_chain.get< Peak_3 >().coefficients = *coefficients;
+        *filter_chain.get< Peak_3 >().coefficients = *coefficients;
         break;
 
     case Peak_4:
-        *mono_chain.get< Peak_4 >().coefficients = *coefficients;
+        *filter_chain.get< Peak_4 >().coefficients = *coefficients;
         break;
 
     case Peak_5:
-        *mono_chain.get< Peak_5 >().coefficients = *coefficients;
+        *filter_chain.get< Peak_5 >().coefficients = *coefficients;
         break;
 
     case LowCut:
@@ -62,7 +64,7 @@ FilterFactory::updatePeakCoefficients(MonoChain& mono_chain, const ChainPosition
 **
 */
 void
-FilterFactory::updateCutCoefficients(MonoChain& mono_chain, const ChainPositions& chain_position) const
+FilterFactory::updateCutCoefficients(FilterChain& filter_chain, const ChainPositions& chain_position) const
 {
     if (processor_ref_ == nullptr) {
         return;
@@ -91,32 +93,32 @@ FilterFactory::updateCutCoefficients(MonoChain& mono_chain, const ChainPositions
         return;
     }
 
-    auto& filter_chain = is_low_cut ? mono_chain.get< LowCut >() : mono_chain.get< HighCut >();
+    auto& filter = is_low_cut ? filter_chain.get< LowCut >() : filter_chain.get< HighCut >();
 
-    filter_chain.setBypassed< Slope_12 >(true);
-    filter_chain.setBypassed< Slope_24 >(true);
-    filter_chain.setBypassed< Slope_36 >(true);
-    filter_chain.setBypassed< Slope_48 >(true);
+    filter.setBypassed< Slope_12 >(true);
+    filter.setBypassed< Slope_24 >(true);
+    filter.setBypassed< Slope_36 >(true);
+    filter.setBypassed< Slope_48 >(true);
 
     const int slope_index = (order / 2) - 1;
 
     // Note, the switch case fall-through is intentional.
     switch (slope_index) {
     case Slope_48:
-        *filter_chain.get< Slope_48 >().coefficients = *coefficients[Slope_48];
-        filter_chain.setBypassed< Slope_48 >(false);
+        *filter.get< Slope_48 >().coefficients = *coefficients[Slope_48];
+        filter.setBypassed< Slope_48 >(false);
 
     case Slope_36:
-        *filter_chain.get< Slope_36 >().coefficients = *coefficients[Slope_36];
-        filter_chain.setBypassed< Slope_36 >(false);
+        *filter.get< Slope_36 >().coefficients = *coefficients[Slope_36];
+        filter.setBypassed< Slope_36 >(false);
 
     case Slope_24:
-        *filter_chain.get< Slope_24 >().coefficients = *coefficients[Slope_24];
-        filter_chain.setBypassed< Slope_24 >(false);
+        *filter.get< Slope_24 >().coefficients = *coefficients[Slope_24];
+        filter.setBypassed< Slope_24 >(false);
 
     case Slope_12:
-        *filter_chain.get< Slope_12 >().coefficients = *coefficients[Slope_12];
-        filter_chain.setBypassed< Slope_12 >(false);
+        *filter.get< Slope_12 >().coefficients = *coefficients[Slope_12];
+        filter.setBypassed< Slope_12 >(false);
         break;
 
     default:
@@ -128,20 +130,20 @@ FilterFactory::updateCutCoefficients(MonoChain& mono_chain, const ChainPositions
 **
 */
 void
-FilterFactory::updateBandEnablements(MonoChain& mono_chain) const
+FilterFactory::updateBandEnablements(FilterChain& filter_chain) const
 {
     if (processor_ref_ == nullptr) {
         return;
     }
 
-    mono_chain.setBypassed< LowCut >(!processor_ref_->getLowCutEnabled());
-    mono_chain.setBypassed< Peak_0 >(!processor_ref_->getBandEnabled(0));
-    mono_chain.setBypassed< Peak_1 >(!processor_ref_->getBandEnabled(1));
-    mono_chain.setBypassed< Peak_2 >(!processor_ref_->getBandEnabled(2));
-    mono_chain.setBypassed< Peak_3 >(!processor_ref_->getBandEnabled(3));
-    mono_chain.setBypassed< Peak_4 >(!processor_ref_->getBandEnabled(4));
-    mono_chain.setBypassed< Peak_5 >(!processor_ref_->getBandEnabled(5));
-    mono_chain.setBypassed< HighCut >(!processor_ref_->getHighCutEnabled());
+    filter_chain.setBypassed< LowCut >(!processor_ref_->getLowCutEnabled());
+    filter_chain.setBypassed< Peak_0 >(!processor_ref_->getBandEnabled(0));
+    filter_chain.setBypassed< Peak_1 >(!processor_ref_->getBandEnabled(1));
+    filter_chain.setBypassed< Peak_2 >(!processor_ref_->getBandEnabled(2));
+    filter_chain.setBypassed< Peak_3 >(!processor_ref_->getBandEnabled(3));
+    filter_chain.setBypassed< Peak_4 >(!processor_ref_->getBandEnabled(4));
+    filter_chain.setBypassed< Peak_5 >(!processor_ref_->getBandEnabled(5));
+    filter_chain.setBypassed< HighCut >(!processor_ref_->getHighCutEnabled());
 }
 
 /*---------------------------------------------------------------------------

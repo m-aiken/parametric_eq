@@ -12,7 +12,7 @@ public:
     using Filter = juce::dsp::IIR::Filter< float >;
     // Cut Filter chain: x4 Filters to allow for 12/24/36/48 dB/oct options
     using CutFilter = juce::dsp::ProcessorChain< Filter, Filter, Filter, Filter >;
-    using MonoChain = juce::dsp::ProcessorChain< CutFilter, Filter, Filter, Filter, Filter, Filter, Filter, CutFilter >;
+    using FilterChain = juce::dsp::ProcessorChain< CutFilter, Filter, Filter, Filter, Filter, Filter, Filter, CutFilter >;
     using CoefficientsType = juce::ReferenceCountedArray< juce::dsp::FilterDesign< float >::IIRCoefficients >;
 
     enum ChainPositions {
@@ -33,9 +33,10 @@ public:
         Slope_48,
     };
 
-    void updatePeakCoefficients(MonoChain& mono_chain, const ChainPositions& chain_position, const int band_index) const;
-    void updateCutCoefficients(MonoChain& mono_chain, const ChainPositions& chain_position) const;
-    void updateBandEnablements(MonoChain& mono_chain) const;
+    void
+    updatePeakCoefficients(FilterChain& filter_chain, const ChainPositions& chain_position, const int band_index) const;
+    void updateCutCoefficients(FilterChain& filter_chain, const ChainPositions& chain_position) const;
+    void updateBandEnablements(FilterChain& filter_chain) const;
 
 private:
     GraphicEqProcessor* processor_ref_;
