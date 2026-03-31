@@ -382,19 +382,19 @@ GraphControlLayer::addListeners()
 
     auto& apvts = processor_ref_.getApvts();
 
+    apvts.getParameter(LOW_CUT_ENABLED.id_)->addListener(this);
     apvts.getParameter(LOW_CUT_FREQ.id_)->addListener(this);
     apvts.getParameter(LOW_CUT_SLOPE.id_)->addListener(this);
-    apvts.getParameter(LOW_CUT_ENABLED.id_)->addListener(this);
 
+    apvts.getParameter(HIGH_CUT_ENABLED.id_)->addListener(this);
     apvts.getParameter(HIGH_CUT_FREQ.id_)->addListener(this);
     apvts.getParameter(HIGH_CUT_SLOPE.id_)->addListener(this);
-    apvts.getParameter(HIGH_CUT_ENABLED.id_)->addListener(this);
 
     for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->addListener(this);
         apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->addListener(this);
         apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->addListener(this);
         apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->addListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->addListener(this);
     }
 }
 
@@ -413,19 +413,19 @@ GraphControlLayer::removeListeners()
 
     auto& apvts = processor_ref_.getApvts();
 
+    apvts.getParameter(LOW_CUT_ENABLED.id_)->removeListener(this);
     apvts.getParameter(LOW_CUT_FREQ.id_)->removeListener(this);
     apvts.getParameter(LOW_CUT_SLOPE.id_)->removeListener(this);
-    apvts.getParameter(LOW_CUT_ENABLED.id_)->removeListener(this);
 
+    apvts.getParameter(HIGH_CUT_ENABLED.id_)->removeListener(this);
     apvts.getParameter(HIGH_CUT_FREQ.id_)->removeListener(this);
     apvts.getParameter(HIGH_CUT_SLOPE.id_)->removeListener(this);
-    apvts.getParameter(HIGH_CUT_ENABLED.id_)->removeListener(this);
 
     for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->removeListener(this);
         apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->removeListener(this);
         apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->removeListener(this);
         apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->removeListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->removeListener(this);
     }
 }
 
@@ -441,19 +441,19 @@ GraphControlLayer::allControlPtrsValid() const
     const auto& apvts = processor_ref_.getApvts();
     bool        ok    = true;
 
+    ok &= apvts.getParameter(LOW_CUT_ENABLED.id_) != nullptr;
     ok &= apvts.getParameter(LOW_CUT_FREQ.id_) != nullptr;
     ok &= apvts.getParameter(LOW_CUT_SLOPE.id_) != nullptr;
-    ok &= apvts.getParameter(LOW_CUT_ENABLED.id_) != nullptr;
 
+    ok &= apvts.getParameter(HIGH_CUT_ENABLED.id_) != nullptr;
     ok &= apvts.getParameter(HIGH_CUT_FREQ.id_) != nullptr;
     ok &= apvts.getParameter(HIGH_CUT_SLOPE.id_) != nullptr;
-    ok &= apvts.getParameter(HIGH_CUT_ENABLED.id_) != nullptr;
 
     for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
+        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i)) != nullptr;
         ok &= apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i)) != nullptr;
         ok &= apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i)) != nullptr;
         ok &= apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i)) != nullptr;
-        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i)) != nullptr;
     }
 
     return ok;
