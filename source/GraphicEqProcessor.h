@@ -2,9 +2,8 @@
 
 #include <JuceHeader.h>
 
+#include "FftInputDataFifo.h"
 #include "FilterFactory.h"
-#include "GraphicEqGlobals.h"
-#include "MonoBufferFifo.h"
 
 class GraphicEqProcessor final
     : public juce::AudioProcessor
@@ -45,8 +44,8 @@ public:
     juce::AudioProcessorValueTreeState& getApvts();
     FilterFactory&                      getFilterFactory();
 
-    std::vector< std::unique_ptr< MonoBufferFifo > >& getPreEqFftBuffers();
-    std::vector< std::unique_ptr< MonoBufferFifo > >& getPostEqFftBuffers();
+    FftInputDataFifo& getPreEqFftFifo();
+    FftInputDataFifo& getPostEqFftFifo();
 
     bool  getLowCutEnabled() const;
     float getLowCutFrequency() const;
@@ -72,11 +71,8 @@ private:
     // vector of filter chains; one per channel.
     std::vector< FilterFactory::FilterChain > filter_chains_;
 
-    // vector of pre-eq ring buffers to be used by the FFT; one per channel.
-    std::vector< std::unique_ptr< MonoBufferFifo > > pre_eq_fft_buffers_;
-
-    // vector of post-eq ring buffers to be used by the FFT; one per channel.
-    std::vector< std::unique_ptr< MonoBufferFifo > > post_eq_fft_buffers_;
+    FftInputDataFifo pre_eq_fft_fifo_;
+    FftInputDataFifo post_eq_fft_fifo_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
 };

@@ -40,8 +40,7 @@ set(PROJECT_SOURCES
         PRIVATE
         source/GraphicEqEditor.cpp
         source/GraphicEqProcessor.cpp
-        source/dsp/AnalyzerPathGenerator.cpp
-        source/dsp/FftDataGenerator.cpp
+        source/dsp/FftInputDataFifo.cpp
         source/dsp/FilterFactory.cpp
         source/gui/band_controls/EqControls.cpp
         source/gui/band_controls/bands/CustomRotarySlider.cpp
@@ -63,12 +62,10 @@ set(PROJECT_HEADERS
         PRIVATE
         source/GraphicEqEditor.h
         source/GraphicEqProcessor.h
-        source/dsp/AnalyzerPathGenerator.h
         source/dsp/EqProperties.h
-        source/dsp/FftDataGenerator.h
+        source/dsp/FftInputDataFifo.h
         source/dsp/Fifo.h
         source/dsp/FilterFactory.h
-        source/dsp/MonoBufferFifo.h
         source/gui/band_controls/EqControls.h
         source/gui/band_controls/bands/CustomRotarySlider.h
         source/gui/band_controls/bands/CutBandControls.h

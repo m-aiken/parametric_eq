@@ -12,16 +12,6 @@ GraphicEqProcessor::GraphicEqProcessor()
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
     , filter_factory_(this)
 {
-    const int num_input_channels = getTotalNumInputChannels();
-    filter_chains_.resize(num_input_channels);
-    pre_eq_fft_buffers_.resize(num_input_channels);
-    post_eq_fft_buffers_.resize(num_input_channels);
-
-    for (int i = 0; i < num_input_channels; ++i) {
-        pre_eq_fft_buffers_.at(i)  = std::make_unique< MonoBufferFifo >(static_cast< GraphicEq::Channel >(i));
-        post_eq_fft_buffers_.at(i) = std::make_unique< MonoBufferFifo >(static_cast< GraphicEq::Channel >(i));
-    }
-
     using namespace GraphicEq;
     using namespace EqProperties;
 
@@ -162,29 +152,19 @@ GraphicEqProcessor::changeProgramName(int index, const juce::String& new_name)
 void
 GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need.
-    juce::ignoreUnused(sample_rate);
-
     juce::dsp::ProcessSpec spec {
         .sampleRate       = sample_rate,
         .maximumBlockSize = static_cast< uint32 >(samples_per_block),
         .numChannels      = static_cast< uint32 >(getTotalNumOutputChannels()),
     };
 
+    filter_chains_.resize(getTotalNumInputChannels());
+
     for (auto& chain : filter_chains_) {
         chain.prepare(spec);
     }
 
     updateFilterChain();
-
-    for (auto& fifo : pre_eq_fft_buffers_) {
-        fifo.get()->prepare(samples_per_block);
-    }
-
-    for (auto& fifo : post_eq_fft_buffers_) {
-        fifo.get()->prepare(samples_per_block);
-    }
 }
 
 /*---------------------------------------------------------------------------
@@ -229,10 +209,8 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
         buffer.clear(i, 0, buffer.getNumSamples());
     }
 
-    // Populate the pre-eq fifo with the buffer in its dry state.
-    for (auto& fifo : pre_eq_fft_buffers_) {
-        fifo.get()->update(buffer);
-    }
+    // Push the buffer in its dry state to the pre-EQ FFT FIFO.
+    pre_eq_fft_fifo_.pushData(buffer);
 
     // Process the EQ.
     const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
@@ -244,10 +222,8 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
         filter_chains_.at(i).process(single_channel_context);
     }
 
-    // Populate the post-eq fifo with the buffer in its wet state.
-    for (auto& fifo : post_eq_fft_buffers_) {
-        fifo.get()->update(buffer);
-    }
+    // Push the buffer in its wet state to the post-EQ FFT FIFO.
+    post_eq_fft_fifo_.pushData(buffer);
 }
 
 /*---------------------------------------------------------------------------
@@ -334,19 +310,19 @@ GraphicEqProcessor::getFilterFactory()
 /*---------------------------------------------------------------------------
 **
 */
-std::vector< std::unique_ptr< MonoBufferFifo > >&
-GraphicEqProcessor::getPreEqFftBuffers()
+FftInputDataFifo&
+GraphicEqProcessor::getPreEqFftFifo()
 {
-    return pre_eq_fft_buffers_;
+    return pre_eq_fft_fifo_;
 }
 
 /*---------------------------------------------------------------------------
 **
 */
-std::vector< std::unique_ptr< MonoBufferFifo > >&
-GraphicEqProcessor::getPostEqFftBuffers()
+FftInputDataFifo&
+GraphicEqProcessor::getPostEqFftFifo()
 {
-    return post_eq_fft_buffers_;
+    return post_eq_fft_fifo_;
 }
 
 /*---------------------------------------------------------------------------

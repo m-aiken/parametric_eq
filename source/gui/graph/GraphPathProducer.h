@@ -2,42 +2,50 @@
 
 #include <JuceHeader.h>
 
-#include "AnalyzerPathGenerator.h"
-#include "FftDataGenerator.h"
-#include "MonoBufferFifo.h"
+#include "FftInputDataFifo.h"
+#include "Fifo.h"
+#include "GraphicEqGlobals.h"
 
 class GraphPathProducer final : public juce::Thread
 {
 public:
-    GraphPathProducer(const double sample_rate, MonoBufferFifo& scsf);
+    GraphPathProducer(const double sample_rate, FftInputDataFifo& fft_input_data_fifo);
     ~GraphPathProducer() override;
 
     void run() override;
+    void pauseThread();
 
-    double getBinWidth() const;
-    void   pauseThread();
-    void   setFFTRectBounds(const juce::Rectangle< float >& bounds);
+    void setPathBounds(const juce::Rectangle< float >& bounds);
 
-    bool pull(juce::Path& path);
     int  getNumAvailableForReading() const;
-    void toggleProcessing(const bool toggle_state);
+    bool pull(juce::Path& path);
+
+    void setProcessingEnabled(const bool enable);
 
 private:
-    void updateRenderData(const std::vector< float >& fft_data);
+    void performFft();
+    void smoothFftOutput();
+    void generatePath();
 
-    MonoBufferFifo& single_channel_sample_fifo_;
+    std::atomic< bool > processing_enabled_;
 
-    FftDataGenerator           fft_data_generator_;
-    AnalyzerPathGenerator      path_generator_;
-    std::vector< float >       render_data_;
-    juce::AudioBuffer< float > buffer_for_generator_;
-    double                     sample_rate_;
-    juce::Rectangle< float >   fft_bounds_;
+    // FFT.
+    FftInputDataFifo&                     fft_input_data_fifo_;
+    juce::dsp::FFT                        fft_;
+    juce::dsp::WindowingFunction< float > windowing_func_;
+    juce::AudioBuffer< float >            fft_input_buffer_;
+    GraphicEq::FFT::OutputBuffer          fft_output_buffer_;
 
-    std::atomic< bool > processing_is_enabled_ { false };
+    // Smoothed FFT output.
+    GraphicEq::FFT::OutputBuffer smoothed_fft_output_;
+    static constexpr float       DECAY_RATE_DB_PER_SECOND = 30.f;
+    static constexpr float       DECAY_RATE               = DECAY_RATE_DB_PER_SECOND / 60.f;
 
-    static constexpr float DECAY_RATE_DB_PER_SECOND = 30.f;
-    static constexpr float DECAY_RATE               = DECAY_RATE_DB_PER_SECOND / 60.f;
+    // Path.
+    static constexpr int     PATH_RESOLUTION = 2;
+    double                   sample_rate_;
+    juce::Rectangle< float > path_bounds_;
+    Fifo< juce::Path, 2 >    path_fifo_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphPathProducer)
 };
