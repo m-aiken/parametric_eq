@@ -8,7 +8,7 @@ public:
     FftInputDataFifo();
 
     void pushData(const juce::AudioBuffer< float >& input_buffer);
-    bool pullData(juce::AudioBuffer< float >& buffer_to_fill) const;
+    void pullData(juce::AudioBuffer< float >& buffer_to_fill) const;
 
 private:
     juce::AudioBuffer< float > fifo_;

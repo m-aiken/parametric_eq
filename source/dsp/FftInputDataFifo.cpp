@@ -49,12 +49,11 @@ FftInputDataFifo::pushData(const juce::AudioBuffer< float >& input_buffer)
 /*---------------------------------------------------------------------------
 **
 */
-bool
+void
 FftInputDataFifo::pullData(juce::AudioBuffer< float >& buffer_to_fill) const
 {
     const juce::ScopedLock fifo_lock(fifo_critical_section_);
     buffer_to_fill.makeCopyOf(fifo_);
-    return true;
 }
 
 /*---------------------------------------------------------------------------

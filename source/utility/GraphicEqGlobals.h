@@ -14,6 +14,11 @@ inline constexpr int   MIN_BAND_INDEX = 0;
 inline constexpr int   MAX_BAND_INDEX = 7;
 inline constexpr int   NUM_PEAK_BANDS = 6;
 
+inline constexpr int   WAVEFORM_REFRESH_RATE_HZ          = 60;
+inline constexpr int   WAVEFORM_PATH_RESOLUTION          = 2;
+inline constexpr float WAVEFORM_DECAY_RATE_DB_PER_SECOND = 30.f;
+inline constexpr float WAVEFORM_DECAY_RATE               = WAVEFORM_DECAY_RATE_DB_PER_SECOND / 60.f;
+
 struct ParamInfo {
     juce::String id_;
     juce::String gui_text_;
