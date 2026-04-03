@@ -63,7 +63,6 @@ set(PROJECT_HEADERS
         source/GraphicEqProcessor.h
         source/dsp/EqProperties.h
         source/dsp/FftInputDataFifo.h
-        source/dsp/Fifo.h
         source/dsp/FilterFactory.h
         source/gui/band_controls/EqControls.h
         source/gui/band_controls/bands/CustomRotarySlider.h
