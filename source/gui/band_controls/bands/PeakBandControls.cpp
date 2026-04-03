@@ -1,4 +1,4 @@
-#include "EqProperties.h"
+#include "GraphicEqGlobals.h"
 #include "PeakBandControls.h"
 #include "Theme.h"
 
@@ -8,11 +8,11 @@
 PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const int band_num)
     : node_is_active_(false)
     , band_enablement_button_(apvts,
-                              getPeakControlParamName(EqProperties::PeakControl::ENABLED, band_num),
+                              getPeakParamName(GraphicEq::PEAK_ENABLED, band_num),
                               "BAND " + juce::String(band_num + 1))
-    , freq_slider_(apvts, getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, band_num), "Hz")
-    , gain_slider_(apvts, getPeakControlParamName(EqProperties::PeakControl::GAIN, band_num), "dB")
-    , q_slider_(apvts, getPeakControlParamName(EqProperties::PeakControl::QUALITY, band_num), "Q")
+    , freq_slider_(apvts, getPeakParamName(GraphicEq::PEAK_FREQ, band_num), "Hz")
+    , gain_slider_(apvts, getPeakParamName(GraphicEq::PEAK_GAIN, band_num), "dB")
+    , q_slider_(apvts, getPeakParamName(GraphicEq::PEAK_Q, band_num), "Q")
 {
     band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
 

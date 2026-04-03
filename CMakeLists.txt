@@ -61,7 +61,6 @@ set(PROJECT_HEADERS
         PRIVATE
         source/GraphicEqEditor.h
         source/GraphicEqProcessor.h
-        source/dsp/EqProperties.h
         source/dsp/FftInputDataFifo.h
         source/dsp/FilterFactory.h
         source/gui/band_controls/EqControls.h

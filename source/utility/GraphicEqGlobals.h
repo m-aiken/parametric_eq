@@ -24,12 +24,84 @@ struct ParamInfo {
     juce::String gui_text_;
 };
 
+inline const ParamInfo LOW_CUT_ENABLED  = { "Low Cut Enabled", "Low Cut Enabled" };
 inline const ParamInfo LOW_CUT_FREQ     = { "Low Cut Freq", "Low Cut Freq" };
 inline const ParamInfo LOW_CUT_SLOPE    = { "Low Cut Slope", "Low Cut Slope" };
-inline const ParamInfo LOW_CUT_ENABLED  = { "Low Cut Enabled", "Low Cut Enabled" };
+inline const ParamInfo HIGH_CUT_ENABLED = { "High Cut Enabled", "High Cut Enabled" };
 inline const ParamInfo HIGH_CUT_FREQ    = { "High Cut Freq", "High Cut Freq" };
 inline const ParamInfo HIGH_CUT_SLOPE   = { "High Cut Slope", "High Cut Slope" };
-inline const ParamInfo HIGH_CUT_ENABLED = { "High Cut Enabled", "High Cut Enabled" };
+
+enum CUT_FILTER_SLOPE {
+    SLOPE_12_DB_PER_OCTAVE,
+    SLOPE_24_DB_PER_OCTAVE,
+    SLOPE_36_DB_PER_OCTAVE,
+    SLOPE_48_DB_PER_OCTAVE,
+};
+
+inline const juce::StringArray CUT_FILTER_SLOPE_CHOICES = {
+    "12 dB/Oct",
+    "24 dB/Oct",
+    "36 dB/Oct",
+    "48 dB/Oct",
+};
+
+inline constexpr bool  LOW_CUT_ENABLED_DEFAULT = false;
+inline constexpr float LOW_CUT_FREQ_MIN        = MIN_HZ;
+inline constexpr float LOW_CUT_FREQ_MAX        = 2000.f;
+inline constexpr float LOW_CUT_FREQ_DEFAULT    = 50.f;
+inline constexpr int   LOW_CUT_SLOPE_DEFAULT   = SLOPE_48_DB_PER_OCTAVE;
+
+inline constexpr bool  HIGH_CUT_ENABLED_DEFAULT = false;
+inline constexpr float HIGH_CUT_FREQ_MIN        = 500.f;
+inline constexpr float HIGH_CUT_FREQ_MAX        = MAX_HZ;
+inline constexpr float HIGH_CUT_FREQ_DEFAULT    = 15000.f;
+inline constexpr int   HIGH_CUT_SLOPE_DEFAULT   = SLOPE_48_DB_PER_OCTAVE;
+
+inline const juce::NormalisableRange LOW_CUT_FREQ_NORMALISABLE_RANGE = { LOW_CUT_FREQ_MIN, LOW_CUT_FREQ_MAX, 1.f, 0.5f };
+inline const juce::NormalisableRange HIGH_CUT_FREQ_NORMALISABLE_RANGE = { HIGH_CUT_FREQ_MIN, HIGH_CUT_FREQ_MAX, 1.f, 0.2f };
+
+enum PEAK_CONTROL {
+    PEAK_ENABLED,
+    PEAK_FREQ,
+    PEAK_GAIN,
+    PEAK_Q,
+};
+
+inline const juce::StringArray PEAK_CONTROL_LABELS = {
+    "Enabled",
+    "Freq",
+    "Gain",
+    "Q",
+};
+
+inline juce::String
+getPeakParamName(const PEAK_CONTROL& peak_control, const int band_index)
+{
+    return { "P" + juce::String(band_index) + " " + PEAK_CONTROL_LABELS[peak_control] };
+}
+#if 0
+inline constexpr std::vector< float > TARGET_FREQUENCIES = {
+    MIN_HZ, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, MAX_HZ,
+};
+#endif
+
+inline constexpr std::array< float, NUM_PEAK_BANDS > PEAK_BAND_CENTRE_FREQUENCIES = {
+    100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f,
+};
+
+inline constexpr bool  PEAK_ENABLED_DEFAULT = true;
+inline constexpr float PEAK_FREQ_MIN        = MIN_HZ;
+inline constexpr float PEAK_FREQ_MAX        = MAX_HZ;
+inline constexpr float PEAK_GAIN_MIN        = MIN_DB;
+inline constexpr float PEAK_GAIN_MAX        = MAX_DB;
+inline constexpr float PEAK_GAIN_DEFAULT    = 0.f;
+inline constexpr float PEAK_Q_MIN           = 0.1f;
+inline constexpr float PEAK_Q_MAX           = 10.f;
+inline constexpr float PEAK_Q_DEFAULT       = 1.f;
+
+inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { PEAK_FREQ_MIN, PEAK_FREQ_MAX, 1.f, 0.1f };
+inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE = { PEAK_GAIN_MIN, PEAK_GAIN_MAX, 0.5f, 1.f };
+inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE    = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
 
 namespace FFT
 {

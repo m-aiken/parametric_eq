@@ -1,4 +1,3 @@
-#include "EqProperties.h"
 #include "GraphControlLayer.h"
 #include "GraphicEqProcessor.h"
 #include "Theme.h"
@@ -17,15 +16,13 @@ GraphControlLayer::GraphControlLayer(GraphicEqProcessor& processor_ref)
         peak_nodes_.at(i) = std::make_unique< GraphNode >(apvts, i);
     }
 
-    using namespace EqProperties;
-
     for (size_t i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
         addAndMakeVisible(*peak_nodes_.at(i));
 
         node_coordinates_.at(i).setXY(0, 0);
 
-        x_values_.at(i).referTo(apvts.getParameterAsValue(getPeakControlParamName(PeakControl::FREQUENCY, i)));
-        y_values_.at(i).referTo(apvts.getParameterAsValue(getPeakControlParamName(PeakControl::GAIN, i)));
+        x_values_.at(i).referTo(apvts.getParameterAsValue(getPeakParamName(GraphicEq::PEAK_FREQ, i)));
+        y_values_.at(i).referTo(apvts.getParameterAsValue(getPeakParamName(GraphicEq::PEAK_GAIN, i)));
     }
 
     addListeners();
@@ -373,28 +370,25 @@ GraphControlLayer::updateMagnitudes()
 void
 GraphControlLayer::addListeners()
 {
-    using namespace GraphicEq;
-    using namespace EqProperties;
-
     if (!allControlPtrsValid()) {
         return;
     }
 
     auto& apvts = processor_ref_.getApvts();
 
-    apvts.getParameter(LOW_CUT_ENABLED.id_)->addListener(this);
-    apvts.getParameter(LOW_CUT_FREQ.id_)->addListener(this);
-    apvts.getParameter(LOW_CUT_SLOPE.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_ENABLED.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_FREQ.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_SLOPE.id_)->addListener(this);
 
-    apvts.getParameter(HIGH_CUT_ENABLED.id_)->addListener(this);
-    apvts.getParameter(HIGH_CUT_FREQ.id_)->addListener(this);
-    apvts.getParameter(HIGH_CUT_SLOPE.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_FREQ.id_)->addListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_)->addListener(this);
 
-    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
-        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->addListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->addListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->addListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->addListener(this);
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_ENABLED, i))->addListener(this);
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_FREQ, i))->addListener(this);
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_GAIN, i))->addListener(this);
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_Q, i))->addListener(this);
     }
 }
 
@@ -404,28 +398,25 @@ GraphControlLayer::addListeners()
 void
 GraphControlLayer::removeListeners()
 {
-    using namespace GraphicEq;
-    using namespace EqProperties;
-
     if (!allControlPtrsValid()) {
         return;
     }
 
     auto& apvts = processor_ref_.getApvts();
 
-    apvts.getParameter(LOW_CUT_ENABLED.id_)->removeListener(this);
-    apvts.getParameter(LOW_CUT_FREQ.id_)->removeListener(this);
-    apvts.getParameter(LOW_CUT_SLOPE.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_ENABLED.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_FREQ.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::LOW_CUT_SLOPE.id_)->removeListener(this);
 
-    apvts.getParameter(HIGH_CUT_ENABLED.id_)->removeListener(this);
-    apvts.getParameter(HIGH_CUT_FREQ.id_)->removeListener(this);
-    apvts.getParameter(HIGH_CUT_SLOPE.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_FREQ.id_)->removeListener(this);
+    apvts.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_)->removeListener(this);
 
-    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
-        apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i))->removeListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i))->removeListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i))->removeListener(this);
-        apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i))->removeListener(this);
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_ENABLED, i))->removeListener(this);
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_FREQ, i))->removeListener(this);
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_GAIN, i))->removeListener(this);
+        apvts.getParameter(getPeakParamName(GraphicEq::PEAK_Q, i))->removeListener(this);
     }
 }
 
@@ -435,25 +426,22 @@ GraphControlLayer::removeListeners()
 bool
 GraphControlLayer::allControlPtrsValid() const
 {
-    using namespace GraphicEq;
-    using namespace EqProperties;
-
     const auto& apvts = processor_ref_.getApvts();
     bool        ok    = true;
 
-    ok &= apvts.getParameter(LOW_CUT_ENABLED.id_) != nullptr;
-    ok &= apvts.getParameter(LOW_CUT_FREQ.id_) != nullptr;
-    ok &= apvts.getParameter(LOW_CUT_SLOPE.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::LOW_CUT_ENABLED.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::LOW_CUT_FREQ.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::LOW_CUT_SLOPE.id_) != nullptr;
 
-    ok &= apvts.getParameter(HIGH_CUT_ENABLED.id_) != nullptr;
-    ok &= apvts.getParameter(HIGH_CUT_FREQ.id_) != nullptr;
-    ok &= apvts.getParameter(HIGH_CUT_SLOPE.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::HIGH_CUT_ENABLED.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::HIGH_CUT_FREQ.id_) != nullptr;
+    ok &= apvts.getParameter(GraphicEq::HIGH_CUT_SLOPE.id_) != nullptr;
 
-    for (int i = 0; i < NUM_PEAK_BANDS; ++i) {
-        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::ENABLED, i)) != nullptr;
-        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::FREQUENCY, i)) != nullptr;
-        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::GAIN, i)) != nullptr;
-        ok &= apvts.getParameter(getPeakControlParamName(PeakControl::QUALITY, i)) != nullptr;
+    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
+        ok &= apvts.getParameter(getPeakParamName(GraphicEq::PEAK_ENABLED, i)) != nullptr;
+        ok &= apvts.getParameter(getPeakParamName(GraphicEq::PEAK_FREQ, i)) != nullptr;
+        ok &= apvts.getParameter(getPeakParamName(GraphicEq::PEAK_GAIN, i)) != nullptr;
+        ok &= apvts.getParameter(getPeakParamName(GraphicEq::PEAK_Q, i)) != nullptr;
     }
 
     return ok;

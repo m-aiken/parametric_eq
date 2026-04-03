@@ -1,5 +1,5 @@
 #include "CutBandControls.h"
-#include "EqProperties.h"
+#include "GraphicEqGlobals.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
