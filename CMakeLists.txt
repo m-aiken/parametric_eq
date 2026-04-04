@@ -47,6 +47,7 @@ set(PROJECT_SOURCES
         source/gui/band_controls/bands/CutBandControls.cpp
         source/gui/band_controls/bands/EqBandBase.cpp
         source/gui/band_controls/bands/PeakBandControls.cpp
+        source/gui/band_controls/bands/ShelfBandControls.cpp
         source/gui/band_controls/bands/TextToggleButton.cpp
         source/gui/graph/Graph.cpp
         source/gui/graph/GraphBackground.cpp
@@ -68,6 +69,7 @@ set(PROJECT_HEADERS
         source/gui/band_controls/bands/CutBandControls.h
         source/gui/band_controls/bands/EqBandBase.h
         source/gui/band_controls/bands/PeakBandControls.h
+        source/gui/band_controls/bands/ShelfBandControls.h
         source/gui/band_controls/bands/TextToggleButton.h
         source/gui/graph/Graph.h
         source/gui/graph/GraphBackground.h

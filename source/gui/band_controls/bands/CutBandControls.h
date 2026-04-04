@@ -3,26 +3,24 @@
 #include <JuceHeader.h>
 
 #include "EqBandBase.h"
-#include "FilterFactory.h"
-#include "TextToggleButton.h"
+#include "GraphicEqGlobals.h"
 
 class CutBandControls final : public EqBandBase
 {
 public:
-    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const FilterFactory::ChainPositions& chain_position);
+    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
 
     void resized() override;
 
 private:
     void setFreqLabelText();
     void setSlopeLabelText();
-    void setSubWidgetEnablement();
+    void setSubWidgetEnablement() override;
 
-    std::unique_ptr< TextToggleButton >   band_enablement_button_;
-    std::unique_ptr< CustomRotarySlider > freq_slider_;
-    std::unique_ptr< CustomRotarySlider > slope_slider_;
-    juce::Label                           freq_value_label_;
-    juce::Label                           slope_value_label_;
+    CustomRotarySlider freq_slider_;
+    CustomRotarySlider slope_slider_;
+    juce::Label        freq_value_label_;
+    juce::Label        slope_value_label_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CutBandControls)
 };

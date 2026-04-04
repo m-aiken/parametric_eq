@@ -5,14 +5,12 @@
 /*---------------------------------------------------------------------------
 **
 */
-TextToggleButton::TextToggleButton(juce::AudioProcessorValueTreeState& apvts,
-                                   const juce::String&                 parameter_id,
-                                   const juce::String&                 label_text)
-    : button_attachment_(apvts, parameter_id, *this)
+TextToggleButton::TextToggleButton(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+    : button_attachment_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
     , background_colour_(Theme::TEXT_BUTTON_BG_STD)
 {
     setMouseCursor(juce::MouseCursor::PointingHandCursor);
-    setButtonText(label_text);
+    setButtonText(GraphicEq::getFilterButtonLabel(filter_id));
 }
 
 /*---------------------------------------------------------------------------

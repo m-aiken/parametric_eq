@@ -3,13 +3,16 @@
 #include <JuceHeader.h>
 
 #include "CustomRotarySlider.h"
+#include "TextToggleButton.h"
 
 class EqBandBase : public juce::Component
 {
 public:
-    EqBandBase() = default;
+    EqBandBase(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
 
 protected:
+    virtual void setSubWidgetEnablement() = 0;
+
     static void         initialiseLabel(juce::Label& label);
     static juce::String getFrequencyString(const CustomRotarySlider& slider);
 
@@ -24,6 +27,8 @@ protected:
     juce::Rectangle< int > getControlSectionBounds() const;
     juce::Rectangle< int > getLabel1Bounds() const;
     juce::Rectangle< int > getLabel2Bounds() const;
+
+    TextToggleButton band_enablement_button_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EqBandBase)
 };

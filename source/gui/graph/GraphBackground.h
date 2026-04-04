@@ -17,7 +17,7 @@ private:
     static void  drawDbLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds);
     static void  drawFrequencyLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds);
 
-    static constexpr int DB_INTERVAL = 12;
+    static constexpr int DB_INTERVAL = 2;
     static constexpr int TEXT_WIDTH  = Theme::UI_PADDING * 16;
 
     static const std::vector< float > HZ_LIST;

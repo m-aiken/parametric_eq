@@ -16,7 +16,7 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
 
-    setSize(800, 600);
+    setSize(1024, 600);
 
     startTimerHz(20);
 }

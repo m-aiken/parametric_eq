@@ -13,70 +13,19 @@ FilterFactory::FilterFactory(GraphicEqProcessor* processor_ref)
 **
 */
 void
-FilterFactory::updatePeakCoefficients(FilterChain&          filter_chain,
-                                      const ChainPositions& chain_position,
-                                      const int             band_index) const
+FilterFactory::updateCutCoefficients(GraphicEq::FilterChain& filter_chain, const GraphicEq::FILTER_ID& filter_id) const
 {
     if (processor_ref_ == nullptr) {
         return;
     }
 
-    const auto  frequency = processor_ref_->getBandFrequency(band_index);
-    const float gain      = processor_ref_->getBandGain(band_index);
-    const float q         = processor_ref_->getBandQ(band_index);
+    const bool is_low_cut = filter_id == GraphicEq::LOW_CUT;
 
-    const auto coefficients =
-        juce::dsp::IIR::Coefficients< float >::makePeakFilter(processor_ref_->getSampleRate(), frequency, q, gain);
-
-    switch (chain_position) {
-    case Peak_0:
-        *filter_chain.get< Peak_0 >().coefficients = *coefficients;
-        break;
-
-    case Peak_1:
-        *filter_chain.get< Peak_1 >().coefficients = *coefficients;
-        break;
-
-    case Peak_2:
-        *filter_chain.get< Peak_2 >().coefficients = *coefficients;
-        break;
-
-    case Peak_3:
-        *filter_chain.get< Peak_3 >().coefficients = *coefficients;
-        break;
-
-    case Peak_4:
-        *filter_chain.get< Peak_4 >().coefficients = *coefficients;
-        break;
-
-    case Peak_5:
-        *filter_chain.get< Peak_5 >().coefficients = *coefficients;
-        break;
-
-    case LowCut:
-    case HighCut:
-    default:
-        break;
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-FilterFactory::updateCutCoefficients(FilterChain& filter_chain, const ChainPositions& chain_position) const
-{
-    if (processor_ref_ == nullptr) {
-        return;
-    }
-
-    const bool is_low_cut = chain_position == LowCut;
-
-    const auto frequency   = is_low_cut ? processor_ref_->getLowCutFrequency() : processor_ref_->getHighCutFrequency();
-    const auto order       = is_low_cut ? processor_ref_->getLowCutOrder() : processor_ref_->getHighCutOrder();
+    const auto frequency   = processor_ref_->getFilterFrequency(filter_id);
+    const auto order       = processor_ref_->getFilterOrder(filter_id);
     const auto sample_rate = processor_ref_->getSampleRate();
 
-    CoefficientsType coefficients;
+    juce::ReferenceCountedArray< juce::dsp::FilterDesign< float >::IIRCoefficients > coefficients;
 
     if (is_low_cut) {
         coefficients = juce::dsp::FilterDesign< float >::designIIRHighpassHighOrderButterworthMethod(frequency,
@@ -93,32 +42,32 @@ FilterFactory::updateCutCoefficients(FilterChain& filter_chain, const ChainPosit
         return;
     }
 
-    auto& filter = is_low_cut ? filter_chain.get< LowCut >() : filter_chain.get< HighCut >();
+    auto& filter = is_low_cut ? filter_chain.get< GraphicEq::LOW_CUT >() : filter_chain.get< GraphicEq::HIGH_CUT >();
 
-    filter.setBypassed< Slope_12 >(true);
-    filter.setBypassed< Slope_24 >(true);
-    filter.setBypassed< Slope_36 >(true);
-    filter.setBypassed< Slope_48 >(true);
+    filter.setBypassed< GraphicEq::SLOPE_12_DB_PER_OCTAVE >(true);
+    filter.setBypassed< GraphicEq::SLOPE_24_DB_PER_OCTAVE >(true);
+    filter.setBypassed< GraphicEq::SLOPE_36_DB_PER_OCTAVE >(true);
+    filter.setBypassed< GraphicEq::SLOPE_48_DB_PER_OCTAVE >(true);
 
     const int slope_index = (order / 2) - 1;
 
     // Note, the switch case fall-through is intentional.
     switch (slope_index) {
-    case Slope_48:
-        *filter.get< Slope_48 >().coefficients = *coefficients[Slope_48];
-        filter.setBypassed< Slope_48 >(false);
+    case GraphicEq::SLOPE_48_DB_PER_OCTAVE:
+        *filter.get< GraphicEq::SLOPE_48_DB_PER_OCTAVE >().coefficients = *coefficients[GraphicEq::SLOPE_48_DB_PER_OCTAVE];
+        filter.setBypassed< GraphicEq::SLOPE_48_DB_PER_OCTAVE >(false);
 
-    case Slope_36:
-        *filter.get< Slope_36 >().coefficients = *coefficients[Slope_36];
-        filter.setBypassed< Slope_36 >(false);
+    case GraphicEq::SLOPE_36_DB_PER_OCTAVE:
+        *filter.get< GraphicEq::SLOPE_36_DB_PER_OCTAVE >().coefficients = *coefficients[GraphicEq::SLOPE_36_DB_PER_OCTAVE];
+        filter.setBypassed< GraphicEq::SLOPE_36_DB_PER_OCTAVE >(false);
 
-    case Slope_24:
-        *filter.get< Slope_24 >().coefficients = *coefficients[Slope_24];
-        filter.setBypassed< Slope_24 >(false);
+    case GraphicEq::SLOPE_24_DB_PER_OCTAVE:
+        *filter.get< GraphicEq::SLOPE_24_DB_PER_OCTAVE >().coefficients = *coefficients[GraphicEq::SLOPE_24_DB_PER_OCTAVE];
+        filter.setBypassed< GraphicEq::SLOPE_24_DB_PER_OCTAVE >(false);
 
-    case Slope_12:
-        *filter.get< Slope_12 >().coefficients = *coefficients[Slope_12];
-        filter.setBypassed< Slope_12 >(false);
+    case GraphicEq::SLOPE_12_DB_PER_OCTAVE:
+        *filter.get< GraphicEq::SLOPE_12_DB_PER_OCTAVE >().coefficients = *coefficients[GraphicEq::SLOPE_12_DB_PER_OCTAVE];
+        filter.setBypassed< GraphicEq::SLOPE_12_DB_PER_OCTAVE >(false);
         break;
 
     default:
@@ -130,20 +79,102 @@ FilterFactory::updateCutCoefficients(FilterChain& filter_chain, const ChainPosit
 **
 */
 void
-FilterFactory::updateBandEnablements(FilterChain& filter_chain) const
+FilterFactory::updateLowShelfCoefficients(GraphicEq::FilterChain& filter_chain) const
 {
     if (processor_ref_ == nullptr) {
         return;
     }
 
-    filter_chain.setBypassed< LowCut >(!processor_ref_->getLowCutEnabled());
-    filter_chain.setBypassed< Peak_0 >(!processor_ref_->getBandEnabled(0));
-    filter_chain.setBypassed< Peak_1 >(!processor_ref_->getBandEnabled(1));
-    filter_chain.setBypassed< Peak_2 >(!processor_ref_->getBandEnabled(2));
-    filter_chain.setBypassed< Peak_3 >(!processor_ref_->getBandEnabled(3));
-    filter_chain.setBypassed< Peak_4 >(!processor_ref_->getBandEnabled(4));
-    filter_chain.setBypassed< Peak_5 >(!processor_ref_->getBandEnabled(5));
-    filter_chain.setBypassed< HighCut >(!processor_ref_->getHighCutEnabled());
+    *filter_chain.get< GraphicEq::LOW_SHELF >().coefficients =
+        *juce::dsp::IIR::Coefficients< float >::makeLowShelf(processor_ref_->getSampleRate(),
+                                                             processor_ref_->getFilterFrequency(GraphicEq::LOW_SHELF),
+                                                             GraphicEq::SHELF_Q_DEFAULT,
+                                                             processor_ref_->getFilterGain(GraphicEq::LOW_SHELF));
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+FilterFactory::updateHighShelfCoefficients(GraphicEq::FilterChain& filter_chain) const
+{
+    if (processor_ref_ == nullptr) {
+        return;
+    }
+
+    *filter_chain.get< GraphicEq::HIGH_SHELF >().coefficients =
+        *juce::dsp::IIR::Coefficients< float >::makeHighShelf(processor_ref_->getSampleRate(),
+                                                              processor_ref_->getFilterFrequency(GraphicEq::HIGH_SHELF),
+                                                              GraphicEq::SHELF_Q_DEFAULT,
+                                                              processor_ref_->getFilterGain(GraphicEq::HIGH_SHELF));
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+FilterFactory::updatePeakCoefficients(GraphicEq::FilterChain& filter_chain, const GraphicEq::FILTER_ID& filter_id) const
+{
+    if (processor_ref_ == nullptr) {
+        return;
+    }
+
+    const auto frequency = processor_ref_->getFilterFrequency(filter_id);
+    const auto gain      = processor_ref_->getFilterGain(filter_id);
+    const auto q         = processor_ref_->getFilterQ(filter_id);
+
+    const auto coefficients =
+        juce::dsp::IIR::Coefficients< float >::makePeakFilter(processor_ref_->getSampleRate(), frequency, q, gain);
+
+    switch (filter_id) {
+    case GraphicEq::PEAK_BAND_1:
+        *filter_chain.get< GraphicEq::PEAK_BAND_1 >().coefficients = *coefficients;
+        break;
+
+    case GraphicEq::PEAK_BAND_2:
+        *filter_chain.get< GraphicEq::PEAK_BAND_2 >().coefficients = *coefficients;
+        break;
+
+    case GraphicEq::PEAK_BAND_3:
+        *filter_chain.get< GraphicEq::PEAK_BAND_3 >().coefficients = *coefficients;
+        break;
+
+    case GraphicEq::PEAK_BAND_4:
+        *filter_chain.get< GraphicEq::PEAK_BAND_4 >().coefficients = *coefficients;
+        break;
+
+    case GraphicEq::PEAK_BAND_5:
+        *filter_chain.get< GraphicEq::PEAK_BAND_5 >().coefficients = *coefficients;
+        break;
+
+    case GraphicEq::LOW_CUT:
+    case GraphicEq::HIGH_CUT:
+    case GraphicEq::LOW_SHELF:
+    case GraphicEq::HIGH_SHELF:
+    default:
+        break;
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+FilterFactory::updateBandEnablements(GraphicEq::FilterChain& filter_chain) const
+{
+    if (processor_ref_ == nullptr) {
+        return;
+    }
+
+    filter_chain.setBypassed< GraphicEq::LOW_CUT >(!processor_ref_->getFilterEnabled(GraphicEq::LOW_CUT));
+    filter_chain.setBypassed< GraphicEq::LOW_SHELF >(!processor_ref_->getFilterEnabled(GraphicEq::LOW_SHELF));
+    filter_chain.setBypassed< GraphicEq::PEAK_BAND_1 >(!processor_ref_->getFilterEnabled(GraphicEq::PEAK_BAND_1));
+    filter_chain.setBypassed< GraphicEq::PEAK_BAND_2 >(!processor_ref_->getFilterEnabled(GraphicEq::PEAK_BAND_2));
+    filter_chain.setBypassed< GraphicEq::PEAK_BAND_3 >(!processor_ref_->getFilterEnabled(GraphicEq::PEAK_BAND_3));
+    filter_chain.setBypassed< GraphicEq::PEAK_BAND_4 >(!processor_ref_->getFilterEnabled(GraphicEq::PEAK_BAND_4));
+    filter_chain.setBypassed< GraphicEq::PEAK_BAND_5 >(!processor_ref_->getFilterEnabled(GraphicEq::PEAK_BAND_5));
+    filter_chain.setBypassed< GraphicEq::HIGH_SHELF >(!processor_ref_->getFilterEnabled(GraphicEq::HIGH_SHELF));
+    filter_chain.setBypassed< GraphicEq::HIGH_CUT >(!processor_ref_->getFilterEnabled(GraphicEq::HIGH_CUT));
 }
 
 /*---------------------------------------------------------------------------

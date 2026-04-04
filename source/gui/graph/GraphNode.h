@@ -5,7 +5,7 @@
 class GraphNode final : public juce::ToggleButton
 {
 public:
-    GraphNode(juce::AudioProcessorValueTreeState& apvts, const int band_num);
+    GraphNode(juce::AudioProcessorValueTreeState& apvts, const juce::String& band_enablement_parameter);
 
     void paint(juce::Graphics& g) override;
 

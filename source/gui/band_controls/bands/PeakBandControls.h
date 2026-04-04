@@ -3,12 +3,12 @@
 #include <JuceHeader.h>
 
 #include "EqBandBase.h"
-#include "TextToggleButton.h"
+#include "GraphicEqGlobals.h"
 
 class PeakBandControls final : public EqBandBase
 {
 public:
-    PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const int band_num);
+    PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -18,11 +18,10 @@ public:
 private:
     void setFreqLabelText();
     void setGainLabelText();
-    void setSubWidgetEnablement();
+    void setSubWidgetEnablement() override;
 
     bool node_is_active_;
 
-    TextToggleButton   band_enablement_button_;
     CustomRotarySlider freq_slider_;
     CustomRotarySlider gain_slider_;
     CustomRotarySlider q_slider_;

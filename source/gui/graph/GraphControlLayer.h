@@ -32,8 +32,8 @@ private:
     static T getYCoordinateFromMag(const double magnitude, const T bounds_top, const T bounds_bottom)
     {
         const auto mapped = juce::jmap< float >(static_cast< float >(magnitude),
-                                                GraphicEq::MIN_DB,
-                                                GraphicEq::MAX_DB,
+                                                GraphicEq::GRAPH_DB_MIN,
+                                                GraphicEq::GRAPH_DB_MAX,
                                                 static_cast< float >(bounds_bottom),
                                                 static_cast< float >(bounds_top));
 
@@ -51,7 +51,7 @@ private:
     juce::Atomic< bool > parameters_changed_;
     size_t               active_node_;
 
-    FilterFactory::FilterChain filter_chain_;
+    GraphicEq::FilterChain filter_chain_;
 
     std::array< std::unique_ptr< GraphNode >, GraphicEq::NUM_PEAK_BANDS > peak_nodes_;
     std::array< juce::Point< int >, GraphicEq::NUM_PEAK_BANDS >           node_coordinates_;
@@ -59,14 +59,15 @@ private:
     std::array< juce::Value, GraphicEq::NUM_PEAK_BANDS >                  y_values_;
 
     enum PATH_ID {
-        P0,
-        P1,
-        P2,
-        P3,
-        P4,
-        P5,
-        LC,
-        HC,
+        LOW_PATH,
+        LOW_MID_PATH,
+        MID_PATH,
+        HIGH_MID_PATH,
+        HIGH_PATH,
+        LOW_CUT_PATH,
+        HIGH_CUT_PATH,
+        LOW_SHELF_PATH,
+        HIGH_SHELF_PATH,
         ALL,
         NUM_PATHS,
     };

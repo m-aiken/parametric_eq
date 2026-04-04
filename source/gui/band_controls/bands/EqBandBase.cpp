@@ -5,6 +5,17 @@
 /*---------------------------------------------------------------------------
 **
 */
+EqBandBase::EqBandBase(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+    : band_enablement_button_(apvts, filter_id)
+{
+    band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
+
+    addAndMakeVisible(band_enablement_button_);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
 /*static*/ void
 EqBandBase::initialiseLabel(juce::Label& label)
 {

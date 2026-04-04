@@ -42,34 +42,26 @@ public:
     void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
 
     juce::AudioProcessorValueTreeState& getApvts();
-    FilterFactory&                      getFilterFactory();
 
     FftInputDataFifo& getPreEqFftFifo();
     FftInputDataFifo& getPostEqFftFifo();
 
-    bool  getLowCutEnabled() const;
-    float getLowCutFrequency() const;
-    int   getLowCutOrder() const;
+    bool  getFilterEnabled(const GraphicEq::FILTER_ID& filter_id) const;
+    float getFilterFrequency(const GraphicEq::FILTER_ID& filter_id) const;
+    float getFilterGain(const GraphicEq::FILTER_ID& filter_id) const;
+    float getFilterQ(const GraphicEq::FILTER_ID& filter_id) const;
+    int   getFilterOrder(const GraphicEq::FILTER_ID& filter_id) const;
 
-    bool  getHighCutEnabled() const;
-    float getHighCutFrequency() const;
-    int   getHighCutOrder() const;
-
-    bool  getBandEnabled(const int band_index) const;
-    float getBandFrequency(const int band_index) const;
-    float getBandGain(const int band_index) const;
-    float getBandQ(const int band_index) const;
+    void updateFilterChain(GraphicEq::FilterChain& filter_chain) const;
 
 private:
-    void updateFilterChain();
-
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     juce::AudioProcessorValueTreeState apvts_;
     FilterFactory                      filter_factory_;
 
     // vector of filter chains; one per channel.
-    std::vector< FilterFactory::FilterChain > filter_chains_;
+    std::vector< GraphicEq::FilterChain > filter_chains_;
 
     FftInputDataFifo pre_eq_fft_fifo_;
     FftInputDataFifo post_eq_fft_fifo_;

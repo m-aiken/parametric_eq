@@ -5,17 +5,13 @@
 /*---------------------------------------------------------------------------
 **
 */
-PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const int band_num)
-    : node_is_active_(false)
-    , band_enablement_button_(apvts,
-                              getPeakParamName(GraphicEq::PEAK_ENABLED, band_num),
-                              "BAND " + juce::String(band_num + 1))
-    , freq_slider_(apvts, getPeakParamName(GraphicEq::PEAK_FREQ, band_num), "Hz")
-    , gain_slider_(apvts, getPeakParamName(GraphicEq::PEAK_GAIN, band_num), "dB")
-    , q_slider_(apvts, getPeakParamName(GraphicEq::PEAK_Q, band_num), "Q")
+PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+    : EqBandBase(apvts, filter_id)
+    , node_is_active_(false)
+    , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
+    , gain_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
+    , q_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).q_, "Q")
 {
-    band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
-
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();
         repaint();
@@ -31,7 +27,6 @@ PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, co
     initialiseLabel(freq_value_label_);
     initialiseLabel(gain_value_label_);
 
-    addAndMakeVisible(band_enablement_button_);
     addAndMakeVisible(freq_slider_);
     addAndMakeVisible(gain_slider_);
     addAndMakeVisible(q_slider_);

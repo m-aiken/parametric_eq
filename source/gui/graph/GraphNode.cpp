@@ -1,12 +1,11 @@
-#include "GraphicEqGlobals.h"
 #include "GraphNode.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-GraphNode::GraphNode(juce::AudioProcessorValueTreeState& apvts, const int band_num)
-    : attachment_(apvts, getPeakParamName(GraphicEq::PEAK_ENABLED, band_num), *this)
+GraphNode::GraphNode(juce::AudioProcessorValueTreeState& apvts, const juce::String& band_enablement_parameter)
+    : attachment_(apvts, band_enablement_parameter, *this)
 {
 }
 
