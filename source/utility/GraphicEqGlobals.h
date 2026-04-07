@@ -222,8 +222,8 @@ inline constexpr float PEAK_Q_MIN      = 0.1f;
 inline constexpr float PEAK_Q_MAX      = 10.f;
 inline constexpr float PEAK_Q_DEFAULT  = 1.f;
 
-inline const juce::NormalisableRange SHELF_GAIN_NORMALISABLE_RANGE = { SHELF_DB_MIN, SHELF_DB_MAX, 0.5f, 1.f };
-inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE  = { PEAK_DB_MIN, PEAK_DB_MAX, 0.5f, 1.f };
+inline const juce::NormalisableRange SHELF_GAIN_NORMALISABLE_RANGE = { SHELF_DB_MIN, SHELF_DB_MAX, 0.01f, 1.f };
+inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE  = { PEAK_DB_MIN, PEAK_DB_MAX, 0.01f, 1.f };
 inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE     = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
 
 struct PeakBandFrequencySet {
@@ -237,7 +237,7 @@ inline constexpr std::array< PeakBandFrequencySet, NUM_PEAK_BANDS > PEAK_BAND_FR
     PeakBandFrequencySet { 200.f, 500.f, 320.f },     //! Peak Band 2.
     PeakBandFrequencySet { 500.f, 1000.f, 720.f },    //! Peak Band 3.
     PeakBandFrequencySet { 1000.f, 2000.f, 1400.f },  //! Peak Band 4.
-    PeakBandFrequencySet { 2000.f, 5000.f, 3200.f },  //! Peak Band 4.
+    PeakBandFrequencySet { 2000.f, 5000.f, 3200.f },  //! Peak Band 5.
 };
 
 inline constexpr bool PEAK_ENABLED_DEFAULT = true;

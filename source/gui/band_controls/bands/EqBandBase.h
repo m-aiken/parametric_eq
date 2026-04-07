@@ -25,6 +25,7 @@ protected:
 
     static void         initialiseLabel(juce::Label& label);
     static juce::String getFrequencyString(const CustomRotarySlider& slider);
+    static juce::String getGainString(const CustomRotarySlider& slider);
 
     std::function< void() > claimLastActive;
 

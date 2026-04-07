@@ -135,6 +135,19 @@ EqBandBase::getFrequencyString(const CustomRotarySlider& slider)
 /*---------------------------------------------------------------------------
 **
 */
+/*static*/ juce::String
+EqBandBase::getGainString(const CustomRotarySlider& slider)
+{
+    const auto&   db_value           = slider.getValue();
+    const auto&   prefix             = db_value > 0 ? "+" : "";
+    constexpr int num_decimal_places = 2;
+
+    return prefix + juce::String(db_value, num_decimal_places) + " dB";
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
 /*static*/ juce::Rectangle< int >
 EqBandBase::getEnablementButtonBounds() const
 {

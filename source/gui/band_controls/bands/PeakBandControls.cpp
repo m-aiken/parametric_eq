@@ -80,10 +80,7 @@ PeakBandControls::setFreqLabelText()
 void
 PeakBandControls::setGainLabelText()
 {
-    const auto& db_value = gain_slider_.getValue();
-    const auto& prefix   = db_value > 0 ? "+" : "";
-
-    gain_value_label_.setText(prefix + juce::String(db_value) + " dB", juce::sendNotification);
+    gain_value_label_.setText(getGainString(gain_slider_), juce::sendNotification);
 }
 
 /*---------------------------------------------------------------------------
