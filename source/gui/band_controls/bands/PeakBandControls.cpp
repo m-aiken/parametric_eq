@@ -1,17 +1,19 @@
 #include "GraphicEqGlobals.h"
 #include "PeakBandControls.h"
-#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts,
+                                   const GraphicEq::FILTER_ID&         filter_id,
+                                   std::function< void() >&&           callback)
     : EqBandBase(apvts, filter_id)
-    , node_is_active_(false)
     , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
     , gain_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
     , q_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).q_, "Q")
 {
+    claimLastActive = std::move(callback);
+
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();
         repaint();
@@ -42,16 +44,6 @@ PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, co
 **
 */
 void
-PeakBandControls::paint(juce::Graphics& g)
-{
-    g.setColour(node_is_active_ ? Theme::PEAK_BAND_FOCUS : Theme::MAIN_BACKGROUND);
-    g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
 PeakBandControls::resized()
 {
     band_enablement_button_.setBounds(getEnablementButtonBounds());
@@ -71,16 +63,6 @@ PeakBandControls::resized()
 
     freq_value_label_.setBounds(getLabel1Bounds());
     gain_value_label_.setBounds(getLabel2Bounds());
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-PeakBandControls::setNodeIsActive(bool activeState)
-{
-    node_is_active_ = activeState;
-    repaint();
 }
 
 /*---------------------------------------------------------------------------

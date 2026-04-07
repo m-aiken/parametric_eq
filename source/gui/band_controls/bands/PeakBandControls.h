@@ -8,19 +8,16 @@
 class PeakBandControls final : public EqBandBase
 {
 public:
-    PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
+    PeakBandControls(juce::AudioProcessorValueTreeState& apvts,
+                     const GraphicEq::FILTER_ID&         filter_id,
+                     std::function< void() >&&           callback);
 
-    void paint(juce::Graphics& g) override;
     void resized() override;
-
-    void setNodeIsActive(bool activeState);
 
 private:
     void setFreqLabelText();
     void setGainLabelText();
     void setSubWidgetEnablement() override;
-
-    bool node_is_active_;
 
     CustomRotarySlider freq_slider_;
     CustomRotarySlider gain_slider_;

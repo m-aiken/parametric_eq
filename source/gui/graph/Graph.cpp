@@ -31,14 +31,5 @@ Graph::resized()
 }
 
 /*---------------------------------------------------------------------------
-**
-*/
-size_t
-Graph::getActiveNodeIndex() const
-{
-    return control_layer_.getActiveNodeIndex();
-}
-
-/*---------------------------------------------------------------------------
 ** End of File
 */

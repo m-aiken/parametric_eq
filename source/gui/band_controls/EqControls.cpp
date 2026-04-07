@@ -6,15 +6,15 @@
 **
 */
 EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
-    : low_cut_controls_(apvts, GraphicEq::LOW_CUT)
-    , low_shelf_controls_(apvts, GraphicEq::LOW_SHELF)
-    , peak_band_1_(apvts, GraphicEq::PEAK_BAND_1)
-    , peak_band_2_(apvts, GraphicEq::PEAK_BAND_2)
-    , peak_band_3_(apvts, GraphicEq::PEAK_BAND_3)
-    , peak_band_4_(apvts, GraphicEq::PEAK_BAND_4)
-    , peak_band_5_(apvts, GraphicEq::PEAK_BAND_5)
-    , high_shelf_controls_(apvts, GraphicEq::HIGH_SHELF)
-    , high_cut_controls_(apvts, GraphicEq::HIGH_CUT)
+    : low_cut_controls_(apvts, GraphicEq::LOW_CUT, [this]() { setActiveBand(GraphicEq::LOW_CUT); })
+    , low_shelf_controls_(apvts, GraphicEq::LOW_SHELF, [this]() { setActiveBand(GraphicEq::LOW_SHELF); })
+    , peak_band_1_(apvts, GraphicEq::PEAK_BAND_1, [this]() { setActiveBand(GraphicEq::PEAK_BAND_1); })
+    , peak_band_2_(apvts, GraphicEq::PEAK_BAND_2, [this]() { setActiveBand(GraphicEq::PEAK_BAND_2); })
+    , peak_band_3_(apvts, GraphicEq::PEAK_BAND_3, [this]() { setActiveBand(GraphicEq::PEAK_BAND_3); })
+    , peak_band_4_(apvts, GraphicEq::PEAK_BAND_4, [this]() { setActiveBand(GraphicEq::PEAK_BAND_4); })
+    , peak_band_5_(apvts, GraphicEq::PEAK_BAND_5, [this]() { setActiveBand(GraphicEq::PEAK_BAND_5); })
+    , high_shelf_controls_(apvts, GraphicEq::HIGH_SHELF, [this]() { setActiveBand(GraphicEq::HIGH_SHELF); })
+    , high_cut_controls_(apvts, GraphicEq::HIGH_CUT, [this]() { setActiveBand(GraphicEq::HIGH_CUT); })
 {
     addAndMakeVisible(low_cut_controls_);
     addAndMakeVisible(low_shelf_controls_);
@@ -25,6 +25,8 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(peak_band_5_);
     addAndMakeVisible(high_shelf_controls_);
     addAndMakeVisible(high_cut_controls_);
+
+    setActiveBand(GraphicEq::PEAK_BAND_3);
 }
 
 /*---------------------------------------------------------------------------
@@ -73,15 +75,17 @@ EqControls::resized()
 **
 */
 void
-EqControls::setBandHasNodeSelection(const size_t active_node_index)
+EqControls::setActiveBand(const GraphicEq::FILTER_ID& last_active_band)
 {
-    const auto& filter_id = static_cast< GraphicEq::FILTER_ID >(GraphicEq::PEAK_BAND_1 + active_node_index);
-
-    peak_band_1_.setNodeIsActive(filter_id == GraphicEq::PEAK_BAND_1);
-    peak_band_2_.setNodeIsActive(filter_id == GraphicEq::PEAK_BAND_2);
-    peak_band_3_.setNodeIsActive(filter_id == GraphicEq::PEAK_BAND_3);
-    peak_band_4_.setNodeIsActive(filter_id == GraphicEq::PEAK_BAND_4);
-    peak_band_5_.setNodeIsActive(filter_id == GraphicEq::PEAK_BAND_5);
+    low_cut_controls_.setIsLastActiveBand(last_active_band == GraphicEq::LOW_CUT);
+    low_shelf_controls_.setIsLastActiveBand(last_active_band == GraphicEq::LOW_SHELF);
+    peak_band_1_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_1);
+    peak_band_2_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_2);
+    peak_band_3_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_3);
+    peak_band_4_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_4);
+    peak_band_5_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_5);
+    high_shelf_controls_.setIsLastActiveBand(last_active_band == GraphicEq::HIGH_SHELF);
+    high_cut_controls_.setIsLastActiveBand(last_active_band == GraphicEq::HIGH_CUT);
 }
 
 /*---------------------------------------------------------------------------

@@ -12,9 +12,9 @@ public:
     explicit EqControls(juce::AudioProcessorValueTreeState& apvts);
     void resized() override;
 
-    void setBandHasNodeSelection(const size_t active_node_index);
-
 private:
+    void setActiveBand(const GraphicEq::FILTER_ID& last_active_band);
+
     CutBandControls   low_cut_controls_;
     ShelfBandControls low_shelf_controls_;
     PeakBandControls  peak_band_1_;

@@ -8,7 +8,6 @@
 GraphControlLayer::GraphControlLayer(GraphicEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
     , parameters_changed_(false)
-    , active_node_(0)
 {
     auto& apvts = processor_ref_.getApvts();
 
@@ -194,8 +193,6 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
         if (peak_nodes_.at(closest_node) != nullptr && peak_nodes_.at(closest_node)->getToggleState()) {
             x_values_.at(closest_node) = x_frequency;
             y_values_.at(closest_node) = y_decibels;
-
-            active_node_ = closest_node;
         }
     }
 }
@@ -232,15 +229,6 @@ GraphControlLayer::timerCallback()
         updateFilterChain();
         repaint();
     }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-size_t
-GraphControlLayer::getActiveNodeIndex() const
-{
-    return active_node_;
 }
 
 /*---------------------------------------------------------------------------

@@ -25,7 +25,7 @@ public:
     static const juce::Colour ANALYSER_GRID;
     static const juce::Colour ANALYSER_PRE_EQ;
     static const juce::Colour ANALYSER_POST_EQ;
-    static const juce::Colour PEAK_BAND_FOCUS;
+    static const juce::Colour ACTIVE_BAND_BACKGROUND;
     static const juce::Colour TEXT_BUTTON_BG_STD;
     static const juce::Colour TEXT_BUTTON_BG_HOVER;
 

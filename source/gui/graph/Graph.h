@@ -13,8 +13,6 @@ public:
 
     void resized() override;
 
-    size_t getActiveNodeIndex() const;
-
 private:
     GraphBackground   background_;
     GraphWaveform     waveform_pre_eq_;

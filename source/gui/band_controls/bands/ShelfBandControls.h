@@ -8,9 +8,10 @@
 class ShelfBandControls final : public EqBandBase
 {
 public:
-    ShelfBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
+    ShelfBandControls(juce::AudioProcessorValueTreeState& apvts,
+                      const GraphicEq::FILTER_ID&         filter_id,
+                      std::function< void() >&&           callback);
 
-    void paint(juce::Graphics& g) override;
     void resized() override;
 
 private:

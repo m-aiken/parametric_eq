@@ -9,7 +9,6 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     , processor_ref_(p)
     , graph_(p)
     , eq_controls_(processor_ref_.getApvts())
-    , active_node_(graph_.getActiveNodeIndex())
 {
     setLookAndFeel(&lnf_);
 
@@ -17,8 +16,6 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     addAndMakeVisible(eq_controls_);
 
     setSize(1024, 600);
-
-    startTimerHz(20);
 }
 
 /*---------------------------------------------------------------------------
@@ -26,7 +23,6 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
 */
 GraphicEqEditor::~GraphicEqEditor()
 {
-    stopTimer();
     setLookAndFeel(nullptr);
 }
 
@@ -61,18 +57,6 @@ GraphicEqEditor::resized()
     grid.items.add(juce::GridItem(eq_controls_));
 
     grid.performLayout(getLocalBounds());
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphicEqEditor::timerCallback()
-{
-    if (active_node_ != graph_.getActiveNodeIndex()) {
-        active_node_ = graph_.getActiveNodeIndex();
-        eq_controls_.setBandHasNodeSelection(active_node_);
-    }
 }
 
 /*---------------------------------------------------------------------------

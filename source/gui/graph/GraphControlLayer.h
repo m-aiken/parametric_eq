@@ -22,8 +22,6 @@ public:
     void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
     void timerCallback() override;
 
-    size_t getActiveNodeIndex() const;
-
 private:
     void updateFilterChain();
     void updateMagnitudes();
@@ -49,7 +47,6 @@ private:
 
     GraphicEqProcessor&  processor_ref_;
     juce::Atomic< bool > parameters_changed_;
-    size_t               active_node_;
 
     GraphicEq::FilterChain filter_chain_;
 
