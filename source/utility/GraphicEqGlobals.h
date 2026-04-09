@@ -7,11 +7,8 @@ namespace GraphicEq
 
 inline constexpr float MIN_HZ = 20.f;
 inline constexpr float MAX_HZ = 20000.f;
-// inline constexpr float MIN_DB         = -12.f;
-// inline constexpr float MAX_DB         = 12.f;
-
-inline constexpr float GRAPH_DB_MIN = -14.f;
-inline constexpr float GRAPH_DB_MAX = 14.f;
+inline constexpr float MIN_DB = -12.f;
+inline constexpr float MAX_DB = 12.f;
 
 inline constexpr int   WAVEFORM_REFRESH_RATE_HZ          = 60;
 inline constexpr int   WAVEFORM_PATH_RESOLUTION          = 2;
@@ -210,13 +207,13 @@ inline const juce::NormalisableRange HIGH_CUT_FREQ_NORM_RANGE  = { HIGH_CUT_FREQ
 inline const juce::NormalisableRange LOW_SHELF_FREQ_NORM_RANGE = { LOW_SHELF_FREQ_MIN, LOW_SHELF_FREQ_MAX, 1.f, 0.5f };
 inline const juce::NormalisableRange HIGH_SHELF_FREQ_NORM_RANGE = { HIGH_SHELF_FREQ_MIN, HIGH_SHELF_FREQ_MAX, 1.f, 0.2f };
 
-inline constexpr float SHELF_DB_MIN     = -6.f;
-inline constexpr float SHELF_DB_MAX     = 6.f;
+inline constexpr float SHELF_DB_MIN     = MIN_DB / 2.f;
+inline constexpr float SHELF_DB_MAX     = MAX_DB / 2.f;
 inline constexpr float SHELF_DB_DEFAULT = 0.f;
 inline constexpr float SHELF_Q_DEFAULT  = 0.7f;
 
-inline constexpr float PEAK_DB_MIN     = -12.f;
-inline constexpr float PEAK_DB_MAX     = 12.f;
+inline constexpr float PEAK_DB_MIN     = MIN_DB;
+inline constexpr float PEAK_DB_MAX     = MAX_DB;
 inline constexpr float PEAK_DB_DEFAULT = 0.f;
 inline constexpr float PEAK_Q_MIN      = 0.1f;
 inline constexpr float PEAK_Q_MAX      = 10.f;

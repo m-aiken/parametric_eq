@@ -30,8 +30,8 @@ private:
     static T getYCoordinateFromMag(const double magnitude, const T bounds_top, const T bounds_bottom)
     {
         const auto mapped = juce::jmap< float >(static_cast< float >(magnitude),
-                                                GraphicEq::GRAPH_DB_MIN,
-                                                GraphicEq::GRAPH_DB_MAX,
+                                                GraphicEq::MIN_DB,
+                                                GraphicEq::MAX_DB,
                                                 static_cast< float >(bounds_bottom),
                                                 static_cast< float >(bounds_top));
 

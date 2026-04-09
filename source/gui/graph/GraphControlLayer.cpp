@@ -175,8 +175,8 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
         const auto y_decibels = juce::jmap< float >(static_cast< float >(y_coord),
                                                     0.f,
                                                     static_cast< float >(bounds_height),
-                                                    GraphicEq::GRAPH_DB_MAX,
-                                                    GraphicEq::GRAPH_DB_MIN);
+                                                    GraphicEq::MAX_DB,
+                                                    GraphicEq::MIN_DB);
 
         size_t closest_node      = 0;
         auto   shortest_distance = bounds_width;

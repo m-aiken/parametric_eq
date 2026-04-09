@@ -27,13 +27,9 @@ GraphBackground::paint(juce::Graphics& g)
     g.setColour(Theme::ANALYSER_GRID.withAlpha(0.2f));
 
     // dB grid lines.
-    for (auto i = static_cast< int >(GraphicEq::GRAPH_DB_MIN); i <= static_cast< int >(GraphicEq::GRAPH_DB_MAX);
-         i += DB_INTERVAL) {
-        const auto y = juce::jmap< float >(static_cast< float >(i),
-                                           GraphicEq::GRAPH_DB_MIN,
-                                           GraphicEq::GRAPH_DB_MAX,
-                                           full_height_f,
-                                           0.f);
+    for (auto i = static_cast< int >(GraphicEq::MIN_DB); i <= static_cast< int >(GraphicEq::MAX_DB); i += DB_INTERVAL) {
+        const auto y =
+            juce::jmap< float >(static_cast< float >(i), GraphicEq::MIN_DB, GraphicEq::MAX_DB, full_height_f, 0.f);
 
         g.drawLine(2, y, full_width_f - 2, y, 1.f);
     }
@@ -105,9 +101,8 @@ GraphBackground::drawDbLabels(const juce::Graphics& g, const juce::Rectangle< in
     const auto& bounds_height = bounds.getHeight();
     const auto& bounds_x      = bounds.getX();
 
-    for (auto db = static_cast< int >(GraphicEq::GRAPH_DB_MIN); db <= static_cast< int >(GraphicEq::GRAPH_DB_MAX);
-         db += DB_INTERVAL) {
-        const auto raw_y = juce::jmap< int >(db, GraphicEq::GRAPH_DB_MIN, GraphicEq::GRAPH_DB_MAX, bounds_height, 0);
+    for (auto db = static_cast< int >(GraphicEq::MIN_DB); db <= static_cast< int >(GraphicEq::MAX_DB); db += DB_INTERVAL) {
+        const auto raw_y     = juce::jmap< int >(db, GraphicEq::MIN_DB, GraphicEq::MAX_DB, bounds_height, 0);
         const auto shifted_y = raw_y - text_height - Theme::UI_PADDING;
         const auto text      = (db > 0 ? "+" : "") + juce::String(db) + " dB";
 

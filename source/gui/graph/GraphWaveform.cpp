@@ -13,8 +13,8 @@ GraphWaveform::GraphWaveform(const double sample_rate, FftInputDataFifo& fft_inp
     , smoothed_fft_output_()
 {
     fft_input_buffer_.setSize(1, GraphicEq::FFT::INPUT_BUFFER_SIZE);
-    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), GraphicEq::GRAPH_DB_MIN);
-    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), GraphicEq::GRAPH_DB_MIN);
+    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), GraphicEq::MIN_DB);
+    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), GraphicEq::MIN_DB);
 
     startTimerHz(GraphicEq::WAVEFORM_REFRESH_RATE_HZ);
 }
@@ -72,7 +72,7 @@ GraphWaveform::performFft()
                                           GraphicEq::FFT::NUM_BINS + 1);
 
     for (auto i = 0; i < GraphicEq::FFT::NUM_BINS + 1; ++i) {
-        fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], GraphicEq::GRAPH_DB_MIN);
+        fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], GraphicEq::MIN_DB);
     }
 }
 
@@ -86,7 +86,7 @@ GraphWaveform::smoothFftOutput()
         const auto previous_value = smoothed_fft_output_[i];
         const auto candidate      = fft_output_buffer_[i];
         const auto final_value    = juce::jmax(candidate, previous_value - GraphicEq::WAVEFORM_DECAY_RATE);
-        smoothed_fft_output_[i]   = juce::jlimit(GraphicEq::GRAPH_DB_MIN, GraphicEq::GRAPH_DB_MAX, final_value);
+        smoothed_fft_output_[i]   = juce::jlimit(GraphicEq::MIN_DB, GraphicEq::MAX_DB, final_value);
     }
 }
 
@@ -113,8 +113,8 @@ GraphWaveform::generatePath()
 
     for (auto i = 1; i < GraphicEq::FFT::NUM_BINS + 1; i += GraphicEq::WAVEFORM_PATH_RESOLUTION) {
         y_coordinate = juce::jmap< float >(smoothed_fft_output_.at(i),
-                                           GraphicEq::GRAPH_DB_MIN,
-                                           GraphicEq::GRAPH_DB_MAX,
+                                           GraphicEq::MIN_DB,
+                                           GraphicEq::MAX_DB,
                                            bounds_bottom,
                                            bounds_y);
 
