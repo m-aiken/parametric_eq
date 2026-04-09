@@ -8,9 +8,7 @@
 class PeakBandControls final : public EqBandBase
 {
 public:
-    PeakBandControls(juce::AudioProcessorValueTreeState& apvts,
-                     const GraphicEq::FILTER_ID&         filter_id,
-                     std::function< void() >&&           callback);
+    PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
 
     void resized() override;
 

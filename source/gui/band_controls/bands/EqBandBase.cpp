@@ -14,48 +14,6 @@ EqBandBase::EqBandBase(juce::AudioProcessorValueTreeState& apvts, const GraphicE
     band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
 
     addAndMakeVisible(band_enablement_button_);
-
-    const auto& [enabled_, frequency_, gain_, q_, slope_] = GraphicEq::PARAMETER_MAP.at(filter_id_);
-
-    if (frequency_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(frequency_)->addListener(this);
-    }
-
-    if (gain_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(gain_)->addListener(this);
-    }
-
-    if (q_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(q_)->addListener(this);
-    }
-
-    if (slope_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(slope_)->addListener(this);
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-EqBandBase::~EqBandBase()
-{
-    const auto& [enabled_, frequency_, gain_, q_, slope_] = GraphicEq::PARAMETER_MAP.at(filter_id_);
-
-    if (frequency_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(frequency_)->removeListener(this);
-    }
-
-    if (gain_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(gain_)->removeListener(this);
-    }
-
-    if (q_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(q_)->removeListener(this);
-    }
-
-    if (slope_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
-        apvts_.getParameter(slope_)->removeListener(this);
-    }
 }
 
 /*---------------------------------------------------------------------------
@@ -66,29 +24,6 @@ EqBandBase::paint(juce::Graphics& g)
 {
     g.setColour(is_last_active_band_ ? Theme::ACTIVE_BAND_BACKGROUND : Theme::MAIN_BACKGROUND);
     g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-EqBandBase::parameterValueChanged(int parameter_index, float new_value)
-{
-    juce::ignoreUnused(parameter_index, new_value);
-
-    juce::MessageManagerLock mml;
-    claimLastActive();
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-EqBandBase::parameterGestureChanged(int parameter_index, bool gesture_is_starting)
-{
-    juce::ignoreUnused(parameter_index, gesture_is_starting);
-
-    // Do nothing. Only implemented because it's a pure virtual method of juce::AudioProcessorParameter::Listener.
 }
 
 /*---------------------------------------------------------------------------

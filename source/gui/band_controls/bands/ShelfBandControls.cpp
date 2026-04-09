@@ -4,15 +4,11 @@
 /*---------------------------------------------------------------------------
 **
 */
-ShelfBandControls::ShelfBandControls(juce::AudioProcessorValueTreeState& apvts,
-                                     const GraphicEq::FILTER_ID&         filter_id,
-                                     std::function< void() >&&           callback)
+ShelfBandControls::ShelfBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
     : EqBandBase(apvts, filter_id)
     , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
     , gain_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
 {
-    claimLastActive = std::move(callback);
-
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();
         repaint();

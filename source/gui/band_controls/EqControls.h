@@ -6,14 +6,21 @@
 #include "PeakBandControls.h"
 #include "ShelfBandControls.h"
 
-class EqControls final : public juce::Component
+class EqControls final
+    : public juce::Component
+    , public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     explicit EqControls(juce::AudioProcessorValueTreeState& apvts);
+    ~EqControls() override;
+
     void resized() override;
+    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
 private:
     void setActiveBand(const GraphicEq::FILTER_ID& last_active_band);
+
+    juce::AudioProcessorValueTreeState& apvts_;
 
     CutBandControls   low_cut_controls_;
     ShelfBandControls low_shelf_controls_;

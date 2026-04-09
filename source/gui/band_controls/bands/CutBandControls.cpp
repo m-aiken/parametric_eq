@@ -5,15 +5,11 @@
 /*---------------------------------------------------------------------------
 **
 */
-CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts,
-                                 const GraphicEq::FILTER_ID&         filter_id,
-                                 std::function< void() >&&           callback)
+CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
     : EqBandBase(apvts, filter_id)
     , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
     , slope_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).slope_, "dB")
 {
-    claimLastActive = std::move(callback);
-
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();
         repaint();

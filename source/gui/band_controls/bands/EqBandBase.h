@@ -6,17 +6,12 @@
 #include "GraphicEqGlobals.h"
 #include "TextToggleButton.h"
 
-class EqBandBase
-    : public juce::Component
-    , public juce::AudioProcessorParameter::Listener
+class EqBandBase : public juce::Component
 {
 public:
     EqBandBase(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
-    ~EqBandBase() override;
 
     void paint(juce::Graphics& g) override;
-    void parameterValueChanged(int parameter_index, float new_value) override;
-    void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
 
     void setIsLastActiveBand(const bool is_last_active);
 
@@ -26,8 +21,6 @@ protected:
     static void         initialiseLabel(juce::Label& label);
     static juce::String getFrequencyString(const CustomRotarySlider& slider);
     static juce::String getGainString(const CustomRotarySlider& slider);
-
-    std::function< void() > claimLastActive;
 
     enum SUB_WIDGET_PROPORTIONS {
         ENABLEMENT_BUTTON = 20,

@@ -8,9 +8,7 @@
 class CutBandControls final : public EqBandBase
 {
 public:
-    CutBandControls(juce::AudioProcessorValueTreeState& apvts,
-                    const GraphicEq::FILTER_ID&         filter_id,
-                    std::function< void() >&&           callback);
+    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
 
     void resized() override;
 
