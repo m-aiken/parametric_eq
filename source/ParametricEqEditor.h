@@ -5,24 +5,24 @@
 #include "CustomLookAndFeel.h"
 #include "EqControls.h"
 #include "Graph.h"
-#include "GraphicEqProcessor.h"
+#include "ParametricEqProcessor.h"
 
-class GraphicEqEditor final : public juce::AudioProcessorEditor
+class ParametricEqEditor final : public juce::AudioProcessorEditor
 {
 public:
-    explicit GraphicEqEditor(GraphicEqProcessor& p);
-    ~GraphicEqEditor() override;
+    explicit ParametricEqEditor(ParametricEqProcessor& p);
+    ~ParametricEqEditor() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
 
 private:
-    GraphicEqProcessor& processor_ref_;
+    ParametricEqProcessor& processor_ref_;
 
     Graph      graph_;
     EqControls eq_controls_;
 
     CustomLookAndFeel lnf_;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqEditor)
 };

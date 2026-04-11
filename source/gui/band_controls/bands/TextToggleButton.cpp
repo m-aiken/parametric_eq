@@ -1,16 +1,16 @@
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "TextToggleButton.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-TextToggleButton::TextToggleButton(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
-    : button_attachment_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
+TextToggleButton::TextToggleButton(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id)
+    : button_attachment_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
     , background_colour_(Theme::TEXT_BUTTON_BG_STD)
 {
     setMouseCursor(juce::MouseCursor::PointingHandCursor);
-    setButtonText(GraphicEq::getFilterButtonLabel(filter_id));
+    setButtonText(ParametricEq::getFilterButtonLabel(filter_id));
 }
 
 /*---------------------------------------------------------------------------

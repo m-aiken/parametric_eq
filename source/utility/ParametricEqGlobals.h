@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-namespace GraphicEq
+namespace ParametricEq
 {
 
 inline constexpr float MIN_HZ = 20.f;
@@ -264,4 +264,4 @@ namespace FFT
 
 }  // namespace FFT
 
-}  // namespace GraphicEq
+}  // namespace ParametricEq

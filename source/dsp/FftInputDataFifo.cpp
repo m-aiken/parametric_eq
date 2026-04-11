@@ -1,12 +1,12 @@
 #include "FftInputDataFifo.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 
 /*---------------------------------------------------------------------------
 **
 */
 FftInputDataFifo::FftInputDataFifo()
 {
-    fifo_.setSize(1, GraphicEq::FFT::INPUT_BUFFER_SIZE);
+    fifo_.setSize(1, ParametricEq::FFT::INPUT_BUFFER_SIZE);
 }
 
 /*---------------------------------------------------------------------------

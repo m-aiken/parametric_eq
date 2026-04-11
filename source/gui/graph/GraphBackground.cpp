@@ -1,5 +1,5 @@
 #include "GraphBackground.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "Theme.h"
 
 /*static*/ const std::vector< float > GraphBackground::HZ_LIST = {
@@ -27,17 +27,20 @@ GraphBackground::paint(juce::Graphics& g)
     g.setColour(Theme::ANALYSER_GRID.withAlpha(0.2f));
 
     // dB grid lines.
-    for (auto i = static_cast< int >(GraphicEq::MIN_DB); i <= static_cast< int >(GraphicEq::MAX_DB); i += DB_INTERVAL) {
+    for (auto i = static_cast< int >(ParametricEq::MIN_DB); i <= static_cast< int >(ParametricEq::MAX_DB);
+         i += DB_INTERVAL) {
         const auto y =
-            juce::jmap< float >(static_cast< float >(i), GraphicEq::MIN_DB, GraphicEq::MAX_DB, full_height_f, 0.f);
+            juce::jmap< float >(static_cast< float >(i), ParametricEq::MIN_DB, ParametricEq::MAX_DB, full_height_f, 0.f);
 
         g.drawLine(2, y, full_width_f - 2, y, 1.f);
     }
 
     // Hz grid lines.
-    for (auto i = static_cast< int >(GraphicEq::MIN_HZ) + 1; i < static_cast< int >(GraphicEq::MAX_HZ) - 1; ++i) {
+    for (auto i = static_cast< int >(ParametricEq::MIN_HZ) + 1; i < static_cast< int >(ParametricEq::MAX_HZ) - 1; ++i) {
         if (shouldDrawFrequency(i)) {
-            const auto raw_x = juce::mapFromLog10< float >(static_cast< float >(i), GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
+            const auto raw_x   = juce::mapFromLog10< float >(static_cast< float >(i),
+                                                           ParametricEq::MIN_HZ,
+                                                           ParametricEq::MAX_HZ);
             const auto x_coord = static_cast< int >(full_width_f * raw_x);
 
             g.setColour(Theme::ANALYSER_GRID.withAlpha(getAlphaForFrequency(i)));
@@ -101,8 +104,9 @@ GraphBackground::drawDbLabels(const juce::Graphics& g, const juce::Rectangle< in
     const auto& bounds_height = bounds.getHeight();
     const auto& bounds_x      = bounds.getX();
 
-    for (auto db = static_cast< int >(GraphicEq::MIN_DB); db <= static_cast< int >(GraphicEq::MAX_DB); db += DB_INTERVAL) {
-        const auto raw_y     = juce::jmap< int >(db, GraphicEq::MIN_DB, GraphicEq::MAX_DB, bounds_height, 0);
+    for (auto db = static_cast< int >(ParametricEq::MIN_DB); db <= static_cast< int >(ParametricEq::MAX_DB);
+         db += DB_INTERVAL) {
+        const auto raw_y     = juce::jmap< int >(db, ParametricEq::MIN_DB, ParametricEq::MAX_DB, bounds_height, 0);
         const auto shifted_y = raw_y - text_height - Theme::UI_PADDING;
         const auto text      = (db > 0 ? "+" : "") + juce::String(db) + " dB";
 
@@ -122,7 +126,7 @@ GraphBackground::drawFrequencyLabels(const juce::Graphics& g, const juce::Rectan
 
     for (auto i = 1; i < HZ_LIST.size() - 1; ++i) {
         auto       hz        = HZ_LIST.at(i);
-        const auto raw_x     = juce::mapFromLog10< float >(hz, GraphicEq::MIN_HZ, GraphicEq::MAX_HZ);
+        const auto raw_x     = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
         const auto shifted_x = static_cast< int >(bounds_width * raw_x) + Theme::UI_PADDING;
 
         juce::String suffix = " Hz";

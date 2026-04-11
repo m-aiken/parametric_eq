@@ -3,12 +3,12 @@
 #include <JuceHeader.h>
 
 #include "EqBandBase.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 
 class CutBandControls final : public EqBandBase
 {
 public:
-    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
+    CutBandControls(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id);
 
     void resized() override;
 

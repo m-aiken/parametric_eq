@@ -1,38 +1,38 @@
-#include "GraphicEqEditor.h"
-#include "GraphicEqProcessor.h"
+#include "ParametricEqEditor.h"
+#include "ParametricEqProcessor.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-GraphicEqProcessor::GraphicEqProcessor()
+ParametricEqProcessor::ParametricEqProcessor()
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true))
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
     , filter_factory_(this)
 {
-    const auto& low_cut_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::LOW_CUT);
+    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
     apvts_.getParameter(low_cut_parameters.enabled_)->addListener(this);
     apvts_.getParameter(low_cut_parameters.frequency_)->addListener(this);
     apvts_.getParameter(low_cut_parameters.slope_)->addListener(this);
 
-    const auto& high_cut_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::HIGH_CUT);
+    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
     apvts_.getParameter(high_cut_parameters.enabled_)->addListener(this);
     apvts_.getParameter(high_cut_parameters.frequency_)->addListener(this);
     apvts_.getParameter(high_cut_parameters.slope_)->addListener(this);
 
-    const auto& low_shelf_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::LOW_SHELF);
+    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
     apvts_.getParameter(low_shelf_parameters.enabled_)->addListener(this);
     apvts_.getParameter(low_shelf_parameters.frequency_)->addListener(this);
     apvts_.getParameter(low_shelf_parameters.gain_)->addListener(this);
 
-    const auto& high_shelf_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::HIGH_SHELF);
+    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
     apvts_.getParameter(high_shelf_parameters.enabled_)->addListener(this);
     apvts_.getParameter(high_shelf_parameters.frequency_)->addListener(this);
     apvts_.getParameter(high_shelf_parameters.gain_)->addListener(this);
 
-    for (int i = GraphicEq::PEAK_BAND_1; i <= GraphicEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = GraphicEq::PARAMETER_MAP.at(static_cast< GraphicEq::FILTER_ID >(i));
+    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
+        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
 
         apvts_.getParameter(peak_band_parameters.enabled_)->addListener(this);
         apvts_.getParameter(peak_band_parameters.frequency_)->addListener(this);
@@ -44,30 +44,30 @@ GraphicEqProcessor::GraphicEqProcessor()
 /*---------------------------------------------------------------------------
 **
 */
-GraphicEqProcessor::~GraphicEqProcessor()
+ParametricEqProcessor::~ParametricEqProcessor()
 {
-    const auto& low_cut_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::LOW_CUT);
+    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
     apvts_.getParameter(low_cut_parameters.enabled_)->removeListener(this);
     apvts_.getParameter(low_cut_parameters.frequency_)->removeListener(this);
     apvts_.getParameter(low_cut_parameters.slope_)->removeListener(this);
 
-    const auto& high_cut_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::HIGH_CUT);
+    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
     apvts_.getParameter(high_cut_parameters.enabled_)->removeListener(this);
     apvts_.getParameter(high_cut_parameters.frequency_)->removeListener(this);
     apvts_.getParameter(high_cut_parameters.slope_)->removeListener(this);
 
-    const auto& low_shelf_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::LOW_SHELF);
+    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
     apvts_.getParameter(low_shelf_parameters.enabled_)->removeListener(this);
     apvts_.getParameter(low_shelf_parameters.frequency_)->removeListener(this);
     apvts_.getParameter(low_shelf_parameters.gain_)->removeListener(this);
 
-    const auto& high_shelf_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::HIGH_SHELF);
+    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
     apvts_.getParameter(high_shelf_parameters.enabled_)->removeListener(this);
     apvts_.getParameter(high_shelf_parameters.frequency_)->removeListener(this);
     apvts_.getParameter(high_shelf_parameters.gain_)->removeListener(this);
 
-    for (int i = GraphicEq::PEAK_BAND_1; i <= GraphicEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = GraphicEq::PARAMETER_MAP.at(static_cast< GraphicEq::FILTER_ID >(i));
+    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
+        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
 
         apvts_.getParameter(peak_band_parameters.enabled_)->removeListener(this);
         apvts_.getParameter(peak_band_parameters.frequency_)->removeListener(this);
@@ -80,7 +80,7 @@ GraphicEqProcessor::~GraphicEqProcessor()
 **
 */
 const juce::String
-GraphicEqProcessor::getName() const
+ParametricEqProcessor::getName() const
 {
     return JucePlugin_Name;
 }
@@ -89,7 +89,7 @@ GraphicEqProcessor::getName() const
 **
 */
 bool
-GraphicEqProcessor::acceptsMidi() const
+ParametricEqProcessor::acceptsMidi() const
 {
     return false;
 }
@@ -98,7 +98,7 @@ GraphicEqProcessor::acceptsMidi() const
 **
 */
 bool
-GraphicEqProcessor::producesMidi() const
+ParametricEqProcessor::producesMidi() const
 {
     return false;
 }
@@ -107,7 +107,7 @@ GraphicEqProcessor::producesMidi() const
 **
 */
 bool
-GraphicEqProcessor::isMidiEffect() const
+ParametricEqProcessor::isMidiEffect() const
 {
     return false;
 }
@@ -116,7 +116,7 @@ GraphicEqProcessor::isMidiEffect() const
 **
 */
 double
-GraphicEqProcessor::getTailLengthSeconds() const
+ParametricEqProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
@@ -125,7 +125,7 @@ GraphicEqProcessor::getTailLengthSeconds() const
 **
 */
 int
-GraphicEqProcessor::getNumPrograms()
+ParametricEqProcessor::getNumPrograms()
 {
     return 1;
 }
@@ -134,7 +134,7 @@ GraphicEqProcessor::getNumPrograms()
 **
 */
 int
-GraphicEqProcessor::getCurrentProgram()
+ParametricEqProcessor::getCurrentProgram()
 {
     return 0;
 }
@@ -143,7 +143,7 @@ GraphicEqProcessor::getCurrentProgram()
 **
 */
 void
-GraphicEqProcessor::setCurrentProgram(int index)
+ParametricEqProcessor::setCurrentProgram(int index)
 {
     juce::ignoreUnused(index);
 }
@@ -152,7 +152,7 @@ GraphicEqProcessor::setCurrentProgram(int index)
 **
 */
 const juce::String
-GraphicEqProcessor::getProgramName(int index)
+ParametricEqProcessor::getProgramName(int index)
 {
     juce::ignoreUnused(index);
     return {};
@@ -162,7 +162,7 @@ GraphicEqProcessor::getProgramName(int index)
 **
 */
 void
-GraphicEqProcessor::changeProgramName(int index, const juce::String& new_name)
+ParametricEqProcessor::changeProgramName(int index, const juce::String& new_name)
 {
     juce::ignoreUnused(index, new_name);
 }
@@ -171,7 +171,7 @@ GraphicEqProcessor::changeProgramName(int index, const juce::String& new_name)
 **
 */
 void
-GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
+ParametricEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
 {
     const juce::dsp::ProcessSpec spec {
         .sampleRate       = sample_rate,
@@ -191,7 +191,7 @@ GraphicEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
 **
 */
 void
-GraphicEqProcessor::releaseResources()
+ParametricEqProcessor::releaseResources()
 {
 }
 
@@ -199,7 +199,7 @@ GraphicEqProcessor::releaseResources()
 **
 */
 bool
-GraphicEqProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+ParametricEqProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
     const auto& output_layout  = layouts.getMainOutputChannelSet();
     const bool  is_mono_out    = output_layout == juce::AudioChannelSet::mono();
@@ -213,7 +213,7 @@ GraphicEqProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 **
 */
 void
-GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiBuffer& midi_messages)
+ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiBuffer& midi_messages)
 {
     juce::ignoreUnused(midi_messages);
 
@@ -250,7 +250,7 @@ GraphicEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiB
 **
 */
 bool
-GraphicEqProcessor::hasEditor() const
+ParametricEqProcessor::hasEditor() const
 {
     return true;
 }
@@ -259,16 +259,16 @@ GraphicEqProcessor::hasEditor() const
 **
 */
 juce::AudioProcessorEditor*
-GraphicEqProcessor::createEditor()
+ParametricEqProcessor::createEditor()
 {
-    return new GraphicEqEditor(*this);
+    return new ParametricEqEditor(*this);
 }
 
 /*---------------------------------------------------------------------------
 **
 */
 void
-GraphicEqProcessor::getStateInformation(juce::MemoryBlock& dest_data)
+ParametricEqProcessor::getStateInformation(juce::MemoryBlock& dest_data)
 {
     juce::MemoryOutputStream mos(dest_data, true);
     apvts_.state.writeToStream(mos);
@@ -278,7 +278,7 @@ GraphicEqProcessor::getStateInformation(juce::MemoryBlock& dest_data)
 **
 */
 void
-GraphicEqProcessor::setStateInformation(const void* data, int size_in_bytes)
+ParametricEqProcessor::setStateInformation(const void* data, int size_in_bytes)
 {
     const auto& tree = juce::ValueTree::readFromData(data, size_in_bytes);
 
@@ -291,7 +291,7 @@ GraphicEqProcessor::setStateInformation(const void* data, int size_in_bytes)
 **
 */
 void
-GraphicEqProcessor::parameterValueChanged(int parameter_index, float new_value)
+ParametricEqProcessor::parameterValueChanged(int parameter_index, float new_value)
 {
     juce::ignoreUnused(parameter_index, new_value);
 
@@ -304,7 +304,7 @@ GraphicEqProcessor::parameterValueChanged(int parameter_index, float new_value)
 **
 */
 void
-GraphicEqProcessor::parameterGestureChanged(int parameter_index, bool gesture_is_starting)
+ParametricEqProcessor::parameterGestureChanged(int parameter_index, bool gesture_is_starting)
 {
     juce::ignoreUnused(parameter_index, gesture_is_starting);
 
@@ -315,7 +315,7 @@ GraphicEqProcessor::parameterGestureChanged(int parameter_index, bool gesture_is
 **
 */
 juce::AudioProcessorValueTreeState&
-GraphicEqProcessor::getApvts()
+ParametricEqProcessor::getApvts()
 {
     return apvts_;
 }
@@ -324,7 +324,7 @@ GraphicEqProcessor::getApvts()
 **
 */
 FftInputDataFifo&
-GraphicEqProcessor::getPreEqFftFifo()
+ParametricEqProcessor::getPreEqFftFifo()
 {
     return pre_eq_fft_fifo_;
 }
@@ -333,7 +333,7 @@ GraphicEqProcessor::getPreEqFftFifo()
 **
 */
 FftInputDataFifo&
-GraphicEqProcessor::getPostEqFftFifo()
+ParametricEqProcessor::getPostEqFftFifo()
 {
     return post_eq_fft_fifo_;
 }
@@ -342,12 +342,12 @@ GraphicEqProcessor::getPostEqFftFifo()
 **
 */
 bool
-GraphicEqProcessor::getFilterEnabled(const GraphicEq::FILTER_ID& filter_id) const
+ParametricEqProcessor::getFilterEnabled(const ParametricEq::FILTER_ID& filter_id) const
 {
     bool        ret = false;
-    const auto& id  = GraphicEq::PARAMETER_MAP.at(filter_id).enabled_;
+    const auto& id  = ParametricEq::PARAMETER_MAP.at(filter_id).enabled_;
 
-    if (id != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+    if (id != ParametricEq::PARAMETER_NOT_SUPPORTED) {
         const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(id));
 
         if (p != nullptr) {
@@ -362,12 +362,12 @@ GraphicEqProcessor::getFilterEnabled(const GraphicEq::FILTER_ID& filter_id) cons
 **
 */
 float
-GraphicEqProcessor::getFilterFrequency(const GraphicEq::FILTER_ID& filter_id) const
+ParametricEqProcessor::getFilterFrequency(const ParametricEq::FILTER_ID& filter_id) const
 {
-    float       ret = GraphicEq::MIN_HZ;
-    const auto& id  = GraphicEq::PARAMETER_MAP.at(filter_id).frequency_;
+    float       ret = ParametricEq::MIN_HZ;
+    const auto& id  = ParametricEq::PARAMETER_MAP.at(filter_id).frequency_;
 
-    if (id != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+    if (id != ParametricEq::PARAMETER_NOT_SUPPORTED) {
         const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
 
         if (p != nullptr) {
@@ -382,12 +382,12 @@ GraphicEqProcessor::getFilterFrequency(const GraphicEq::FILTER_ID& filter_id) co
 **
 */
 float
-GraphicEqProcessor::getFilterGain(const GraphicEq::FILTER_ID& filter_id) const
+ParametricEqProcessor::getFilterGain(const ParametricEq::FILTER_ID& filter_id) const
 {
     float       ret = 1.f;
-    const auto& id  = GraphicEq::PARAMETER_MAP.at(filter_id).gain_;
+    const auto& id  = ParametricEq::PARAMETER_MAP.at(filter_id).gain_;
 
-    if (id != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+    if (id != ParametricEq::PARAMETER_NOT_SUPPORTED) {
         const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
 
         if (p != nullptr) {
@@ -402,12 +402,12 @@ GraphicEqProcessor::getFilterGain(const GraphicEq::FILTER_ID& filter_id) const
 **
 */
 float
-GraphicEqProcessor::getFilterQ(const GraphicEq::FILTER_ID& filter_id) const
+ParametricEqProcessor::getFilterQ(const ParametricEq::FILTER_ID& filter_id) const
 {
     float       ret = 0.f;
-    const auto& id  = GraphicEq::PARAMETER_MAP.at(filter_id).q_;
+    const auto& id  = ParametricEq::PARAMETER_MAP.at(filter_id).q_;
 
-    if (id != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+    if (id != ParametricEq::PARAMETER_NOT_SUPPORTED) {
         const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
 
         if (p != nullptr) {
@@ -422,12 +422,12 @@ GraphicEqProcessor::getFilterQ(const GraphicEq::FILTER_ID& filter_id) const
 **
 */
 int
-GraphicEqProcessor::getFilterOrder(const GraphicEq::FILTER_ID& filter_id) const
+ParametricEqProcessor::getFilterOrder(const ParametricEq::FILTER_ID& filter_id) const
 {
-    int         ret = GraphicEq::SLOPE_48_DB_PER_OCTAVE * 2;
-    const auto& id  = GraphicEq::PARAMETER_MAP.at(filter_id).slope_;
+    int         ret = ParametricEq::SLOPE_48_DB_PER_OCTAVE * 2;
+    const auto& id  = ParametricEq::PARAMETER_MAP.at(filter_id).slope_;
 
-    if (id != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+    if (id != ParametricEq::PARAMETER_NOT_SUPPORTED) {
         if (const auto* p = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(id)); p != nullptr) {
             ret = (p->getIndex() + 1) * 2;
         }
@@ -440,32 +440,32 @@ GraphicEqProcessor::getFilterOrder(const GraphicEq::FILTER_ID& filter_id) const
 **
 */
 void
-GraphicEqProcessor::updateFilterChain(GraphicEq::FilterChain& filter_chain) const
+ParametricEqProcessor::updateFilterChain(ParametricEq::FilterChain& filter_chain) const
 {
     // Update the enabled/disabled state of each filter in the chain.
     filter_factory_.updateBandEnablements(filter_chain);
 
     // Update the coefficients.
-    if (getFilterEnabled(GraphicEq::LOW_CUT)) {
-        filter_factory_.updateCutCoefficients(filter_chain, GraphicEq::LOW_CUT);
+    if (getFilterEnabled(ParametricEq::LOW_CUT)) {
+        filter_factory_.updateCutCoefficients(filter_chain, ParametricEq::LOW_CUT);
     }
 
-    if (getFilterEnabled(GraphicEq::LOW_SHELF)) {
+    if (getFilterEnabled(ParametricEq::LOW_SHELF)) {
         filter_factory_.updateLowShelfCoefficients(filter_chain);
     }
 
-    for (int i = GraphicEq::PEAK_BAND_1; i <= GraphicEq::PEAK_BAND_5; ++i) {
-        if (const auto& filter_id = static_cast< GraphicEq::FILTER_ID >(i); getFilterEnabled(filter_id)) {
+    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
+        if (const auto& filter_id = static_cast< ParametricEq::FILTER_ID >(i); getFilterEnabled(filter_id)) {
             filter_factory_.updatePeakCoefficients(filter_chain, filter_id);
         }
     }
 
-    if (getFilterEnabled(GraphicEq::HIGH_SHELF)) {
+    if (getFilterEnabled(ParametricEq::HIGH_SHELF)) {
         filter_factory_.updateHighShelfCoefficients(filter_chain);
     }
 
-    if (getFilterEnabled(GraphicEq::HIGH_CUT)) {
-        filter_factory_.updateCutCoefficients(filter_chain, GraphicEq::HIGH_CUT);
+    if (getFilterEnabled(ParametricEq::HIGH_CUT)) {
+        filter_factory_.updateCutCoefficients(filter_chain, ParametricEq::HIGH_CUT);
     }
 }
 
@@ -473,85 +473,85 @@ GraphicEqProcessor::updateFilterChain(GraphicEq::FilterChain& filter_chain) cons
 **
 */
 juce::AudioProcessorValueTreeState::ParameterLayout
-GraphicEqProcessor::createParameterLayout()
+ParametricEqProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    const auto& low_cut_parameters    = GraphicEq::PARAMETER_MAP.at(GraphicEq::LOW_CUT);
-    const auto& high_cut_parameters   = GraphicEq::PARAMETER_MAP.at(GraphicEq::HIGH_CUT);
-    const auto& low_shelf_parameters  = GraphicEq::PARAMETER_MAP.at(GraphicEq::LOW_SHELF);
-    const auto& high_shelf_parameters = GraphicEq::PARAMETER_MAP.at(GraphicEq::HIGH_SHELF);
+    const auto& low_cut_parameters    = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
+    const auto& high_cut_parameters   = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
+    const auto& low_shelf_parameters  = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
+    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
 
     // Low cut parameters.
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(low_cut_parameters.enabled_, 1),
                                                             low_cut_parameters.enabled_,
-                                                            GraphicEq::LOW_CUT_ENABLED_DEFAULT));
+                                                            ParametricEq::LOW_CUT_ENABLED_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(low_cut_parameters.frequency_, 1),
                                                              low_cut_parameters.frequency_,
-                                                             GraphicEq::LOW_CUT_FREQ_NORM_RANGE,
-                                                             GraphicEq::LOW_CUT_FREQ_DEFAULT));
+                                                             ParametricEq::LOW_CUT_FREQ_NORM_RANGE,
+                                                             ParametricEq::LOW_CUT_FREQ_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(low_cut_parameters.slope_, 1),
                                                               low_cut_parameters.slope_,
-                                                              GraphicEq::CUT_FILTER_SLOPE_CHOICES,
-                                                              GraphicEq::LOW_CUT_SLOPE_DEFAULT));
+                                                              ParametricEq::CUT_FILTER_SLOPE_CHOICES,
+                                                              ParametricEq::LOW_CUT_SLOPE_DEFAULT));
 
     // High cut parameters.
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(high_cut_parameters.enabled_, 1),
                                                             high_cut_parameters.enabled_,
-                                                            GraphicEq::HIGH_CUT_ENABLED_DEFAULT));
+                                                            ParametricEq::HIGH_CUT_ENABLED_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_cut_parameters.frequency_, 1),
                                                              high_cut_parameters.frequency_,
-                                                             GraphicEq::HIGH_CUT_FREQ_NORM_RANGE,
-                                                             GraphicEq::HIGH_CUT_FREQ_DEFAULT));
+                                                             ParametricEq::HIGH_CUT_FREQ_NORM_RANGE,
+                                                             ParametricEq::HIGH_CUT_FREQ_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(high_cut_parameters.slope_, 1),
                                                               high_cut_parameters.slope_,
-                                                              GraphicEq::CUT_FILTER_SLOPE_CHOICES,
-                                                              GraphicEq::HIGH_CUT_SLOPE_DEFAULT));
+                                                              ParametricEq::CUT_FILTER_SLOPE_CHOICES,
+                                                              ParametricEq::HIGH_CUT_SLOPE_DEFAULT));
 
     // Low shelf parameters.
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(low_shelf_parameters.enabled_, 1),
                                                             low_shelf_parameters.enabled_,
-                                                            GraphicEq::LOW_SHELF_ENABLED_DEFAULT));
+                                                            ParametricEq::LOW_SHELF_ENABLED_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(low_shelf_parameters.frequency_, 1),
                                                              low_shelf_parameters.frequency_,
-                                                             GraphicEq::LOW_SHELF_FREQ_NORM_RANGE,
-                                                             GraphicEq::LOW_SHELF_FREQ_DEFAULT));
+                                                             ParametricEq::LOW_SHELF_FREQ_NORM_RANGE,
+                                                             ParametricEq::LOW_SHELF_FREQ_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(low_shelf_parameters.gain_, 1),
                                                              low_shelf_parameters.gain_,
-                                                             GraphicEq::SHELF_GAIN_NORMALISABLE_RANGE,
-                                                             GraphicEq::SHELF_DB_DEFAULT));
+                                                             ParametricEq::SHELF_GAIN_NORMALISABLE_RANGE,
+                                                             ParametricEq::SHELF_DB_DEFAULT));
 
     // High shelf parameters.
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(high_shelf_parameters.enabled_, 1),
                                                             high_shelf_parameters.enabled_,
-                                                            GraphicEq::HIGH_SHELF_ENABLED_DEFAULT));
+                                                            ParametricEq::HIGH_SHELF_ENABLED_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_shelf_parameters.frequency_, 1),
                                                              high_shelf_parameters.frequency_,
-                                                             GraphicEq::HIGH_SHELF_FREQ_NORM_RANGE,
-                                                             GraphicEq::HIGH_SHELF_FREQ_DEFAULT));
+                                                             ParametricEq::HIGH_SHELF_FREQ_NORM_RANGE,
+                                                             ParametricEq::HIGH_SHELF_FREQ_DEFAULT));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_shelf_parameters.gain_, 1),
                                                              high_shelf_parameters.gain_,
-                                                             GraphicEq::SHELF_GAIN_NORMALISABLE_RANGE,
-                                                             GraphicEq::SHELF_DB_DEFAULT));
+                                                             ParametricEq::SHELF_GAIN_NORMALISABLE_RANGE,
+                                                             ParametricEq::SHELF_DB_DEFAULT));
 
     // Peak band parameters.
-    for (int i = 0; i < GraphicEq::NUM_PEAK_BANDS; ++i) {
-        const auto& filter_id            = static_cast< GraphicEq::FILTER_ID >(GraphicEq::PEAK_BAND_1 + i);
-        const auto& peak_band_parameters = GraphicEq::PARAMETER_MAP.at(filter_id);
+    for (int i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
+        const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
+        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
 
-        const auto& [min_, max_, default_] = GraphicEq::PEAK_BAND_FREQUENCIES.at(i);
+        const auto& [min_, max_, default_] = ParametricEq::PEAK_BAND_FREQUENCIES.at(i);
 
         layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(peak_band_parameters.enabled_, 1),
                                                                 peak_band_parameters.enabled_,
-                                                                GraphicEq::PEAK_ENABLED_DEFAULT));
+                                                                ParametricEq::PEAK_ENABLED_DEFAULT));
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.frequency_, 1),
                                                                  peak_band_parameters.frequency_,
@@ -560,13 +560,13 @@ GraphicEqProcessor::createParameterLayout()
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.gain_, 1),
                                                                  peak_band_parameters.gain_,
-                                                                 GraphicEq::PEAK_GAIN_NORMALISABLE_RANGE,
-                                                                 GraphicEq::PEAK_DB_DEFAULT));
+                                                                 ParametricEq::PEAK_GAIN_NORMALISABLE_RANGE,
+                                                                 ParametricEq::PEAK_DB_DEFAULT));
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.q_, 1),
                                                                  peak_band_parameters.q_,
-                                                                 GraphicEq::PEAK_Q_NORMALISABLE_RANGE,
-                                                                 GraphicEq::PEAK_Q_DEFAULT));
+                                                                 ParametricEq::PEAK_Q_NORMALISABLE_RANGE,
+                                                                 ParametricEq::PEAK_Q_DEFAULT));
     }
 
     return layout;
@@ -578,7 +578,7 @@ GraphicEqProcessor::createParameterLayout()
 juce::AudioProcessor* JUCE_CALLTYPE
 createPluginFilter()
 {
-    return new GraphicEqProcessor();
+    return new ParametricEqProcessor();
 }
 
 /*---------------------------------------------------------------------------

@@ -1,11 +1,11 @@
 #include "EqBandBase.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-EqBandBase::EqBandBase(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+EqBandBase::EqBandBase(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id)
     : band_enablement_button_(apvts, filter_id)
     , apvts_(apvts)
     , filter_id_(filter_id)

@@ -1,5 +1,4 @@
 #include "CustomRotarySlider.h"
-#include "GraphicEqGlobals.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------

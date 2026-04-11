@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-project(GRAPHIC_EQ VERSION 1.0.0)
+project(PARAMETRIC_EQ VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(JUCE_COPY_PLUGIN_AFTER_BUILD ON)
@@ -32,14 +32,14 @@ juce_add_plugin(${PROJECT_NAME}
         PLUGIN_CODE P005                            # A unique four-character plugin id with exactly one upper-case character
         # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
         FORMATS AU VST3 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-        PRODUCT_NAME "Graphic EQ")                  # The name of the final executable, which can differ from the target name
+        PRODUCT_NAME "Parametric EQ")               # The name of the final executable, which can differ from the target name
 
 juce_generate_juce_header(${PROJECT_NAME})
 
 set(PROJECT_SOURCES
         PRIVATE
-        source/GraphicEqEditor.cpp
-        source/GraphicEqProcessor.cpp
+        source/ParametricEqEditor.cpp
+        source/ParametricEqProcessor.cpp
         source/dsp/FftInputDataFifo.cpp
         source/dsp/FilterFactory.cpp
         source/gui/band_controls/EqControls.cpp
@@ -60,8 +60,8 @@ set(PROJECT_SOURCES
 
 set(PROJECT_HEADERS
         PRIVATE
-        source/GraphicEqEditor.h
-        source/GraphicEqProcessor.h
+        source/ParametricEqEditor.h
+        source/ParametricEqProcessor.h
         source/dsp/FftInputDataFifo.h
         source/dsp/FilterFactory.h
         source/gui/band_controls/EqControls.h
@@ -78,7 +78,7 @@ set(PROJECT_HEADERS
         source/gui/graph/GraphWaveform.h
         source/gui/look_and_feel/CustomLookAndFeel.h
         source/gui/look_and_feel/Theme.h
-        source/utility/GraphicEqGlobals.h
+        source/utility/ParametricEqGlobals.h
 )
 
 target_sources(${PROJECT_NAME}

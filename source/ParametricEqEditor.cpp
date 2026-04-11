@@ -1,10 +1,10 @@
-#include "GraphicEqEditor.h"
+#include "ParametricEqEditor.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
+ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
     , graph_(p)
@@ -21,7 +21,7 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
 /*---------------------------------------------------------------------------
 **
 */
-GraphicEqEditor::~GraphicEqEditor()
+ParametricEqEditor::~ParametricEqEditor()
 {
     setLookAndFeel(nullptr);
 }
@@ -30,7 +30,7 @@ GraphicEqEditor::~GraphicEqEditor()
 **
 */
 void
-GraphicEqEditor::paint(juce::Graphics& g)
+ParametricEqEditor::paint(juce::Graphics& g)
 {
     g.fillAll(Theme::MAIN_BACKGROUND);
 }
@@ -39,7 +39,7 @@ GraphicEqEditor::paint(juce::Graphics& g)
 **
 */
 void
-GraphicEqEditor::resized()
+ParametricEqEditor::resized()
 {
     using Track = juce::Grid::TrackInfo;
     using Fr    = juce::Grid::Fr;

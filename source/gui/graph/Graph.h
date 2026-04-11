@@ -9,7 +9,7 @@
 class Graph final : public juce::Component
 {
 public:
-    explicit Graph(GraphicEqProcessor& processor_ref);
+    explicit Graph(ParametricEqProcessor& processor_ref);
 
     void resized() override;
 

@@ -1,11 +1,11 @@
 #include "Graph.h"
-#include "GraphicEqProcessor.h"
+#include "ParametricEqProcessor.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-Graph::Graph(GraphicEqProcessor& processor_ref)
+Graph::Graph(ParametricEqProcessor& processor_ref)
     : waveform_pre_eq_(processor_ref.getSampleRate(), processor_ref.getPreEqFftFifo(), Theme::ANALYSER_PRE_EQ)
     , waveform_post_eq_(processor_ref.getSampleRate(), processor_ref.getPostEqFftFifo(), Theme::ANALYSER_POST_EQ)
     , control_layer_(processor_ref)

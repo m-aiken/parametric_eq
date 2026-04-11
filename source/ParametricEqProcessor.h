@@ -5,13 +5,13 @@
 #include "FftInputDataFifo.h"
 #include "FilterFactory.h"
 
-class GraphicEqProcessor final
+class ParametricEqProcessor final
     : public juce::AudioProcessor
     , public juce::AudioProcessorParameter::Listener
 {
 public:
-    GraphicEqProcessor();
-    ~GraphicEqProcessor() override;
+    ParametricEqProcessor();
+    ~ParametricEqProcessor() override;
 
     const juce::String getName() const override;
 
@@ -46,13 +46,13 @@ public:
     FftInputDataFifo& getPreEqFftFifo();
     FftInputDataFifo& getPostEqFftFifo();
 
-    bool  getFilterEnabled(const GraphicEq::FILTER_ID& filter_id) const;
-    float getFilterFrequency(const GraphicEq::FILTER_ID& filter_id) const;
-    float getFilterGain(const GraphicEq::FILTER_ID& filter_id) const;
-    float getFilterQ(const GraphicEq::FILTER_ID& filter_id) const;
-    int   getFilterOrder(const GraphicEq::FILTER_ID& filter_id) const;
+    bool  getFilterEnabled(const ParametricEq::FILTER_ID& filter_id) const;
+    float getFilterFrequency(const ParametricEq::FILTER_ID& filter_id) const;
+    float getFilterGain(const ParametricEq::FILTER_ID& filter_id) const;
+    float getFilterQ(const ParametricEq::FILTER_ID& filter_id) const;
+    int   getFilterOrder(const ParametricEq::FILTER_ID& filter_id) const;
 
-    void updateFilterChain(GraphicEq::FilterChain& filter_chain) const;
+    void updateFilterChain(ParametricEq::FilterChain& filter_chain) const;
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -61,10 +61,10 @@ private:
     FilterFactory                      filter_factory_;
 
     // vector of filter chains; one per channel.
-    std::vector< GraphicEq::FilterChain > filter_chains_;
+    std::vector< ParametricEq::FilterChain > filter_chains_;
 
     FftInputDataFifo pre_eq_fft_fifo_;
     FftInputDataFifo post_eq_fft_fifo_;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphicEqProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqProcessor)
 };

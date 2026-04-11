@@ -1,14 +1,14 @@
 #include "CutBandControls.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+CutBandControls::CutBandControls(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id)
     : EqBandBase(apvts, filter_id)
-    , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
-    , slope_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).slope_, "dB")
+    , freq_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
+    , slope_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).slope_, "dB")
 {
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();

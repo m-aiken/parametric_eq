@@ -1,14 +1,14 @@
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "PeakBandControls.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+PeakBandControls::PeakBandControls(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id)
     : EqBandBase(apvts, filter_id)
-    , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
-    , gain_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
-    , q_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).q_, "Q")
+    , freq_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
+    , gain_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
+    , q_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).q_, "Q")
 {
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();

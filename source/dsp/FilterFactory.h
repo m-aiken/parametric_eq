@@ -2,23 +2,23 @@
 
 #include <JuceHeader.h>
 
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 
-class GraphicEqProcessor;
+class ParametricEqProcessor;
 
 class FilterFactory
 {
 public:
-    explicit FilterFactory(GraphicEqProcessor* processor_ref);
+    explicit FilterFactory(ParametricEqProcessor* processor_ref);
 
-    void updateCutCoefficients(GraphicEq::FilterChain& filter_chain, const GraphicEq::FILTER_ID& filter_id) const;
-    void updateLowShelfCoefficients(GraphicEq::FilterChain& filter_chain) const;
-    void updateHighShelfCoefficients(GraphicEq::FilterChain& filter_chain) const;
-    void updatePeakCoefficients(GraphicEq::FilterChain& filter_chain, const GraphicEq::FILTER_ID& filter_id) const;
-    void updateBandEnablements(GraphicEq::FilterChain& filter_chain) const;
+    void updateCutCoefficients(ParametricEq::FilterChain& filter_chain, const ParametricEq::FILTER_ID& filter_id) const;
+    void updateLowShelfCoefficients(ParametricEq::FilterChain& filter_chain) const;
+    void updateHighShelfCoefficients(ParametricEq::FilterChain& filter_chain) const;
+    void updatePeakCoefficients(ParametricEq::FilterChain& filter_chain, const ParametricEq::FILTER_ID& filter_id) const;
+    void updateBandEnablements(ParametricEq::FilterChain& filter_chain) const;
 
 private:
-    GraphicEqProcessor* processor_ref_;
+    ParametricEqProcessor* processor_ref_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FilterFactory)
 };

@@ -3,13 +3,13 @@
 #include <JuceHeader.h>
 
 #include "CustomRotarySlider.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "TextToggleButton.h"
 
 class EqBandBase : public juce::Component
 {
 public:
-    EqBandBase(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
+    EqBandBase(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id);
 
     void paint(juce::Graphics& g) override;
 
@@ -37,7 +37,7 @@ protected:
     TextToggleButton band_enablement_button_;
 
     juce::AudioProcessorValueTreeState& apvts_;
-    const GraphicEq::FILTER_ID          filter_id_;
+    const ParametricEq::FILTER_ID       filter_id_;
 
     bool is_last_active_band_;
 

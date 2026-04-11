@@ -1,13 +1,12 @@
 #include "ShelfBandControls.h"
-#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-ShelfBandControls::ShelfBandControls(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id)
+ShelfBandControls::ShelfBandControls(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id)
     : EqBandBase(apvts, filter_id)
-    , freq_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
-    , gain_slider_(apvts, GraphicEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
+    , freq_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).frequency_, "Hz")
+    , gain_slider_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).gain_, "dB")
 {
     freq_slider_.onValueChange = [this]() {
         setFreqLabelText();

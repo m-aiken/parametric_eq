@@ -1,5 +1,5 @@
 #include "EqControls.h"
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
@@ -7,15 +7,15 @@
 */
 EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     : apvts_(apvts)
-    , low_cut_controls_(apvts, GraphicEq::LOW_CUT)
-    , low_shelf_controls_(apvts, GraphicEq::LOW_SHELF)
-    , peak_band_1_(apvts, GraphicEq::PEAK_BAND_1)
-    , peak_band_2_(apvts, GraphicEq::PEAK_BAND_2)
-    , peak_band_3_(apvts, GraphicEq::PEAK_BAND_3)
-    , peak_band_4_(apvts, GraphicEq::PEAK_BAND_4)
-    , peak_band_5_(apvts, GraphicEq::PEAK_BAND_5)
-    , high_shelf_controls_(apvts, GraphicEq::HIGH_SHELF)
-    , high_cut_controls_(apvts, GraphicEq::HIGH_CUT)
+    , low_cut_controls_(apvts, ParametricEq::LOW_CUT)
+    , low_shelf_controls_(apvts, ParametricEq::LOW_SHELF)
+    , peak_band_1_(apvts, ParametricEq::PEAK_BAND_1)
+    , peak_band_2_(apvts, ParametricEq::PEAK_BAND_2)
+    , peak_band_3_(apvts, ParametricEq::PEAK_BAND_3)
+    , peak_band_4_(apvts, ParametricEq::PEAK_BAND_4)
+    , peak_band_5_(apvts, ParametricEq::PEAK_BAND_5)
+    , high_shelf_controls_(apvts, ParametricEq::HIGH_SHELF)
+    , high_cut_controls_(apvts, ParametricEq::HIGH_CUT)
 {
     addAndMakeVisible(low_cut_controls_);
     addAndMakeVisible(low_shelf_controls_);
@@ -27,26 +27,26 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(high_shelf_controls_);
     addAndMakeVisible(high_cut_controls_);
 
-    setActiveBand(GraphicEq::PEAK_BAND_3);
+    setActiveBand(ParametricEq::PEAK_BAND_3);
 
-    for (int i = GraphicEq::LOW_CUT; i <= GraphicEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< GraphicEq::FILTER_ID >(i);
+    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
+        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
 
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = GraphicEq::PARAMETER_MAP.at(filter_id);
+        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
 
-        if (frequency_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.addParameterListener(frequency_, this);
         }
 
-        if (gain_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (gain_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.addParameterListener(gain_, this);
         }
 
-        if (q_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (q_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.addParameterListener(q_, this);
         }
 
-        if (slope_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (slope_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.addParameterListener(slope_, this);
         }
     }
@@ -57,24 +57,24 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
 */
 EqControls::~EqControls()
 {
-    for (int i = GraphicEq::LOW_CUT; i <= GraphicEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< GraphicEq::FILTER_ID >(i);
+    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
+        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
 
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = GraphicEq::PARAMETER_MAP.at(filter_id);
+        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
 
-        if (frequency_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.removeParameterListener(frequency_, this);
         }
 
-        if (gain_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (gain_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.removeParameterListener(gain_, this);
         }
 
-        if (q_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (q_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.removeParameterListener(q_, this);
         }
 
-        if (slope_ != GraphicEq::PARAMETER_NOT_SUPPORTED) {
+        if (slope_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.removeParameterListener(slope_, this);
         }
     }
@@ -128,12 +128,12 @@ EqControls::resized()
 void
 EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
 {
-    GraphicEq::FILTER_ID active_band = GraphicEq::PEAK_BAND_3;
+    ParametricEq::FILTER_ID active_band = ParametricEq::PEAK_BAND_3;
 
-    for (int i = GraphicEq::LOW_CUT; i <= GraphicEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< GraphicEq::FILTER_ID >(i);
+    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
+        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
 
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = GraphicEq::PARAMETER_MAP.at(filter_id);
+        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
 
         if (parameter_id == frequency_ || parameter_id == gain_ || parameter_id == q_ || parameter_id == slope_) {
             active_band = filter_id;
@@ -148,18 +148,18 @@ EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
 **
 */
 void
-EqControls::setActiveBand(const GraphicEq::FILTER_ID& last_active_band)
+EqControls::setActiveBand(const ParametricEq::FILTER_ID& last_active_band)
 {
     juce::MessageManagerLock mml;
-    low_cut_controls_.setIsLastActiveBand(last_active_band == GraphicEq::LOW_CUT);
-    low_shelf_controls_.setIsLastActiveBand(last_active_band == GraphicEq::LOW_SHELF);
-    peak_band_1_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_1);
-    peak_band_2_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_2);
-    peak_band_3_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_3);
-    peak_band_4_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_4);
-    peak_band_5_.setIsLastActiveBand(last_active_band == GraphicEq::PEAK_BAND_5);
-    high_shelf_controls_.setIsLastActiveBand(last_active_band == GraphicEq::HIGH_SHELF);
-    high_cut_controls_.setIsLastActiveBand(last_active_band == GraphicEq::HIGH_CUT);
+    low_cut_controls_.setIsLastActiveBand(last_active_band == ParametricEq::LOW_CUT);
+    low_shelf_controls_.setIsLastActiveBand(last_active_band == ParametricEq::LOW_SHELF);
+    peak_band_1_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_1);
+    peak_band_2_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_2);
+    peak_band_3_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_3);
+    peak_band_4_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_4);
+    peak_band_5_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_5);
+    high_shelf_controls_.setIsLastActiveBand(last_active_band == ParametricEq::HIGH_SHELF);
+    high_cut_controls_.setIsLastActiveBand(last_active_band == ParametricEq::HIGH_CUT);
 }
 
 /*---------------------------------------------------------------------------

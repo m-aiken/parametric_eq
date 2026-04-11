@@ -2,12 +2,12 @@
 
 #include <JuceHeader.h>
 
-#include "GraphicEqGlobals.h"
+#include "ParametricEqGlobals.h"
 
 class TextToggleButton final : public juce::ToggleButton
 {
 public:
-    TextToggleButton(juce::AudioProcessorValueTreeState& apvts, const GraphicEq::FILTER_ID& filter_id);
+    TextToggleButton(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id);
 
     void paintButton(juce::Graphics& g, bool should_draw_button_as_highlighted, bool should_draw_button_as_down) override;
     void mouseEnter(const juce::MouseEvent& event) override;
