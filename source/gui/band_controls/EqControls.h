@@ -2,9 +2,7 @@
 
 #include <JuceHeader.h>
 
-#include "CutBandControls.h"
-#include "PeakBandControls.h"
-#include "ShelfBandControls.h"
+#include "EqBandWidget.h"
 
 class EqControls final
     : public juce::Component
@@ -22,15 +20,15 @@ private:
 
     juce::AudioProcessorValueTreeState& apvts_;
 
-    CutBandControls   low_cut_controls_;
-    ShelfBandControls low_shelf_controls_;
-    PeakBandControls  peak_band_1_;
-    PeakBandControls  peak_band_2_;
-    PeakBandControls  peak_band_3_;
-    PeakBandControls  peak_band_4_;
-    PeakBandControls  peak_band_5_;
-    ShelfBandControls high_shelf_controls_;
-    CutBandControls   high_cut_controls_;
+    EqBandWidget low_cut_controls_;
+    EqBandWidget low_shelf_controls_;
+    EqBandWidget peak_band_1_;
+    EqBandWidget peak_band_2_;
+    EqBandWidget peak_band_3_;
+    EqBandWidget peak_band_4_;
+    EqBandWidget peak_band_5_;
+    EqBandWidget high_shelf_controls_;
+    EqBandWidget high_cut_controls_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EqControls)
 };

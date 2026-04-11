@@ -49,8 +49,8 @@ ParametricEqEditor::resized()
     grid.autoColumns = Track(Fr(100));
 
     grid.templateRows = {
-        Track(Fr(70)),  //! Graph.
-        Track(Fr(30)),  //! Band controls.
+        Track(Fr(80)),  //! Graph.
+        Track(Fr(20)),  //! Band controls.
     };
 
     grid.items.add(juce::GridItem(graph_));

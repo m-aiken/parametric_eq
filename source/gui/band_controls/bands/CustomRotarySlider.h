@@ -5,12 +5,11 @@
 class CustomRotarySlider final : public juce::Slider
 {
 public:
-    CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts,
-                       const juce::String&                 parameter_id,
-                       const juce::String&                 label_text);
+    CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts, const juce::String& parameter_id);
 
     void                                 paint(juce::Graphics& g) override;
     [[nodiscard]] juce::Rectangle< int > getRotaryBounds() const;
+    juce::RangedAudioParameter*          getParameter() const;
 
     void setEnablement(const bool enable);
 

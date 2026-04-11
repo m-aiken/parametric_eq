@@ -4,14 +4,11 @@
 /*---------------------------------------------------------------------------
 **
 */
-CustomRotarySlider::CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts,
-                                       const juce::String&                 parameter_id,
-                                       const juce::String&                 label_text)
+CustomRotarySlider::CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts, const juce::String& parameter_id)
     : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
     , slider_attachment_(apvts, parameter_id, *this)
     , param(apvts.getParameter(parameter_id))
 {
-    setName(label_text);
 }
 
 /*---------------------------------------------------------------------------
@@ -24,11 +21,11 @@ CustomRotarySlider::paint(juce::Graphics& g)
         return;
     }
 
-    const auto& rotary_bounds = getRotaryBounds();
+    // const auto& rotary_bounds = getRotaryBounds();
 
     g.setFont(Theme::getFont());
     g.setColour(Theme::TEXT);
-
+#if 0
     const auto& range         = param->getNormalisableRange();
     const auto  value_to_draw = juce::jmap< float >(getValue(), range.start, range.end, START_ANGLE, END_ANGLE);
 
@@ -41,8 +38,9 @@ CustomRotarySlider::paint(juce::Graphics& g)
                                       START_ANGLE,                //! start angle
                                       END_ANGLE,                  //! end angle
                                       *this);                     //! slider
+#endif
 
-    g.drawFittedText(getName(), rotary_bounds, juce::Justification::centred, 1);
+    g.drawFittedText(param->getCurrentValueAsText(), getLocalBounds(), juce::Justification::centred, 1);
 }
 
 /*---------------------------------------------------------------------------
@@ -62,6 +60,15 @@ CustomRotarySlider::getRotaryBounds() const
     r.setY(bounds.getCentreY() - (size * 0.5));
 
     return r;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+juce::RangedAudioParameter*
+CustomRotarySlider::getParameter() const
+{
+    return param;
 }
 
 /*---------------------------------------------------------------------------
