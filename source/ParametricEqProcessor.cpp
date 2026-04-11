@@ -477,6 +477,24 @@ ParametricEqProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+    const auto hz_string_from_value_func = [](const float value, int /*maximum_string_length*/) -> juce::String {
+        if (value >= 1000.0f) {
+            return juce::String(value / 1000.0f, 2) + " kHz";
+        }
+
+        return juce::String(value) + " Hz";
+    };
+
+    const auto hz_param_attributes = juce::AudioParameterFloatAttributes().withStringFromValueFunction(
+        hz_string_from_value_func);
+
+    const auto db_string_from_value_func = [](const float value, int /*maximum_string_length*/) -> juce::String {
+        return (value > 0 ? "+" : "") + juce::String(value, 2) + " dB";
+    };
+
+    const auto db_param_attributes = juce::AudioParameterFloatAttributes().withStringFromValueFunction(
+        db_string_from_value_func);
+
     const auto& low_cut_parameters    = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
     const auto& high_cut_parameters   = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
     const auto& low_shelf_parameters  = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
@@ -490,27 +508,13 @@ ParametricEqProcessor::createParameterLayout()
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(low_cut_parameters.frequency_, 1),
                                                              low_cut_parameters.frequency_,
                                                              ParametricEq::LOW_CUT_FREQ_NORM_RANGE,
-                                                             ParametricEq::LOW_CUT_FREQ_DEFAULT));
+                                                             ParametricEq::LOW_CUT_FREQ_DEFAULT,
+                                                             hz_param_attributes));
 
     layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(low_cut_parameters.slope_, 1),
                                                               low_cut_parameters.slope_,
                                                               ParametricEq::CUT_FILTER_SLOPE_CHOICES,
                                                               ParametricEq::LOW_CUT_SLOPE_DEFAULT));
-
-    // High cut parameters.
-    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(high_cut_parameters.enabled_, 1),
-                                                            high_cut_parameters.enabled_,
-                                                            ParametricEq::HIGH_CUT_ENABLED_DEFAULT));
-
-    layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_cut_parameters.frequency_, 1),
-                                                             high_cut_parameters.frequency_,
-                                                             ParametricEq::HIGH_CUT_FREQ_NORM_RANGE,
-                                                             ParametricEq::HIGH_CUT_FREQ_DEFAULT));
-
-    layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(high_cut_parameters.slope_, 1),
-                                                              high_cut_parameters.slope_,
-                                                              ParametricEq::CUT_FILTER_SLOPE_CHOICES,
-                                                              ParametricEq::HIGH_CUT_SLOPE_DEFAULT));
 
     // Low shelf parameters.
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(low_shelf_parameters.enabled_, 1),
@@ -520,27 +524,14 @@ ParametricEqProcessor::createParameterLayout()
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(low_shelf_parameters.frequency_, 1),
                                                              low_shelf_parameters.frequency_,
                                                              ParametricEq::LOW_SHELF_FREQ_NORM_RANGE,
-                                                             ParametricEq::LOW_SHELF_FREQ_DEFAULT));
+                                                             ParametricEq::LOW_SHELF_FREQ_DEFAULT,
+                                                             hz_param_attributes));
 
     layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(low_shelf_parameters.gain_, 1),
                                                              low_shelf_parameters.gain_,
                                                              ParametricEq::SHELF_GAIN_NORMALISABLE_RANGE,
-                                                             ParametricEq::SHELF_DB_DEFAULT));
-
-    // High shelf parameters.
-    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(high_shelf_parameters.enabled_, 1),
-                                                            high_shelf_parameters.enabled_,
-                                                            ParametricEq::HIGH_SHELF_ENABLED_DEFAULT));
-
-    layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_shelf_parameters.frequency_, 1),
-                                                             high_shelf_parameters.frequency_,
-                                                             ParametricEq::HIGH_SHELF_FREQ_NORM_RANGE,
-                                                             ParametricEq::HIGH_SHELF_FREQ_DEFAULT));
-
-    layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_shelf_parameters.gain_, 1),
-                                                             high_shelf_parameters.gain_,
-                                                             ParametricEq::SHELF_GAIN_NORMALISABLE_RANGE,
-                                                             ParametricEq::SHELF_DB_DEFAULT));
+                                                             ParametricEq::SHELF_DB_DEFAULT,
+                                                             db_param_attributes));
 
     // Peak band parameters.
     for (int i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
@@ -556,18 +547,53 @@ ParametricEqProcessor::createParameterLayout()
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.frequency_, 1),
                                                                  peak_band_parameters.frequency_,
                                                                  juce::NormalisableRange(min_, max_, 1.f, 1.f),
-                                                                 default_));
+                                                                 default_,
+                                                                 hz_param_attributes));
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.gain_, 1),
                                                                  peak_band_parameters.gain_,
                                                                  ParametricEq::PEAK_GAIN_NORMALISABLE_RANGE,
-                                                                 ParametricEq::PEAK_DB_DEFAULT));
+                                                                 ParametricEq::PEAK_DB_DEFAULT,
+                                                                 db_param_attributes));
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.q_, 1),
                                                                  peak_band_parameters.q_,
                                                                  ParametricEq::PEAK_Q_NORMALISABLE_RANGE,
                                                                  ParametricEq::PEAK_Q_DEFAULT));
     }
+
+    // High shelf parameters.
+    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(high_shelf_parameters.enabled_, 1),
+                                                            high_shelf_parameters.enabled_,
+                                                            ParametricEq::HIGH_SHELF_ENABLED_DEFAULT));
+
+    layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_shelf_parameters.frequency_, 1),
+                                                             high_shelf_parameters.frequency_,
+                                                             ParametricEq::HIGH_SHELF_FREQ_NORM_RANGE,
+                                                             ParametricEq::HIGH_SHELF_FREQ_DEFAULT,
+                                                             hz_param_attributes));
+
+    layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_shelf_parameters.gain_, 1),
+                                                             high_shelf_parameters.gain_,
+                                                             ParametricEq::SHELF_GAIN_NORMALISABLE_RANGE,
+                                                             ParametricEq::SHELF_DB_DEFAULT,
+                                                             db_param_attributes));
+
+    // High cut parameters.
+    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(high_cut_parameters.enabled_, 1),
+                                                            high_cut_parameters.enabled_,
+                                                            ParametricEq::HIGH_CUT_ENABLED_DEFAULT));
+
+    layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(high_cut_parameters.frequency_, 1),
+                                                             high_cut_parameters.frequency_,
+                                                             ParametricEq::HIGH_CUT_FREQ_NORM_RANGE,
+                                                             ParametricEq::HIGH_CUT_FREQ_DEFAULT,
+                                                             hz_param_attributes));
+
+    layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(high_cut_parameters.slope_, 1),
+                                                              high_cut_parameters.slope_,
+                                                              ParametricEq::CUT_FILTER_SLOPE_CHOICES,
+                                                              ParametricEq::HIGH_CUT_SLOPE_DEFAULT));
 
     return layout;
 }
