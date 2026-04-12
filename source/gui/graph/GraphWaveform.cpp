@@ -13,8 +13,8 @@ GraphWaveform::GraphWaveform(const double sample_rate, FftInputDataFifo& fft_inp
     , smoothed_fft_output_()
 {
     fft_input_buffer_.setSize(1, ParametricEq::FFT::INPUT_BUFFER_SIZE);
-    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), ParametricEq::MIN_DB);
-    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), ParametricEq::MIN_DB);
+    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), ParametricEq::FFT::MIN_DB);
+    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), ParametricEq::FFT::MIN_DB);
 
     startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ);
 }
@@ -72,7 +72,7 @@ GraphWaveform::performFft()
                                           ParametricEq::FFT::NUM_BINS + 1);
 
     for (auto i = 0; i < ParametricEq::FFT::NUM_BINS + 1; ++i) {
-        fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], ParametricEq::MIN_DB);
+        fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], ParametricEq::FFT::MIN_DB);
     }
 }
 
@@ -86,7 +86,7 @@ GraphWaveform::smoothFftOutput()
         const auto previous_value = smoothed_fft_output_[i];
         const auto candidate      = fft_output_buffer_[i];
         const auto final_value    = juce::jmax(candidate, previous_value - ParametricEq::WAVEFORM_DECAY_RATE);
-        smoothed_fft_output_[i]   = juce::jlimit(ParametricEq::MIN_DB, ParametricEq::MAX_DB, final_value);
+        smoothed_fft_output_[i]   = juce::jlimit(ParametricEq::FFT::MIN_DB, ParametricEq::FFT::MAX_DB, final_value);
     }
 }
 
@@ -113,8 +113,8 @@ GraphWaveform::generatePath()
 
     for (auto i = 1; i < ParametricEq::FFT::NUM_BINS + 1; i += ParametricEq::WAVEFORM_PATH_RESOLUTION) {
         y_coordinate = juce::jmap< float >(smoothed_fft_output_.at(i),
-                                           ParametricEq::MIN_DB,
-                                           ParametricEq::MAX_DB,
+                                           ParametricEq::FFT::MIN_DB,
+                                           ParametricEq::FFT::MAX_DB,
                                            bounds_bottom,
                                            bounds_y);
 

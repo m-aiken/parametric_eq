@@ -248,6 +248,9 @@ namespace FFT
         SIZE_8192 = 13,
     };
 
+    inline constexpr float MIN_DB = -96.f;
+    inline constexpr float MAX_DB = 12.f;
+
     static constexpr int ORDER    = SIZE_8192;
     static constexpr int SIZE     = 1 << ORDER;
     static constexpr int NUM_BINS = SIZE / 2;
