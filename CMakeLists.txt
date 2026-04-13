@@ -43,8 +43,8 @@ set(PROJECT_SOURCES
         source/dsp/FftInputDataFifo.cpp
         source/dsp/FilterFactory.cpp
         source/gui/band_controls/EqControls.cpp
-        source/gui/band_controls/bands/CustomRotarySlider.cpp
         source/gui/band_controls/bands/EqBandWidget.cpp
+        source/gui/band_controls/bands/TextOnlyRotary.cpp
         source/gui/band_controls/bands/TextToggleButton.cpp
         source/gui/graph/Graph.cpp
         source/gui/graph/GraphBackground.cpp
@@ -61,8 +61,8 @@ set(PROJECT_HEADERS
         source/dsp/FftInputDataFifo.h
         source/dsp/FilterFactory.h
         source/gui/band_controls/EqControls.h
-        source/gui/band_controls/bands/CustomRotarySlider.h
         source/gui/band_controls/bands/EqBandWidget.h
+        source/gui/band_controls/bands/TextOnlyRotary.h
         source/gui/band_controls/bands/TextToggleButton.h
         source/gui/graph/Graph.h
         source/gui/graph/GraphBackground.h

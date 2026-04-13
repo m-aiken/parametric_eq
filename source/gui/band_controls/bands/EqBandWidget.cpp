@@ -45,17 +45,17 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
     }
 
     if (slider_1_parameter_id.isNotEmpty()) {
-        slider_1_ = std::make_unique< CustomRotarySlider >(apvts, slider_1_parameter_id);
+        slider_1_ = std::make_unique< TextOnlyRotary >(apvts, slider_1_parameter_id);
         addAndMakeVisible(slider_1_.get());
     }
 
     if (slider_2_parameter_id.isNotEmpty()) {
-        slider_2_ = std::make_unique< CustomRotarySlider >(apvts, slider_2_parameter_id);
+        slider_2_ = std::make_unique< TextOnlyRotary >(apvts, slider_2_parameter_id);
         addAndMakeVisible(slider_2_.get());
     }
 
     if (slider_3_parameter_id.isNotEmpty()) {
-        slider_3_ = std::make_unique< CustomRotarySlider >(apvts, slider_3_parameter_id);
+        slider_3_ = std::make_unique< TextOnlyRotary >(apvts, slider_3_parameter_id);
         addAndMakeVisible(slider_3_.get());
     }
 

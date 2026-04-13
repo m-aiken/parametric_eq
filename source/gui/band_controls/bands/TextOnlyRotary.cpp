@@ -1,10 +1,10 @@
-#include "CustomRotarySlider.h"
+#include "TextOnlyRotary.h"
 #include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **
 */
-CustomRotarySlider::CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts, const juce::String& parameter_id)
+TextOnlyRotary::TextOnlyRotary(juce::AudioProcessorValueTreeState& apvts, const juce::String& parameter_id)
     : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
     , slider_attachment_(apvts, parameter_id, *this)
     , param_(apvts.getParameter(parameter_id))
@@ -15,7 +15,7 @@ CustomRotarySlider::CustomRotarySlider(juce::AudioProcessorValueTreeState& apvts
 **
 */
 void
-CustomRotarySlider::paint(juce::Graphics& g)
+TextOnlyRotary::paint(juce::Graphics& g)
 {
     if (param_ != nullptr) {
         g.setFont(Theme::getFont());
@@ -28,7 +28,7 @@ CustomRotarySlider::paint(juce::Graphics& g)
 **
 */
 void
-CustomRotarySlider::setEnablement(const bool enable)
+TextOnlyRotary::setEnablement(const bool enable)
 {
     setEnabled(enable);
     setAlpha(enable ? Theme::ENABLED_ALPHA : Theme::DISABLED_ALPHA);
