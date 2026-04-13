@@ -19,15 +19,17 @@
 /*static*/ const juce::Colour Theme::ROTARY_FILL            = RED;
 /*static*/ const juce::Colour Theme::ROTARY_THUMB           = DARK_GREY;
 /*static*/ const juce::Colour Theme::RESPONSE_CURVE         = RED;
+/*static*/ const juce::Colour Theme::RESPONSE_CURVE_FILL    = RED.withAlpha(0.2f);
 /*static*/ const juce::Colour Theme::RESPONSE_CURVE_AVG     = DARK_GREY;
 /*static*/ const juce::Colour Theme::NODE_ON                = RED;
 /*static*/ const juce::Colour Theme::NODE_OFF               = DARK_GREY;
 /*static*/ const juce::Colour Theme::ANALYSER_GRID          = DARK_GREY;
 /*static*/ const juce::Colour Theme::ANALYSER_PRE_EQ        = RED.withAlpha(0.05f);
 /*static*/ const juce::Colour Theme::ANALYSER_POST_EQ       = TEAL.withAlpha(0.5f);
-/*static*/ const juce::Colour Theme::ACTIVE_BAND_BACKGROUND = RED.withAlpha(0.15f);
-/*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_STD     = DARK_GREY.withAlpha(0.03f);
-/*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.05f);
+/*static*/ const juce::Colour Theme::BAND_BACKGROUND        = RED.withAlpha(0.2f);
+/*static*/ const juce::Colour Theme::ACTIVE_BAND_BACKGROUND = RED.withAlpha(0.5f);
+/*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_STD     = DARK_GREY.withAlpha(0.05f);
+/*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.08f);
 
 /*---------------------------------------------------------------------------
 **

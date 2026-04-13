@@ -115,11 +115,11 @@ EqControls::resized()
     grid.items.add(juce::GridItem(high_shelf_controls_));
     grid.items.add(juce::GridItem(high_cut_controls_));
 
-    grid.setGap(juce::Grid::Px(Theme::UI_PADDING));
+    constexpr auto margin = Theme::UI_PADDING * 2;
+    grid.setGap(juce::Grid::Px(margin));
 
     const auto& bounds = getLocalBounds();
-    grid.performLayout(
-        bounds.withSizeKeepingCentre(bounds.getWidth() - Theme::UI_PADDING, bounds.getHeight() - Theme::UI_PADDING));
+    grid.performLayout(bounds.withSizeKeepingCentre(bounds.getWidth() - (margin * 2), bounds.getHeight() - (margin * 2)));
 }
 
 /*---------------------------------------------------------------------------

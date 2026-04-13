@@ -68,7 +68,7 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
 void
 EqBandWidget::paint(juce::Graphics& g)
 {
-    g.setColour(is_last_active_band_ ? Theme::ACTIVE_BAND_BACKGROUND : Theme::MAIN_BACKGROUND);
+    g.setColour(is_last_active_band_ ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
     g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
 }
 

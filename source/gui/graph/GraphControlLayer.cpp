@@ -89,7 +89,7 @@ GraphControlLayer::paint(juce::Graphics& g)
     }
 
     // Draw the faded fill.
-    g.setColour(Theme::RESPONSE_CURVE.withAlpha(0.2f));
+    g.setColour(Theme::RESPONSE_CURVE_FILL);
     for (size_t path_index = 0; path_index < paths_.size() - 1; ++path_index) {
         g.fillPath(paths_.at(path_index));
     }
