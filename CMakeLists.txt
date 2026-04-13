@@ -46,12 +46,12 @@ set(PROJECT_SOURCES
         source/gui/band_controls/bands/EqBandWidget.cpp
         source/gui/band_controls/bands/TextOnlyRotary.cpp
         source/gui/band_controls/bands/TextToggleButton.cpp
+        source/gui/colour_theme/Theme.cpp
         source/gui/graph/Graph.cpp
         source/gui/graph/GraphBackground.cpp
         source/gui/graph/GraphControlLayer.cpp
         source/gui/graph/GraphNode.cpp
         source/gui/graph/GraphWaveform.cpp
-        source/gui/look_and_feel/Theme.cpp
 )
 
 set(PROJECT_HEADERS
@@ -64,12 +64,12 @@ set(PROJECT_HEADERS
         source/gui/band_controls/bands/EqBandWidget.h
         source/gui/band_controls/bands/TextOnlyRotary.h
         source/gui/band_controls/bands/TextToggleButton.h
+        source/gui/colour_theme/Theme.h
         source/gui/graph/Graph.h
         source/gui/graph/GraphBackground.h
         source/gui/graph/GraphControlLayer.h
         source/gui/graph/GraphNode.h
         source/gui/graph/GraphWaveform.h
-        source/gui/look_and_feel/Theme.h
         source/utility/ParametricEqGlobals.h
 )
 
@@ -86,8 +86,8 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/colour_theme
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/graph
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/look_and_feel
         ${CMAKE_CURRENT_SOURCE_DIR}/source/utility
 )
 
