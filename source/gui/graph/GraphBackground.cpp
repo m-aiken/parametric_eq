@@ -24,14 +24,12 @@ GraphBackground::paint(juce::Graphics& g)
     const auto& full_width_f  = bounds_f.getWidth();
     const auto& full_height_f = bounds_f.getHeight();
 
-    g.setColour(Theme::ANALYSER_GRID.withAlpha(0.2f));
-
     // dB grid lines.
-    for (auto i = static_cast< int >(ParametricEq::MIN_DB); i <= static_cast< int >(ParametricEq::MAX_DB);
-         i += DB_INTERVAL) {
+    for (auto i = static_cast< int >(ParametricEq::MIN_DB); i <= static_cast< int >(ParametricEq::MAX_DB); ++i) {
         const auto y =
             juce::jmap< float >(static_cast< float >(i), ParametricEq::MIN_DB, ParametricEq::MAX_DB, full_height_f, 0.f);
 
+        g.setColour(Theme::ANALYSER_GRID.withAlpha(getAlphaForDb(i)));
         g.drawLine(2, y, full_width_f - 2, y, 1.f);
     }
 
@@ -48,18 +46,90 @@ GraphBackground::paint(juce::Graphics& g)
         }
     }
 
-    const auto& bounds_i      = getLocalBounds();
-    const auto& full_width_i  = bounds_i.getWidth();
-    const auto& full_height_i = bounds_i.getHeight();
-
     g.setFont(Theme::getFont());
     g.setColour(Theme::ANALYSER_TEXT);
 
     // dB labels.
-    drawDbLabels(g, { Theme::UI_PADDING, 0, TEXT_WIDTH, full_height_i });
+    drawDbLabels(g);
 
     // Hz labels.
-    drawFrequencyLabels(g, { 0, Theme::UI_PADDING, full_width_i, static_cast< int >(Theme::getFont().getHeight()) });
+    drawFrequencyLabels(g);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphBackground::drawDbLabels(const juce::Graphics& g) const
+{
+    const auto& text_height   = static_cast< int >(g.getCurrentFont().getHeight());
+    const auto& bounds_height = getLocalBounds().getHeight();
+
+    for (auto i = static_cast< int >(ParametricEq::MIN_DB) + 3; i <= static_cast< int >(ParametricEq::MAX_DB) - 3; ++i) {
+        if (i % DB_LABEL_INTERVAL != 0) {
+            continue;
+        }
+
+        const auto raw_y     = juce::jmap< int >(i, ParametricEq::MIN_DB, ParametricEq::MAX_DB, bounds_height, 0);
+        const auto shifted_y = raw_y - text_height - Theme::UI_PADDING;
+        const auto text      = (i > 0 ? "+" : "") + juce::String(i) + " dB";
+
+        g.drawFittedText(text, Theme::UI_PADDING, shifted_y, TEXT_WIDTH, text_height, juce::Justification::centredLeft, 1);
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphBackground::drawFrequencyLabels(const juce::Graphics& g) const
+{
+    const auto& text_height  = static_cast< int >(Theme::getFont().getHeight());
+    const auto& bounds_y     = Theme::UI_PADDING;
+    const auto& bounds_width = getLocalBounds().toFloat().getWidth();
+
+    for (auto i = 1; i < HZ_LIST.size() - 1; ++i) {
+        auto       hz        = HZ_LIST.at(i);
+        const auto raw_x     = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
+        const auto shifted_x = static_cast< int >(bounds_width * raw_x) + Theme::UI_PADDING;
+
+        juce::String suffix = " Hz";
+
+        if (hz >= 1000.f) {
+            hz     = hz / 1000.f;
+            suffix = " kHz";
+        }
+
+        const auto& text = juce::String(hz, 0) + suffix;
+
+        g.drawFittedText(text, shifted_x, bounds_y, TEXT_WIDTH, text_height, juce::Justification::centredLeft, 1);
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ float
+GraphBackground::getAlphaForDb(const int db)
+{
+    if (db % DB_LABEL_INTERVAL == 0) {
+        return LINE_ALPHA_BOLDER;
+    }
+
+    return LINE_ALPHA_LIGHTER;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ float
+GraphBackground::getAlphaForFrequency(const int hz)
+{
+    if (hz == 50 || hz == 100 || hz == 200 || hz == 500 || hz == 1000 || hz == 2000 || hz == 5000 || hz == 10000) {
+        return LINE_ALPHA_BOLDER;
+    }
+
+    return LINE_ALPHA_LIGHTER;
 }
 
 /*---------------------------------------------------------------------------
@@ -78,68 +148,6 @@ GraphBackground::shouldDrawFrequency(const int hz)
     should_draw |= (hz % 1000 == 0);
 
     return should_draw;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-/*static*/ float
-GraphBackground::getAlphaForFrequency(const int hz)
-{
-    if (hz == 50 || hz == 100 || hz == 200 || hz == 500 || hz == 1000 || hz == 2000 || hz == 5000 || hz == 10000) {
-        return 0.2f;
-    }
-
-    return 0.07f;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-/*static*/ void
-GraphBackground::drawDbLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds)
-{
-    const auto& text_height   = static_cast< int >(g.getCurrentFont().getHeight());
-    const auto& bounds_width  = bounds.getWidth();
-    const auto& bounds_height = bounds.getHeight();
-    const auto& bounds_x      = bounds.getX();
-
-    for (auto db = static_cast< int >(ParametricEq::MIN_DB); db <= static_cast< int >(ParametricEq::MAX_DB);
-         db += DB_INTERVAL) {
-        const auto raw_y     = juce::jmap< int >(db, ParametricEq::MIN_DB, ParametricEq::MAX_DB, bounds_height, 0);
-        const auto shifted_y = raw_y - text_height - Theme::UI_PADDING;
-        const auto text      = (db > 0 ? "+" : "") + juce::String(db) + " dB";
-
-        g.drawFittedText(text, bounds_x, shifted_y, bounds_width, text_height, juce::Justification::centredLeft, 1);
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-/*static*/ void
-GraphBackground::drawFrequencyLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds)
-{
-    const auto& text_height  = static_cast< int >(Theme::getFont().getHeight());
-    const auto& bounds_y     = bounds.getY();
-    const auto& bounds_width = bounds.getWidth();
-
-    for (auto i = 1; i < HZ_LIST.size() - 1; ++i) {
-        auto       hz        = HZ_LIST.at(i);
-        const auto raw_x     = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
-        const auto shifted_x = static_cast< int >(bounds_width * raw_x) + Theme::UI_PADDING;
-
-        juce::String suffix = " Hz";
-
-        if (hz >= 1000.f) {
-            hz     = hz / 1000.f;
-            suffix = " kHz";
-        }
-
-        const auto& text = juce::String(hz, 0) + suffix;
-
-        g.drawFittedText(text, shifted_x, bounds_y, TEXT_WIDTH, text_height, juce::Justification::centredLeft, 1);
-    }
 }
 
 /*---------------------------------------------------------------------------

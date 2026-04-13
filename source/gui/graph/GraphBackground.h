@@ -12,14 +12,17 @@ public:
     void paint(juce::Graphics& g) override;
 
 private:
-    static bool  shouldDrawFrequency(const int hz);
+    void drawDbLabels(const juce::Graphics& g) const;
+    void drawFrequencyLabels(const juce::Graphics& g) const;
+
+    static float getAlphaForDb(const int db);
     static float getAlphaForFrequency(const int hz);
-    static void  drawDbLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds);
-    static void  drawFrequencyLabels(const juce::Graphics& g, const juce::Rectangle< int >& bounds);
+    static bool  shouldDrawFrequency(const int hz);
 
-    static constexpr int DB_INTERVAL = 2;
-    static constexpr int TEXT_WIDTH  = Theme::UI_PADDING * 16;
-
+    static constexpr int              TEXT_WIDTH         = Theme::UI_PADDING * 16;
+    static constexpr float            LINE_ALPHA_BOLDER  = 0.2f;
+    static constexpr float            LINE_ALPHA_LIGHTER = 0.07f;
+    static constexpr int              DB_LABEL_INTERVAL  = 3;
     static const std::vector< float > HZ_LIST;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphBackground)
