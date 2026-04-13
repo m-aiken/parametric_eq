@@ -52,7 +52,6 @@ set(PROJECT_SOURCES
         source/gui/graph/GraphNode.cpp
         source/gui/graph/GraphWaveform.cpp
         source/gui/look_and_feel/Theme.cpp
-        source/gui/look_and_feel/CustomLookAndFeel.cpp
 )
 
 set(PROJECT_HEADERS
@@ -70,7 +69,6 @@ set(PROJECT_HEADERS
         source/gui/graph/GraphControlLayer.h
         source/gui/graph/GraphNode.h
         source/gui/graph/GraphWaveform.h
-        source/gui/look_and_feel/CustomLookAndFeel.h
         source/gui/look_and_feel/Theme.h
         source/utility/ParametricEqGlobals.h
 )

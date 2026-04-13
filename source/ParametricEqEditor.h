@@ -2,7 +2,6 @@
 
 #include <JuceHeader.h>
 
-#include "CustomLookAndFeel.h"
 #include "EqControls.h"
 #include "Graph.h"
 #include "ParametricEqProcessor.h"
@@ -11,7 +10,7 @@ class ParametricEqEditor final : public juce::AudioProcessorEditor
 {
 public:
     explicit ParametricEqEditor(ParametricEqProcessor& p);
-    ~ParametricEqEditor() override;
+    ~ParametricEqEditor() override = default;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -21,8 +20,6 @@ private:
 
     Graph      graph_;
     EqControls eq_controls_;
-
-    CustomLookAndFeel lnf_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqEditor)
 };

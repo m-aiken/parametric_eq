@@ -10,20 +10,10 @@ ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     , graph_(p)
     , eq_controls_(processor_ref_.getApvts())
 {
-    setLookAndFeel(&lnf_);
-
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
 
     setSize(1024, 600);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-ParametricEqEditor::~ParametricEqEditor()
-{
-    setLookAndFeel(nullptr);
 }
 
 /*---------------------------------------------------------------------------
