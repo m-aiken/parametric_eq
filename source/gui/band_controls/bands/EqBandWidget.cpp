@@ -60,6 +60,8 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
     }
 
     band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
+
+    setSubWidgetEnablement();
 }
 
 /*---------------------------------------------------------------------------
