@@ -26,7 +26,7 @@
 /*static*/ const juce::Colour Theme::ANALYSER_GRID          = DARK_GREY;
 /*static*/ const juce::Colour Theme::ANALYSER_PRE_EQ        = RED.withAlpha(0.05f);
 /*static*/ const juce::Colour Theme::ANALYSER_POST_EQ       = TEAL.withAlpha(0.5f);
-/*static*/ const juce::Colour Theme::BAND_BACKGROUND        = RED.withAlpha(0.2f);
+/*static*/ const juce::Colour Theme::BAND_BACKGROUND        = RED.withAlpha(0.15f);
 /*static*/ const juce::Colour Theme::ACTIVE_BAND_BACKGROUND = RED.withAlpha(0.5f);
 /*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_STD     = DARK_GREY.withAlpha(0.05f);
 /*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.08f);
