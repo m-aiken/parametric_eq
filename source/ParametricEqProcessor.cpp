@@ -537,8 +537,7 @@ ParametricEqProcessor::createParameterLayout()
     for (int i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
         const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
         const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
-
-        const auto& [min_, max_, default_] = ParametricEq::PEAK_BAND_FREQUENCIES.at(i);
+        const auto& default_hz           = ParametricEq::PEAK_BAND_DEFAULT_FREQUENCIES.at(i);
 
         layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(peak_band_parameters.enabled_, 1),
                                                                 peak_band_parameters.enabled_,
@@ -546,8 +545,8 @@ ParametricEqProcessor::createParameterLayout()
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.frequency_, 1),
                                                                  peak_band_parameters.frequency_,
-                                                                 juce::NormalisableRange(min_, max_, 1.f, 1.f),
-                                                                 default_,
+                                                                 ParametricEq::PEAK_FREQ_NORMALISABLE_RANGE,
+                                                                 default_hz,
                                                                  hz_param_attributes));
 
         layout.add(std::make_unique< juce::AudioParameterFloat >(juce::ParameterID(peak_band_parameters.gain_, 1),

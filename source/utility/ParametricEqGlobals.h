@@ -224,6 +224,8 @@ inline constexpr float SHELF_DB_MAX     = MAX_DB / 2.f;
 inline constexpr float SHELF_DB_DEFAULT = 0.f;
 inline constexpr float SHELF_Q_DEFAULT  = 0.7f;
 
+inline const juce::NormalisableRange SHELF_GAIN_NORMALISABLE_RANGE = { SHELF_DB_MIN, SHELF_DB_MAX, 0.01f, 1.f };
+
 inline constexpr float PEAK_DB_MIN     = MIN_DB;
 inline constexpr float PEAK_DB_MAX     = MAX_DB;
 inline constexpr float PEAK_DB_DEFAULT = 0.f;
@@ -231,22 +233,16 @@ inline constexpr float PEAK_Q_MIN      = 0.1f;
 inline constexpr float PEAK_Q_MAX      = 10.f;
 inline constexpr float PEAK_Q_DEFAULT  = 1.f;
 
-inline const juce::NormalisableRange SHELF_GAIN_NORMALISABLE_RANGE = { SHELF_DB_MIN, SHELF_DB_MAX, 0.01f, 1.f };
-inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE  = { PEAK_DB_MIN, PEAK_DB_MAX, 0.01f, 1.f };
-inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE     = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
+inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { MIN_HZ, MAX_HZ, 1.f, 1.f };
+inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE = { PEAK_DB_MIN, PEAK_DB_MAX, 0.01f, 1.f };
+inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE    = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
 
-struct PeakBandFrequencySet {
-    float min_;
-    float max_;
-    float default_;
-};
-
-inline constexpr std::array< PeakBandFrequencySet, NUM_PEAK_BANDS > PEAK_BAND_FREQUENCIES = {
-    PeakBandFrequencySet { 100.f, 200.f, 140.f },     //! Peak Band 1.
-    PeakBandFrequencySet { 200.f, 500.f, 320.f },     //! Peak Band 2.
-    PeakBandFrequencySet { 500.f, 1000.f, 720.f },    //! Peak Band 3.
-    PeakBandFrequencySet { 1000.f, 2000.f, 1400.f },  //! Peak Band 4.
-    PeakBandFrequencySet { 2000.f, 5000.f, 3200.f },  //! Peak Band 5.
+inline constexpr std::array< float, NUM_PEAK_BANDS > PEAK_BAND_DEFAULT_FREQUENCIES = {
+    140.f,   //! Peak Band 1.
+    320.f,   //! Peak Band 2.
+    720.f,   //! Peak Band 3.
+    1400.f,  //! Peak Band 4.
+    3200.f,  //! Peak Band 5.
 };
 
 inline constexpr bool PEAK_ENABLED_DEFAULT = true;
