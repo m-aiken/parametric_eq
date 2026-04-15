@@ -18,6 +18,7 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     void mouseDrag(const juce::MouseEvent& event) override;
+    void mouseUp(const juce::MouseEvent& event) override;
     void parameterValueChanged(int parameter_index, float new_value) override;
     void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
     void timerCallback() override;
@@ -71,6 +72,9 @@ private:
 
     std::array< juce::Path, NUM_PATHS >            paths_;
     std::array< std::vector< double >, NUM_PATHS > magnitudes_;
+
+    size_t                  latched_node_index_;
+    static constexpr size_t LATCHED_NODE_INDEX_UNSET = 0xFFFF;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphControlLayer)
 };

@@ -8,6 +8,7 @@
 GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
     , parameters_changed_(false)
+    , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
     auto& apvts = processor_ref_.getApvts();
 
@@ -162,41 +163,56 @@ GraphControlLayer::resized()
 void
 GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
 {
-    const auto x_coord = static_cast< int >(event.position.getX());
-    const auto y_coord = static_cast< int >(event.position.getY());
+    const auto x = static_cast< int >(event.position.getX());
+    const auto y = static_cast< int >(event.position.getY());
 
     const auto& bounds        = getLocalBounds();
     const auto  bounds_width  = bounds.getWidth();
     const auto  bounds_height = bounds.getHeight();
 
-    if (x_coord >= 0 && x_coord <= bounds_width && y_coord >= 0 && y_coord <= bounds_height) {
-        const auto x_frequency = mapToLog10< float >(static_cast< float >(x_coord) / static_cast< float >(bounds_width),
-                                                     ParametricEq::MIN_HZ,
-                                                     ParametricEq::MAX_HZ);
+    // Check that the coordinates are within the legal range.
+    if (x < 0 || x > bounds_width || y < 0 || y > bounds_height) {
+        return;
+    }
 
-        const auto y_decibels = juce::jmap< float >(static_cast< float >(y_coord),
-                                                    0.f,
-                                                    static_cast< float >(bounds_height),
-                                                    ParametricEq::MAX_DB,
-                                                    ParametricEq::MIN_DB);
-
-        size_t closest_node      = 0;
-        auto   shortest_distance = bounds_width;
+    // If the latched dragged node is unset calculate the closest node.
+    if (latched_node_index_ == LATCHED_NODE_INDEX_UNSET) {
+        auto shortest_distance = bounds_width;
 
         for (size_t i = 0; i < node_coordinates_.size(); ++i) {
-            const auto distance = std::abs(node_coordinates_.at(i).getX() - x_coord);
+            const auto distance = std::abs(node_coordinates_.at(i).getX() - x);
 
             if (distance < shortest_distance) {
-                closest_node      = i;
-                shortest_distance = distance;
+                latched_node_index_ = i;
+                shortest_distance   = distance;
             }
         }
-
-        if (peak_nodes_.at(closest_node) != nullptr && peak_nodes_.at(closest_node)->getToggleState()) {
-            x_values_.at(closest_node) = x_frequency;
-            y_values_.at(closest_node) = y_decibels;
-        }
     }
+
+    if (peak_nodes_.at(latched_node_index_) != nullptr && peak_nodes_.at(latched_node_index_)->getToggleState()) {
+        const auto hz = mapToLog10< float >(static_cast< float >(x) / static_cast< float >(bounds_width),
+                                            ParametricEq::MIN_HZ,
+                                            ParametricEq::MAX_HZ);
+
+        const auto db = juce::jmap< float >(static_cast< float >(y),
+                                            0.f,
+                                            static_cast< float >(bounds_height),
+                                            ParametricEq::MAX_DB,
+                                            ParametricEq::MIN_DB);
+
+        x_values_.at(latched_node_index_) = hz;
+        y_values_.at(latched_node_index_) = db;
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphControlLayer::mouseUp(const juce::MouseEvent& event)
+{
+    // Reset latched dragged node reference.
+    latched_node_index_ = LATCHED_NODE_INDEX_UNSET;
 }
 
 /*---------------------------------------------------------------------------
