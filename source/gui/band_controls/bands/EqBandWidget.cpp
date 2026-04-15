@@ -10,7 +10,7 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
                            const BAND_TYPE&                    band_type)
     : apvts_(apvts)
     , filter_id_(filter_id)
-    , is_last_active_band_(false)
+    , is_active_band_(false)
     , band_enablement_button_(apvts, filter_id)
 {
     addAndMakeVisible(band_enablement_button_);
@@ -70,7 +70,7 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
 void
 EqBandWidget::paint(juce::Graphics& g)
 {
-    g.setColour(is_last_active_band_ ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
+    g.setColour(is_active_band_ ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
     g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
 }
 
@@ -115,9 +115,9 @@ EqBandWidget::resized()
 **
 */
 void
-EqBandWidget::setIsLastActiveBand(const bool is_last_active)
+EqBandWidget::setIsActiveBand(const bool is_active)
 {
-    is_last_active_band_ = is_last_active;
+    is_active_band_ = is_active;
 
     repaint();
 }

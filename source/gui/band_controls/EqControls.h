@@ -16,7 +16,7 @@ public:
     void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
 private:
-    void setActiveBand(const ParametricEq::FILTER_ID& last_active_band);
+    void setActiveBand(const ParametricEq::FILTER_ID& active_band);
 
     juce::AudioProcessorValueTreeState& apvts_;
 

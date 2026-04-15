@@ -23,14 +23,14 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
 
-    void setIsLastActiveBand(const bool is_last_active);
+    void setIsActiveBand(const bool is_active);
 
 private:
     void setSubWidgetEnablement() const;
 
     juce::AudioProcessorValueTreeState& apvts_;
     const ParametricEq::FILTER_ID       filter_id_;
-    bool                                is_last_active_band_;
+    bool                                is_active_band_;
 
     TextToggleButton                  band_enablement_button_;
     std::unique_ptr< TextOnlyRotary > slider_1_;

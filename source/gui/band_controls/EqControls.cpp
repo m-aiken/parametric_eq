@@ -27,12 +27,16 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(high_shelf_controls_);
     addAndMakeVisible(high_cut_controls_);
 
-    setActiveBand(ParametricEq::PEAK_BAND_3);
+    setActiveBand(ParametricEq::NULL_BAND);
 
     for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
         const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
 
         const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
+
+        if (enabled_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
+            apvts_.addParameterListener(enabled_, this);
+        }
 
         if (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.addParameterListener(frequency_, this);
@@ -61,6 +65,10 @@ EqControls::~EqControls()
         const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
 
         const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
+
+        if (enabled_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
+            apvts_.removeParameterListener(enabled_, this);
+        }
 
         if (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
             apvts_.removeParameterListener(frequency_, this);
@@ -128,13 +136,26 @@ EqControls::resized()
 void
 EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
 {
-    ParametricEq::FILTER_ID active_band = ParametricEq::PEAK_BAND_3;
+    juce::ignoreUnused(new_value);
+
+    ParametricEq::FILTER_ID active_band = ParametricEq::NULL_BAND;
 
     for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
         const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
 
         const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
 
+        // Enablement button: this band is active if its enablement button was toggled to on/true.
+        if (parameter_id == enabled_) {
+            const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(parameter_id));
+
+            if (p != nullptr && p->get()) {
+                active_band = filter_id;
+                break;
+            }
+        }
+
+        // All other parameters: this band is active if any of their values have changed.
         if (parameter_id == frequency_ || parameter_id == gain_ || parameter_id == q_ || parameter_id == slope_) {
             active_band = filter_id;
             break;
@@ -148,18 +169,18 @@ EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
 **
 */
 void
-EqControls::setActiveBand(const ParametricEq::FILTER_ID& last_active_band)
+EqControls::setActiveBand(const ParametricEq::FILTER_ID& active_band)
 {
     juce::MessageManagerLock mml;
-    low_cut_controls_.setIsLastActiveBand(last_active_band == ParametricEq::LOW_CUT);
-    low_shelf_controls_.setIsLastActiveBand(last_active_band == ParametricEq::LOW_SHELF);
-    peak_band_1_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_1);
-    peak_band_2_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_2);
-    peak_band_3_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_3);
-    peak_band_4_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_4);
-    peak_band_5_.setIsLastActiveBand(last_active_band == ParametricEq::PEAK_BAND_5);
-    high_shelf_controls_.setIsLastActiveBand(last_active_band == ParametricEq::HIGH_SHELF);
-    high_cut_controls_.setIsLastActiveBand(last_active_band == ParametricEq::HIGH_CUT);
+    low_cut_controls_.setIsActiveBand(active_band == ParametricEq::LOW_CUT);
+    low_shelf_controls_.setIsActiveBand(active_band == ParametricEq::LOW_SHELF);
+    peak_band_1_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_1);
+    peak_band_2_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_2);
+    peak_band_3_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_3);
+    peak_band_4_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_4);
+    peak_band_5_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_5);
+    high_shelf_controls_.setIsActiveBand(active_band == ParametricEq::HIGH_SHELF);
+    high_cut_controls_.setIsActiveBand(active_band == ParametricEq::HIGH_CUT);
 }
 
 /*---------------------------------------------------------------------------

@@ -43,6 +43,7 @@ enum FILTER_ID {
     PEAK_BAND_5,
     HIGH_SHELF,
     HIGH_CUT,
+    NULL_BAND,
 };
 
 enum CUT_FILTER_SLOPE {
@@ -135,6 +136,14 @@ inline const std::map< FILTER_ID, FilterParameterIds > PARAMETER_MAP = {
           .q_         = PARAMETER_NOT_SUPPORTED,
           .slope_     = "High Cut Slope",
       } },
+    { NULL_BAND,
+      {
+          .enabled_   = PARAMETER_NOT_SUPPORTED,
+          .frequency_ = PARAMETER_NOT_SUPPORTED,
+          .gain_      = PARAMETER_NOT_SUPPORTED,
+          .q_         = PARAMETER_NOT_SUPPORTED,
+          .slope_     = PARAMETER_NOT_SUPPORTED,
+      } },
 };
 
 inline juce::String
@@ -167,6 +176,9 @@ getFilterButtonLabel(const FILTER_ID filter_id)
 
     case HIGH_CUT:
         return "High Cut";
+
+    case NULL_BAND:
+        return "NULL_BAND";
 
     default:
         return {};
