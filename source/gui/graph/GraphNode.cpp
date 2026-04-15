@@ -7,6 +7,7 @@
 GraphNode::GraphNode(juce::AudioProcessorValueTreeState& apvts, const juce::String& band_enablement_parameter)
     : attachment_(apvts, band_enablement_parameter, *this)
 {
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
 }
 
 /*---------------------------------------------------------------------------
