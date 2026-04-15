@@ -157,6 +157,7 @@ FilterFactory::updatePeakCoefficients(ParametricEq::FilterChain&     filter_chai
     case ParametricEq::HIGH_CUT:
     case ParametricEq::LOW_SHELF:
     case ParametricEq::HIGH_SHELF:
+    case ParametricEq::NULL_BAND:
     default:
         break;
     }
