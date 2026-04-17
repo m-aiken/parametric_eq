@@ -180,7 +180,8 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
         auto shortest_distance = bounds_width;
 
         for (size_t i = 0; i < node_coordinates_.size(); ++i) {
-            const auto distance = std::abs(node_coordinates_.at(i).getX() - x);
+            const auto& node_xy  = node_coordinates_.at(i);
+            const auto  distance = std::abs(node_xy.getX() - x) + std::abs(node_xy.getY() - y);
 
             if (distance < shortest_distance) {
                 latched_node_index_ = i;
@@ -189,6 +190,7 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
         }
     }
 
+    // Update the frequency and gain parameters for the node being dragged.
     if (peak_nodes_.at(latched_node_index_) != nullptr && peak_nodes_.at(latched_node_index_)->getToggleState()) {
         const auto hz = mapToLog10< float >(static_cast< float >(x) / static_cast< float >(bounds_width),
                                             ParametricEq::MIN_HZ,
