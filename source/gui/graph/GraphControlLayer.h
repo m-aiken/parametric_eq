@@ -43,9 +43,6 @@ private:
     void removeListeners();
     bool allControlPtrsValid() const;
 
-    static constexpr int NODE_DIAMETER = 6;
-    static constexpr int NODE_RADIUS   = 3;
-
     ParametricEqProcessor& processor_ref_;
     juce::Atomic< bool >   parameters_changed_;
 

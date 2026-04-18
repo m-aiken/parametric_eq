@@ -11,6 +11,11 @@ public:
 
     juce::Point< int >& coordinates();
 
+    enum {
+        DIAMETER = 6,
+        RADIUS   = 3,
+    };
+
 private:
     juce::AudioProcessorValueTreeState::ButtonAttachment attachment_;
 

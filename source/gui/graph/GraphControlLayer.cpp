@@ -114,24 +114,25 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Draw the nodes.
     for (size_t i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
-        if (peak_nodes_.at(i) == nullptr) {
+        auto& node = peak_nodes_.at(i);
+
+        if (node == nullptr) {
             continue;
         }
 
-        const auto& filter_id = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
-
-        const auto band_frequency       = processor_ref_.getFilterFrequency(filter_id);
-        const auto normalized_frequency = juce::mapFromLog10< float >(band_frequency,
+        const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
+        const auto  band_frequency       = processor_ref_.getFilterFrequency(filter_id);
+        const auto  normalized_frequency = juce::mapFromLog10< float >(band_frequency,
                                                                       ParametricEq::MIN_HZ,
                                                                       ParametricEq::MAX_HZ);
 
         const auto x_raw = bounds_i_x + static_cast< int >(bounds_f_width * normalized_frequency);
         // Clamp the upper bounds for the x coordinate so that it can't go out of the vector bounds.
-        const auto node_x = juce::jmin< int >(x_raw, bounds_i_width - NODE_RADIUS);
+        const auto node_x = juce::jmin< int >(x_raw, bounds_i_width - GraphNode::RADIUS);
         const int node_y = getYCoordinateFromMag(magnitudes_.at(i).at(node_x - bounds_i_x), bounds_i_y, bounds_i_bottom);
 
-        peak_nodes_.at(i)->setBounds(node_x - NODE_RADIUS, node_y - NODE_RADIUS, NODE_DIAMETER, NODE_DIAMETER);
-        peak_nodes_.at(i)->coordinates().setXY(node_x, node_y);
+        node->setBounds(node_x - GraphNode::RADIUS, node_y - GraphNode::RADIUS, GraphNode::DIAMETER, GraphNode::DIAMETER);
+        node->coordinates().setXY(node_x, node_y);
     }
 
     // Vertical lines on both ends of the container to hide the edge of the response curve.
