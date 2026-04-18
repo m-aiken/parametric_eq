@@ -9,8 +9,12 @@ public:
 
     void paint(juce::Graphics& g) override;
 
+    juce::Point< int >& coordinates();
+
 private:
     juce::AudioProcessorValueTreeState::ButtonAttachment attachment_;
+
+    juce::Point< int > coordinates_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphNode)
 };

@@ -52,7 +52,6 @@ private:
     ParametricEq::FilterChain filter_chain_;
 
     std::array< std::unique_ptr< GraphNode >, ParametricEq::NUM_PEAK_BANDS > peak_nodes_;
-    std::array< juce::Point< int >, ParametricEq::NUM_PEAK_BANDS >           node_coordinates_;
     std::array< juce::Value, ParametricEq::NUM_PEAK_BANDS >                  x_values_;
     std::array< juce::Value, ParametricEq::NUM_PEAK_BANDS >                  y_values_;
 

@@ -20,8 +20,6 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
 
         addAndMakeVisible(*peak_nodes_.at(i));
 
-        node_coordinates_.at(i).setXY(0, 0);
-
         x_values_.at(i).referTo(apvts.getParameterAsValue(peak_band_parameters.frequency_));
         y_values_.at(i).referTo(apvts.getParameterAsValue(peak_band_parameters.gain_));
     }
@@ -133,7 +131,7 @@ GraphControlLayer::paint(juce::Graphics& g)
         const int node_y = getYCoordinateFromMag(magnitudes_.at(i).at(node_x - bounds_i_x), bounds_i_y, bounds_i_bottom);
 
         peak_nodes_.at(i)->setBounds(node_x - NODE_RADIUS, node_y - NODE_RADIUS, NODE_DIAMETER, NODE_DIAMETER);
-        node_coordinates_.at(i).setXY(node_x, node_y);
+        peak_nodes_.at(i)->coordinates().setXY(node_x, node_y);
     }
 
     // Vertical lines on both ends of the container to hide the edge of the response curve.
@@ -179,8 +177,14 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
     if (latched_node_index_ == LATCHED_NODE_INDEX_UNSET) {
         auto shortest_distance = bounds_width;
 
-        for (size_t i = 0; i < node_coordinates_.size(); ++i) {
-            const auto& node_xy  = node_coordinates_.at(i);
+        for (size_t i = 0; i < peak_nodes_.size(); ++i) {
+            const auto& node = peak_nodes_.at(i);
+
+            if (node == nullptr) {
+                continue;
+            }
+
+            const auto& node_xy  = node->coordinates();
             const auto  distance = std::abs(node_xy.getX() - x) + std::abs(node_xy.getY() - y);
 
             if (distance < shortest_distance) {
