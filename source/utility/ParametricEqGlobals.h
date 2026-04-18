@@ -31,6 +31,7 @@ using FilterChain = juce::dsp::ProcessorChain< CutFilter,  //! Low Cut.
                                                CutFilter   //! High Cut.
                                                >;
 
+inline constexpr int NUM_FILTERS    = 9;
 inline constexpr int NUM_PEAK_BANDS = 5;
 
 enum FILTER_ID {

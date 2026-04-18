@@ -48,26 +48,11 @@ private:
 
     ParametricEq::FilterChain filter_chain_;
 
-    std::array< std::unique_ptr< GraphNode >, ParametricEq::NUM_PEAK_BANDS > peak_nodes_;
-    std::array< juce::Value, ParametricEq::NUM_PEAK_BANDS >                  x_values_;
-    std::array< juce::Value, ParametricEq::NUM_PEAK_BANDS >                  y_values_;
-
-    enum PATH_ID {
-        LOW_PATH,
-        LOW_MID_PATH,
-        MID_PATH,
-        HIGH_MID_PATH,
-        HIGH_PATH,
-        LOW_CUT_PATH,
-        HIGH_CUT_PATH,
-        LOW_SHELF_PATH,
-        HIGH_SHELF_PATH,
-        ALL,
-        NUM_PATHS,
-    };
-
-    std::array< juce::Path, NUM_PATHS >            paths_;
-    std::array< std::vector< double >, NUM_PATHS > magnitudes_;
+    std::array< std::unique_ptr< GraphNode >, ParametricEq::NUM_FILTERS > nodes_;
+    std::array< juce::Value, ParametricEq::NUM_FILTERS >                  x_values_;
+    std::array< juce::Value, ParametricEq::NUM_FILTERS >                  y_values_;
+    std::array< juce::Path, ParametricEq::NUM_FILTERS + 1 >               paths_;
+    std::array< std::vector< double >, ParametricEq::NUM_FILTERS + 1 >    magnitudes_;
 
     size_t                  latched_node_index_;
     static constexpr size_t LATCHED_NODE_INDEX_UNSET = 0xFFFF;

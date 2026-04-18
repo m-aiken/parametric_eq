@@ -12,16 +12,28 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
 {
     auto& apvts = processor_ref_.getApvts();
 
-    for (size_t i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
-        const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
-        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
+    for (size_t i = 0; i < nodes_.size(); ++i) {
+        const auto& filter_id       = static_cast< ParametricEq::FILTER_ID >(i);
+        const auto& band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
 
-        peak_nodes_.at(i) = std::make_unique< GraphNode >(apvts, peak_band_parameters.enabled_);
+        nodes_.at(i) = std::make_unique< GraphNode >(apvts, band_parameters.enabled_);
 
-        addAndMakeVisible(*peak_nodes_.at(i));
+        addAndMakeVisible(*nodes_.at(i));
 
-        x_values_.at(i).referTo(apvts.getParameterAsValue(peak_band_parameters.frequency_));
-        y_values_.at(i).referTo(apvts.getParameterAsValue(peak_band_parameters.gain_));
+        // Map the x coordinate to the band frequency.
+        x_values_.at(i).referTo(apvts.getParameterAsValue(band_parameters.frequency_));
+
+        // For the cut filters map the y coordinate to the band slope.
+        // For all other filters map the y coordinate to the band gain.
+        auto y_parameter = band_parameters.gain_;
+
+        if (filter_id == ParametricEq::LOW_CUT || filter_id == ParametricEq::HIGH_CUT) {
+            y_parameter = band_parameters.slope_;
+        }
+
+        if (y_parameter != ParametricEq::PARAMETER_NOT_SUPPORTED) {
+            y_values_.at(i).referTo(apvts.getParameterAsValue(y_parameter));
+        }
     }
 
     addListeners();
@@ -113,14 +125,14 @@ GraphControlLayer::paint(juce::Graphics& g)
     g.strokePath(paths_.at(paths_.size() - 1), juce::PathStrokeType(1.f));
 
     // Draw the nodes.
-    for (size_t i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
-        auto& node = peak_nodes_.at(i);
+    for (size_t i = 0; i < nodes_.size(); ++i) {
+        auto& node = nodes_.at(i);
 
         if (node == nullptr) {
             continue;
         }
 
-        const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
+        const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(i);
         const auto  band_frequency       = processor_ref_.getFilterFrequency(filter_id);
         const auto  normalized_frequency = juce::mapFromLog10< float >(band_frequency,
                                                                       ParametricEq::MIN_HZ,
@@ -178,10 +190,15 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
     if (latched_node_index_ == LATCHED_NODE_INDEX_UNSET) {
         auto shortest_distance = bounds_width;
 
-        for (size_t i = 0; i < peak_nodes_.size(); ++i) {
-            const auto& node = peak_nodes_.at(i);
+        for (size_t i = 0; i < nodes_.size(); ++i) {
+            const auto& node = nodes_.at(i);
 
             if (node == nullptr) {
+                continue;
+            }
+
+            // Only check nodes that are enabled.
+            if (!node->getToggleState()) {
                 continue;
             }
 
@@ -195,21 +212,23 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
         }
     }
 
-    // Update the frequency and gain parameters for the node being dragged.
-    if (peak_nodes_.at(latched_node_index_) != nullptr && peak_nodes_.at(latched_node_index_)->getToggleState()) {
-        const auto hz = mapToLog10< float >(static_cast< float >(x) / static_cast< float >(bounds_width),
-                                            ParametricEq::MIN_HZ,
-                                            ParametricEq::MAX_HZ);
-
-        const auto db = juce::jmap< float >(static_cast< float >(y),
-                                            0.f,
-                                            static_cast< float >(bounds_height),
-                                            ParametricEq::MAX_DB,
-                                            ParametricEq::MIN_DB);
-
-        x_values_.at(latched_node_index_) = hz;
-        y_values_.at(latched_node_index_) = db;
+    if (latched_node_index_ == LATCHED_NODE_INDEX_UNSET) {
+        return;
     }
+
+    // Update the frequency and gain parameters for the node being dragged.
+    const auto hz = mapToLog10< float >(static_cast< float >(x) / static_cast< float >(bounds_width),
+                                        ParametricEq::MIN_HZ,
+                                        ParametricEq::MAX_HZ);
+
+    const auto db = juce::jmap< float >(static_cast< float >(y),
+                                        0.f,
+                                        static_cast< float >(bounds_height),
+                                        ParametricEq::MAX_DB,
+                                        ParametricEq::MIN_DB);
+
+    x_values_.at(latched_node_index_) = hz;
+    y_values_.at(latched_node_index_) = db;
 }
 
 /*---------------------------------------------------------------------------
@@ -289,15 +308,10 @@ GraphControlLayer::updateMagnitudes()
     const auto& high_shelf_coefficients = filter_chain_.get< ParametricEq::FILTER_ID::HIGH_SHELF >().coefficients;
 
     for (auto i = 0; i < bounds_width; ++i) {
-        std::array< double, ParametricEq::NUM_PEAK_BANDS > peak_mags { 0.0 };
+        std::array< double, ParametricEq::NUM_FILTERS > filter_mags { 1.0 };
+        double                                          mag_all = 1.0;
 
-        peak_mags.fill(1.0);
-
-        double mag_low_cut    = 1.0;
-        double mag_low_shelf  = 1.0;
-        double mag_high_shelf = 1.0;
-        double mag_high_cut   = 1.0;
-        double mag_all        = 1.0;
+        filter_mags.fill(1.0);
 
         const auto freq = mapToLog10< double >(static_cast< double >(i) / bounds_width,
                                                ParametricEq::MIN_HZ,
@@ -306,29 +320,29 @@ GraphControlLayer::updateMagnitudes()
         if (processor_ref_.getFilterEnabled(ParametricEq::LOW_CUT)) {
             if (!low_cut.isBypassed< 0 >() && low_cut.get< 0 >().coefficients != nullptr) {
                 const auto mag = low_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_low_cut *= mag;
+                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
                 mag_all *= mag;
             }
             if (!low_cut.isBypassed< 1 >() && low_cut.get< 1 >().coefficients != nullptr) {
                 const auto mag = low_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_low_cut *= mag;
+                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
                 mag_all *= mag;
             }
             if (!low_cut.isBypassed< 2 >() && low_cut.get< 2 >().coefficients != nullptr) {
                 const auto mag = low_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_low_cut *= mag;
+                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
                 mag_all *= mag;
             }
             if (!low_cut.isBypassed< 3 >() && low_cut.get< 3 >().coefficients != nullptr) {
                 const auto mag = low_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_low_cut *= mag;
+                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
                 mag_all *= mag;
             }
         }
 
         if (processor_ref_.getFilterEnabled(ParametricEq::LOW_SHELF) && low_shelf_coefficients != nullptr) {
             const auto mag = low_shelf_coefficients->getMagnitudeForFrequency(freq, sample_rate);
-            mag_low_shelf *= mag;
+            filter_mags.at(ParametricEq::LOW_SHELF) *= mag;
             mag_all *= mag;
         }
 
@@ -337,51 +351,45 @@ GraphControlLayer::updateMagnitudes()
 
             if (processor_ref_.getFilterEnabled(filter_id) && peak_coefficients.at(peak_band) != nullptr) {
                 const auto mag = peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate);
-                peak_mags.at(peak_band) *= mag;
+                filter_mags.at(filter_id) *= mag;
                 mag_all *= mag;
             }
         }
 
         if (processor_ref_.getFilterEnabled(ParametricEq::HIGH_SHELF) && high_shelf_coefficients != nullptr) {
             const auto mag = high_shelf_coefficients->getMagnitudeForFrequency(freq, sample_rate);
-            mag_high_shelf *= mag;
+            filter_mags.at(ParametricEq::HIGH_SHELF) *= mag;
             mag_all *= mag;
         }
 
         if (processor_ref_.getFilterEnabled(ParametricEq::HIGH_CUT)) {
             if (!high_cut.isBypassed< 0 >() && high_cut.get< 0 >().coefficients != nullptr) {
                 const auto mag = high_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_high_cut *= mag;
+                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
                 mag_all *= mag;
             }
             if (!high_cut.isBypassed< 1 >() && high_cut.get< 1 >().coefficients != nullptr) {
                 const auto mag = high_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_high_cut *= mag;
+                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
                 mag_all *= mag;
             }
             if (!high_cut.isBypassed< 2 >() && high_cut.get< 2 >().coefficients != nullptr) {
                 const auto mag = high_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_high_cut *= mag;
+                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
                 mag_all *= mag;
             }
             if (!high_cut.isBypassed< 3 >() && high_cut.get< 3 >().coefficients != nullptr) {
                 const auto mag = high_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                mag_high_cut *= mag;
+                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
                 mag_all *= mag;
             }
         }
 
-        magnitudes_.at(PATH_ID::LOW_CUT_PATH).at(i)   = juce::Decibels::gainToDecibels(mag_low_cut);
-        magnitudes_.at(PATH_ID::LOW_SHELF_PATH).at(i) = juce::Decibels::gainToDecibels(mag_low_shelf);
-
-        for (size_t peak_band = 0; peak_band < ParametricEq::NUM_PEAK_BANDS; ++peak_band) {
-            magnitudes_.at(peak_band).at(i) = juce::Decibels::gainToDecibels(peak_mags.at(peak_band));
+        for (size_t filter = 0; filter < ParametricEq::NUM_FILTERS; ++filter) {
+            magnitudes_.at(filter).at(i) = juce::Decibels::gainToDecibels(filter_mags.at(filter));
         }
 
-        magnitudes_.at(PATH_ID::HIGH_SHELF_PATH).at(i) = juce::Decibels::gainToDecibels(mag_high_shelf);
-        magnitudes_.at(PATH_ID::HIGH_CUT_PATH).at(i)   = juce::Decibels::gainToDecibels(mag_high_cut);
-
-        magnitudes_.at(PATH_ID::ALL).at(i) = juce::Decibels::gainToDecibels(mag_all);
+        magnitudes_.back().at(i) = juce::Decibels::gainToDecibels(mag_all);
     }
 }
 
