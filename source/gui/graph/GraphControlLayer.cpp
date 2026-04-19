@@ -10,6 +10,9 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     , parameters_changed_(false)
     , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
+    initialiseCoefficientsRefs();
+    resetUpdateFlags();
+
     auto& apvts = processor_ref_.getApvts();
 
     for (size_t i = 0; i < nodes_.size(); ++i) {
@@ -67,8 +70,6 @@ GraphControlLayer::paint(juce::Graphics& g)
     const auto  bounds_f_x      = bounds_f.getX();
     const auto  bounds_f_y      = bounds_f.getY();
     const auto  bounds_f_bottom = bounds_f.getBottom();
-
-    updateMagnitudes();
 
     for (auto& path : paths_) {
         path.clear();
@@ -245,22 +246,28 @@ GraphControlLayer::mouseUp(const juce::MouseEvent& event)
 **
 */
 void
-GraphControlLayer::parameterValueChanged(int parameter_index, float new_value)
+GraphControlLayer::parameterChanged(const juce::String& parameter_id, float new_value)
 {
-    juce::ignoreUnused(parameter_index, new_value);
+    juce::ignoreUnused(new_value);
 
-    parameters_changed_.set(true);
-}
+    for (auto i = 0; i < ParametricEq::NUM_FILTERS; ++i) {
+        const auto filter_id                                 = static_cast< ParametricEq::FILTER_ID >(i);
+        const auto [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
 
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphControlLayer::parameterGestureChanged(int parameter_index, bool gesture_is_starting)
-{
-    juce::ignoreUnused(parameter_index, gesture_is_starting);
+        bool is_match = false;
 
-    // Do nothing. Only implemented because it's a pure virtual method of juce::AudioProcessorParameter::Listener.
+        is_match |= (enabled_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == enabled_);
+        is_match |= (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == frequency_);
+        is_match |= (gain_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == gain_);
+        is_match |= (q_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == q_);
+        is_match |= (slope_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == slope_);
+
+        if (is_match) {
+            update_flags_.at(filter_id).set(true);
+            parameters_changed_.set(true);
+            break;
+        }
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -271,6 +278,17 @@ GraphControlLayer::timerCallback()
 {
     if (parameters_changed_.compareAndSetBool(false, true)) {
         updateFilterChain();
+
+        for (auto i = 0; i < update_flags_.size(); ++i) {
+            if (update_flags_.at(i).get()) {
+                calculateFilterMagnitudeResponse(static_cast< ParametricEq::FILTER_ID >(i));
+                break;
+            }
+        }
+
+        calculateTotalMagnitudeResponse();
+        resetUpdateFlags();
+
         repaint();
     }
 }
@@ -288,108 +306,96 @@ GraphControlLayer::updateFilterChain()
 **
 */
 void
-GraphControlLayer::updateMagnitudes()
+GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id)
 {
+    using namespace ParametricEq;
+
+    auto& filter_mags = magnitudes_.at(filter_id);
+
+    if (!processor_ref_.getFilterEnabled(filter_id)) {
+        std::fill(filter_mags.begin(), filter_mags.end(), juce::Decibels::gainToDecibels(1.0));
+        return;
+    }
+
     const int  bounds_width = getLocalBounds().getWidth();
     const auto sample_rate  = processor_ref_.getSampleRate();
 
-    auto& low_cut  = filter_chain_.get< ParametricEq::FILTER_ID::LOW_CUT >();
-    auto& high_cut = filter_chain_.get< ParametricEq::FILTER_ID::HIGH_CUT >();
+    const auto getHzFromPx = [&](const int px) {
+        return mapToLog10< double >(static_cast< double >(px) / bounds_width, MIN_HZ, MAX_HZ);
+    };
 
-    std::array< juce::dsp::IIR::Filter< float >::CoefficientsPtr, ParametricEq::NUM_PEAK_BANDS > peak_coefficients;
+    if (filter_id == LOW_CUT || filter_id == HIGH_CUT) {
+        const auto& filter = filter_id == LOW_CUT ? filter_chain_.get< LOW_CUT >() : filter_chain_.get< HIGH_CUT >();
+        const auto& cut_coefficients = filter_id == LOW_CUT ? low_cut_coefficients_ : high_cut_coefficients_;
 
-    peak_coefficients[0] = filter_chain_.get< ParametricEq::FILTER_ID::PEAK_BAND_1 >().coefficients;
-    peak_coefficients[1] = filter_chain_.get< ParametricEq::FILTER_ID::PEAK_BAND_2 >().coefficients;
-    peak_coefficients[2] = filter_chain_.get< ParametricEq::FILTER_ID::PEAK_BAND_3 >().coefficients;
-    peak_coefficients[3] = filter_chain_.get< ParametricEq::FILTER_ID::PEAK_BAND_4 >().coefficients;
-    peak_coefficients[4] = filter_chain_.get< ParametricEq::FILTER_ID::PEAK_BAND_5 >().coefficients;
+        for (auto& c : cut_coefficients) {
+            if (c == nullptr) {
+                return;
+            }
+        }
 
-    const auto& low_shelf_coefficients  = filter_chain_.get< ParametricEq::FILTER_ID::LOW_SHELF >().coefficients;
-    const auto& high_shelf_coefficients = filter_chain_.get< ParametricEq::FILTER_ID::HIGH_SHELF >().coefficients;
+        for (auto i = 0; i < bounds_width; ++i) {
+            const auto hz        = getHzFromPx(i);
+            auto       mag_at_hz = 1.0;
 
+            if (!filter.isBypassed< SLOPE_12_DBPO >()) {
+                mag_at_hz *= cut_coefficients[SLOPE_12_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+            }
+            if (!filter.isBypassed< SLOPE_24_DBPO >()) {
+                mag_at_hz *= cut_coefficients[SLOPE_24_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+            }
+            if (!filter.isBypassed< SLOPE_36_DBPO >()) {
+                mag_at_hz *= cut_coefficients[SLOPE_36_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+            }
+            if (!filter.isBypassed< SLOPE_48_DBPO >()) {
+                mag_at_hz *= cut_coefficients[SLOPE_48_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+            }
+
+            filter_mags.at(i) = juce::Decibels::gainToDecibels(mag_at_hz);
+        }
+    }
+    else {
+        if (band_coefficients_.at(filter_id) == nullptr) {
+            return;
+        }
+
+        for (auto i = 0; i < bounds_width; ++i) {
+            const auto hz        = getHzFromPx(i);
+            const auto mag_at_hz = 1.0 * band_coefficients_.at(filter_id)->getMagnitudeForFrequency(hz, sample_rate);
+
+            filter_mags.at(i) = juce::Decibels::gainToDecibels(mag_at_hz);
+        }
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphControlLayer::calculateTotalMagnitudeResponse()
+{
+    const int bounds_width = getLocalBounds().getWidth();
+
+    // Calculate the total magnitude across all filters.
     for (auto i = 0; i < bounds_width; ++i) {
-        std::array< double, ParametricEq::NUM_FILTERS > filter_mags { 1.0 };
-        double                                          mag_all = 1.0;
+        double mag_all = 1.0;
 
-        filter_mags.fill(1.0);
-
-        const auto freq = mapToLog10< double >(static_cast< double >(i) / bounds_width,
-                                               ParametricEq::MIN_HZ,
-                                               ParametricEq::MAX_HZ);
-
-        if (processor_ref_.getFilterEnabled(ParametricEq::LOW_CUT)) {
-            if (!low_cut.isBypassed< 0 >() && low_cut.get< 0 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
-                mag_all *= mag;
-            }
-            if (!low_cut.isBypassed< 1 >() && low_cut.get< 1 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
-                mag_all *= mag;
-            }
-            if (!low_cut.isBypassed< 2 >() && low_cut.get< 2 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
-                mag_all *= mag;
-            }
-            if (!low_cut.isBypassed< 3 >() && low_cut.get< 3 >().coefficients != nullptr) {
-                const auto mag = low_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::LOW_CUT) *= mag;
-                mag_all *= mag;
-            }
-        }
-
-        if (processor_ref_.getFilterEnabled(ParametricEq::LOW_SHELF) && low_shelf_coefficients != nullptr) {
-            const auto mag = low_shelf_coefficients->getMagnitudeForFrequency(freq, sample_rate);
-            filter_mags.at(ParametricEq::LOW_SHELF) *= mag;
-            mag_all *= mag;
-        }
-
-        for (int peak_band = 0; peak_band < ParametricEq::NUM_PEAK_BANDS; ++peak_band) {
-            const auto& filter_id = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + peak_band);
-
-            if (processor_ref_.getFilterEnabled(filter_id) && peak_coefficients.at(peak_band) != nullptr) {
-                const auto mag = peak_coefficients.at(peak_band)->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(filter_id) *= mag;
-                mag_all *= mag;
-            }
-        }
-
-        if (processor_ref_.getFilterEnabled(ParametricEq::HIGH_SHELF) && high_shelf_coefficients != nullptr) {
-            const auto mag = high_shelf_coefficients->getMagnitudeForFrequency(freq, sample_rate);
-            filter_mags.at(ParametricEq::HIGH_SHELF) *= mag;
-            mag_all *= mag;
-        }
-
-        if (processor_ref_.getFilterEnabled(ParametricEq::HIGH_CUT)) {
-            if (!high_cut.isBypassed< 0 >() && high_cut.get< 0 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 0 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
-                mag_all *= mag;
-            }
-            if (!high_cut.isBypassed< 1 >() && high_cut.get< 1 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 1 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
-                mag_all *= mag;
-            }
-            if (!high_cut.isBypassed< 2 >() && high_cut.get< 2 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 2 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
-                mag_all *= mag;
-            }
-            if (!high_cut.isBypassed< 3 >() && high_cut.get< 3 >().coefficients != nullptr) {
-                const auto mag = high_cut.get< 3 >().coefficients->getMagnitudeForFrequency(freq, sample_rate);
-                filter_mags.at(ParametricEq::HIGH_CUT) *= mag;
-                mag_all *= mag;
-            }
-        }
-
-        for (size_t filter = 0; filter < ParametricEq::NUM_FILTERS; ++filter) {
-            magnitudes_.at(filter).at(i) = juce::Decibels::gainToDecibels(filter_mags.at(filter));
+        for (auto f = 0; f < ParametricEq::NUM_FILTERS; ++f) {
+            mag_all *= juce::Decibels::decibelsToGain(magnitudes_.at(f).at(i));
         }
 
         magnitudes_.back().at(i) = juce::Decibels::gainToDecibels(mag_all);
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphControlLayer::resetUpdateFlags()
+{
+    for (auto& flag : update_flags_) {
+        flag.set(false);
     }
 }
 
@@ -406,32 +412,32 @@ GraphControlLayer::addListeners()
     auto& apvts = processor_ref_.getApvts();
 
     const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    apvts.getParameter(low_cut_parameters.enabled_)->addListener(this);
-    apvts.getParameter(low_cut_parameters.frequency_)->addListener(this);
-    apvts.getParameter(low_cut_parameters.slope_)->addListener(this);
+    apvts.addParameterListener(low_cut_parameters.enabled_, this);
+    apvts.addParameterListener(low_cut_parameters.frequency_, this);
+    apvts.addParameterListener(low_cut_parameters.slope_, this);
 
     const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    apvts.getParameter(high_cut_parameters.enabled_)->addListener(this);
-    apvts.getParameter(high_cut_parameters.frequency_)->addListener(this);
-    apvts.getParameter(high_cut_parameters.slope_)->addListener(this);
+    apvts.addParameterListener(high_cut_parameters.enabled_, this);
+    apvts.addParameterListener(high_cut_parameters.frequency_, this);
+    apvts.addParameterListener(high_cut_parameters.slope_, this);
 
     const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    apvts.getParameter(low_shelf_parameters.enabled_)->addListener(this);
-    apvts.getParameter(low_shelf_parameters.frequency_)->addListener(this);
-    apvts.getParameter(low_shelf_parameters.gain_)->addListener(this);
+    apvts.addParameterListener(low_shelf_parameters.enabled_, this);
+    apvts.addParameterListener(low_shelf_parameters.frequency_, this);
+    apvts.addParameterListener(low_shelf_parameters.gain_, this);
 
     const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    apvts.getParameter(high_shelf_parameters.enabled_)->addListener(this);
-    apvts.getParameter(high_shelf_parameters.frequency_)->addListener(this);
-    apvts.getParameter(high_shelf_parameters.gain_)->addListener(this);
+    apvts.addParameterListener(high_shelf_parameters.enabled_, this);
+    apvts.addParameterListener(high_shelf_parameters.frequency_, this);
+    apvts.addParameterListener(high_shelf_parameters.gain_, this);
 
     for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
         const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
 
-        apvts.getParameter(peak_band_parameters.enabled_)->addListener(this);
-        apvts.getParameter(peak_band_parameters.frequency_)->addListener(this);
-        apvts.getParameter(peak_band_parameters.gain_)->addListener(this);
-        apvts.getParameter(peak_band_parameters.q_)->addListener(this);
+        apvts.addParameterListener(peak_band_parameters.enabled_, this);
+        apvts.addParameterListener(peak_band_parameters.frequency_, this);
+        apvts.addParameterListener(peak_band_parameters.gain_, this);
+        apvts.addParameterListener(peak_band_parameters.q_, this);
     }
 }
 
@@ -448,32 +454,32 @@ GraphControlLayer::removeListeners()
     auto& apvts = processor_ref_.getApvts();
 
     const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    apvts.getParameter(low_cut_parameters.enabled_)->removeListener(this);
-    apvts.getParameter(low_cut_parameters.frequency_)->removeListener(this);
-    apvts.getParameter(low_cut_parameters.slope_)->removeListener(this);
+    apvts.removeParameterListener(low_cut_parameters.enabled_, this);
+    apvts.removeParameterListener(low_cut_parameters.frequency_, this);
+    apvts.removeParameterListener(low_cut_parameters.slope_, this);
 
     const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    apvts.getParameter(high_cut_parameters.enabled_)->removeListener(this);
-    apvts.getParameter(high_cut_parameters.frequency_)->removeListener(this);
-    apvts.getParameter(high_cut_parameters.slope_)->removeListener(this);
+    apvts.removeParameterListener(high_cut_parameters.enabled_, this);
+    apvts.removeParameterListener(high_cut_parameters.frequency_, this);
+    apvts.removeParameterListener(high_cut_parameters.slope_, this);
 
     const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    apvts.getParameter(low_shelf_parameters.enabled_)->removeListener(this);
-    apvts.getParameter(low_shelf_parameters.frequency_)->removeListener(this);
-    apvts.getParameter(low_shelf_parameters.gain_)->removeListener(this);
+    apvts.removeParameterListener(low_shelf_parameters.enabled_, this);
+    apvts.removeParameterListener(low_shelf_parameters.frequency_, this);
+    apvts.removeParameterListener(low_shelf_parameters.gain_, this);
 
     const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    apvts.getParameter(high_shelf_parameters.enabled_)->removeListener(this);
-    apvts.getParameter(high_shelf_parameters.frequency_)->removeListener(this);
-    apvts.getParameter(high_shelf_parameters.gain_)->removeListener(this);
+    apvts.removeParameterListener(high_shelf_parameters.enabled_, this);
+    apvts.removeParameterListener(high_shelf_parameters.frequency_, this);
+    apvts.removeParameterListener(high_shelf_parameters.gain_, this);
 
     for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
         const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
 
-        apvts.getParameter(peak_band_parameters.enabled_)->removeListener(this);
-        apvts.getParameter(peak_band_parameters.frequency_)->removeListener(this);
-        apvts.getParameter(peak_band_parameters.gain_)->removeListener(this);
-        apvts.getParameter(peak_band_parameters.q_)->removeListener(this);
+        apvts.removeParameterListener(peak_band_parameters.enabled_, this);
+        apvts.removeParameterListener(peak_band_parameters.frequency_, this);
+        apvts.removeParameterListener(peak_band_parameters.gain_, this);
+        apvts.removeParameterListener(peak_band_parameters.q_, this);
     }
 }
 
@@ -516,6 +522,35 @@ GraphControlLayer::allControlPtrsValid() const
     }
 
     return ok;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphControlLayer::initialiseCoefficientsRefs()
+{
+    using namespace ParametricEq;
+
+    low_cut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_12_DBPO >().coefficients;
+    low_cut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_24_DBPO >().coefficients;
+    low_cut_coefficients_[SLOPE_36_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_36_DBPO >().coefficients;
+    low_cut_coefficients_[SLOPE_48_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_48_DBPO >().coefficients;
+
+    high_cut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_12_DBPO >().coefficients;
+    high_cut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_24_DBPO >().coefficients;
+    high_cut_coefficients_[SLOPE_36_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_36_DBPO >().coefficients;
+    high_cut_coefficients_[SLOPE_48_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_48_DBPO >().coefficients;
+
+    band_coefficients_[LOW_CUT]     = nullptr;
+    band_coefficients_[LOW_SHELF]   = filter_chain_.get< LOW_SHELF >().coefficients;
+    band_coefficients_[PEAK_BAND_1] = filter_chain_.get< PEAK_BAND_1 >().coefficients;
+    band_coefficients_[PEAK_BAND_2] = filter_chain_.get< PEAK_BAND_2 >().coefficients;
+    band_coefficients_[PEAK_BAND_3] = filter_chain_.get< PEAK_BAND_3 >().coefficients;
+    band_coefficients_[PEAK_BAND_4] = filter_chain_.get< PEAK_BAND_4 >().coefficients;
+    band_coefficients_[PEAK_BAND_5] = filter_chain_.get< PEAK_BAND_5 >().coefficients;
+    band_coefficients_[HIGH_SHELF]  = filter_chain_.get< HIGH_SHELF >().coefficients;
+    band_coefficients_[HIGH_CUT]    = nullptr;
 }
 
 /*---------------------------------------------------------------------------

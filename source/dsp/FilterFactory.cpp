@@ -45,34 +45,30 @@ FilterFactory::updateCutCoefficients(ParametricEq::FilterChain& filter_chain, co
     auto& filter = is_low_cut ? filter_chain.get< ParametricEq::LOW_CUT >() :
                                 filter_chain.get< ParametricEq::HIGH_CUT >();
 
-    filter.setBypassed< ParametricEq::SLOPE_12_DB_PER_OCTAVE >(true);
-    filter.setBypassed< ParametricEq::SLOPE_24_DB_PER_OCTAVE >(true);
-    filter.setBypassed< ParametricEq::SLOPE_36_DB_PER_OCTAVE >(true);
-    filter.setBypassed< ParametricEq::SLOPE_48_DB_PER_OCTAVE >(true);
+    filter.setBypassed< ParametricEq::SLOPE_12_DBPO >(true);
+    filter.setBypassed< ParametricEq::SLOPE_24_DBPO >(true);
+    filter.setBypassed< ParametricEq::SLOPE_36_DBPO >(true);
+    filter.setBypassed< ParametricEq::SLOPE_48_DBPO >(true);
 
     const int slope_index = (order / 2) - 1;
 
     // Note, the switch case fall-through is intentional.
     switch (slope_index) {
-    case ParametricEq::SLOPE_48_DB_PER_OCTAVE:
-        *filter.get< ParametricEq::SLOPE_48_DB_PER_OCTAVE >().coefficients =
-            *coefficients[ParametricEq::SLOPE_48_DB_PER_OCTAVE];
-        filter.setBypassed< ParametricEq::SLOPE_48_DB_PER_OCTAVE >(false);
+    case ParametricEq::SLOPE_48_DBPO:
+        *filter.get< ParametricEq::SLOPE_48_DBPO >().coefficients = *coefficients[ParametricEq::SLOPE_48_DBPO];
+        filter.setBypassed< ParametricEq::SLOPE_48_DBPO >(false);
 
-    case ParametricEq::SLOPE_36_DB_PER_OCTAVE:
-        *filter.get< ParametricEq::SLOPE_36_DB_PER_OCTAVE >().coefficients =
-            *coefficients[ParametricEq::SLOPE_36_DB_PER_OCTAVE];
-        filter.setBypassed< ParametricEq::SLOPE_36_DB_PER_OCTAVE >(false);
+    case ParametricEq::SLOPE_36_DBPO:
+        *filter.get< ParametricEq::SLOPE_36_DBPO >().coefficients = *coefficients[ParametricEq::SLOPE_36_DBPO];
+        filter.setBypassed< ParametricEq::SLOPE_36_DBPO >(false);
 
-    case ParametricEq::SLOPE_24_DB_PER_OCTAVE:
-        *filter.get< ParametricEq::SLOPE_24_DB_PER_OCTAVE >().coefficients =
-            *coefficients[ParametricEq::SLOPE_24_DB_PER_OCTAVE];
-        filter.setBypassed< ParametricEq::SLOPE_24_DB_PER_OCTAVE >(false);
+    case ParametricEq::SLOPE_24_DBPO:
+        *filter.get< ParametricEq::SLOPE_24_DBPO >().coefficients = *coefficients[ParametricEq::SLOPE_24_DBPO];
+        filter.setBypassed< ParametricEq::SLOPE_24_DBPO >(false);
 
-    case ParametricEq::SLOPE_12_DB_PER_OCTAVE:
-        *filter.get< ParametricEq::SLOPE_12_DB_PER_OCTAVE >().coefficients =
-            *coefficients[ParametricEq::SLOPE_12_DB_PER_OCTAVE];
-        filter.setBypassed< ParametricEq::SLOPE_12_DB_PER_OCTAVE >(false);
+    case ParametricEq::SLOPE_12_DBPO:
+        *filter.get< ParametricEq::SLOPE_12_DBPO >().coefficients = *coefficients[ParametricEq::SLOPE_12_DBPO];
+        filter.setBypassed< ParametricEq::SLOPE_12_DBPO >(false);
         break;
 
     default:

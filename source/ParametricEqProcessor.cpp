@@ -424,7 +424,7 @@ ParametricEqProcessor::getFilterQ(const ParametricEq::FILTER_ID& filter_id) cons
 int
 ParametricEqProcessor::getFilterOrder(const ParametricEq::FILTER_ID& filter_id) const
 {
-    int         ret = ParametricEq::SLOPE_48_DB_PER_OCTAVE * 2;
+    int         ret = ParametricEq::SLOPE_48_DBPO * 2;
     const auto& id  = ParametricEq::PARAMETER_MAP.at(filter_id).slope_;
 
     if (id != ParametricEq::PARAMETER_NOT_SUPPORTED) {

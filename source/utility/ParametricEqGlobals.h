@@ -31,8 +31,9 @@ using FilterChain = juce::dsp::ProcessorChain< CutFilter,  //! Low Cut.
                                                CutFilter   //! High Cut.
                                                >;
 
-inline constexpr int NUM_FILTERS    = 9;
-inline constexpr int NUM_PEAK_BANDS = 5;
+inline constexpr int NUM_FILTERS           = 9;
+inline constexpr int NUM_PEAK_BANDS        = 5;
+inline constexpr int NUM_CUT_SLOPE_OPTIONS = 4;
 
 enum FILTER_ID {
     LOW_CUT,
@@ -48,10 +49,10 @@ enum FILTER_ID {
 };
 
 enum CUT_FILTER_SLOPE {
-    SLOPE_12_DB_PER_OCTAVE,
-    SLOPE_24_DB_PER_OCTAVE,
-    SLOPE_36_DB_PER_OCTAVE,
-    SLOPE_48_DB_PER_OCTAVE,
+    SLOPE_12_DBPO,
+    SLOPE_24_DBPO,
+    SLOPE_36_DBPO,
+    SLOPE_48_DBPO,
 };
 
 struct FilterParameterIds {
@@ -197,13 +198,13 @@ inline constexpr bool  LOW_CUT_ENABLED_DEFAULT = false;
 inline constexpr float LOW_CUT_FREQ_MIN        = MIN_HZ;
 inline constexpr float LOW_CUT_FREQ_MAX        = 200.f;
 inline constexpr float LOW_CUT_FREQ_DEFAULT    = 50.f;
-inline constexpr int   LOW_CUT_SLOPE_DEFAULT   = SLOPE_48_DB_PER_OCTAVE;
+inline constexpr int   LOW_CUT_SLOPE_DEFAULT   = SLOPE_48_DBPO;
 
 inline constexpr bool  HIGH_CUT_ENABLED_DEFAULT = false;
 inline constexpr float HIGH_CUT_FREQ_MIN        = 5000.f;
 inline constexpr float HIGH_CUT_FREQ_MAX        = MAX_HZ;
 inline constexpr float HIGH_CUT_FREQ_DEFAULT    = 15000.f;
-inline constexpr int   HIGH_CUT_SLOPE_DEFAULT   = SLOPE_48_DB_PER_OCTAVE;
+inline constexpr int   HIGH_CUT_SLOPE_DEFAULT   = SLOPE_48_DBPO;
 
 inline constexpr bool  LOW_SHELF_ENABLED_DEFAULT = false;
 inline constexpr float LOW_SHELF_FREQ_MIN        = MIN_HZ;

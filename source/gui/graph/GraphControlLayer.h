@@ -8,7 +8,7 @@
 
 class GraphControlLayer final
     : public juce::Component
-    , public juce::AudioProcessorParameter::Listener
+    , public juce::AudioProcessorValueTreeState::Listener
     , public juce::Timer
 {
 public:
@@ -19,13 +19,14 @@ public:
     void resized() override;
     void mouseDrag(const juce::MouseEvent& event) override;
     void mouseUp(const juce::MouseEvent& event) override;
-    void parameterValueChanged(int parameter_index, float new_value) override;
-    void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
+    void parameterChanged(const juce::String& parameter_id, float new_value) override;
     void timerCallback() override;
 
 private:
     void updateFilterChain();
-    void updateMagnitudes();
+    void calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id);
+    void calculateTotalMagnitudeResponse();
+    void resetUpdateFlags();
 
     template < typename T >
     static T getYCoordinateFromMag(const double magnitude, const T bounds_top, const T bounds_bottom)
@@ -42,6 +43,7 @@ private:
     void addListeners();
     void removeListeners();
     bool allControlPtrsValid() const;
+    void initialiseCoefficientsRefs();
 
     ParametricEqProcessor& processor_ref_;
     juce::Atomic< bool >   parameters_changed_;
@@ -56,6 +58,13 @@ private:
 
     size_t                  latched_node_index_;
     static constexpr size_t LATCHED_NODE_INDEX_UNSET = 0xFFFF;
+
+    std::array< juce::Atomic< bool >, ParametricEq::NUM_FILTERS > update_flags_;
+
+    typedef juce::dsp::IIR::Filter< float >::CoefficientsPtr              FilterCoefficients;
+    std::array< FilterCoefficients, ParametricEq::NUM_CUT_SLOPE_OPTIONS > low_cut_coefficients_;
+    std::array< FilterCoefficients, ParametricEq::NUM_CUT_SLOPE_OPTIONS > high_cut_coefficients_;
+    std::array< FilterCoefficients, ParametricEq::NUM_FILTERS >           band_coefficients_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphControlLayer)
 };
