@@ -70,7 +70,11 @@ GraphBackground::drawDbLabels(const juce::Graphics& g) const
             continue;
         }
 
-        const auto raw_y     = juce::jmap< int >(i, ParametricEq::MIN_DB, ParametricEq::MAX_DB, bounds_height, 0);
+        const auto raw_y     = juce::jmap< int >(i,
+                                             static_cast< int >(ParametricEq::MIN_DB),
+                                             static_cast< int >(ParametricEq::MAX_DB),
+                                             bounds_height,
+                                             0);
         const auto shifted_y = raw_y - text_height - Theme::UI_PADDING;
         const auto text      = (i > 0 ? "+" : "") + juce::String(i) + " dB";
 
@@ -88,7 +92,7 @@ GraphBackground::drawFrequencyLabels(const juce::Graphics& g) const
     const auto& bounds_y     = Theme::UI_PADDING;
     const auto& bounds_width = getLocalBounds().toFloat().getWidth();
 
-    for (auto i = 1; i < HZ_LIST.size() - 1; ++i) {
+    for (size_t i = 1; i < HZ_LIST.size() - 1; ++i) {
         auto       hz        = HZ_LIST.at(i);
         const auto raw_x     = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
         const auto shifted_x = static_cast< int >(bounds_width * raw_x) + Theme::UI_PADDING;

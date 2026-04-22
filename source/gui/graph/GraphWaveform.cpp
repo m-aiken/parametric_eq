@@ -71,7 +71,7 @@ GraphWaveform::performFft()
                                           1.f / static_cast< float >(ParametricEq::FFT::NUM_BINS),
                                           ParametricEq::FFT::NUM_BINS + 1);
 
-    for (auto i = 0; i < ParametricEq::FFT::NUM_BINS + 1; ++i) {
+    for (size_t i = 0; i < static_cast< size_t >(ParametricEq::FFT::NUM_BINS + 1); ++i) {
         fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], ParametricEq::FFT::MIN_DB);
     }
 }
@@ -82,7 +82,7 @@ GraphWaveform::performFft()
 void
 GraphWaveform::smoothFftOutput()
 {
-    for (auto i = 0; i < ParametricEq::FFT::NUM_BINS; ++i) {
+    for (size_t i = 0; i < static_cast< size_t >(ParametricEq::FFT::NUM_BINS); ++i) {
         const auto previous_value = smoothed_fft_output_[i];
         const auto candidate      = fft_output_buffer_[i];
         const auto final_value    = juce::jmax(candidate, previous_value - ParametricEq::WAVEFORM_DECAY_RATE);
@@ -111,7 +111,8 @@ GraphWaveform::generatePath()
 
     path.startNewSubPath(last_x_coordinate, y_coordinate);
 
-    for (auto i = 1; i < ParametricEq::FFT::NUM_BINS + 1; i += ParametricEq::WAVEFORM_PATH_RESOLUTION) {
+    for (size_t i = 1; i < static_cast< size_t >(ParametricEq::FFT::NUM_BINS + 1);
+         i += ParametricEq::WAVEFORM_PATH_RESOLUTION) {
         y_coordinate = juce::jmap< float >(smoothed_fft_output_.at(i),
                                            ParametricEq::FFT::MIN_DB,
                                            ParametricEq::FFT::MAX_DB,

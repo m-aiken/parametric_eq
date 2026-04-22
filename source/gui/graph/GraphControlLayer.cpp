@@ -85,7 +85,7 @@ GraphControlLayer::paint(juce::Graphics& g)
 
         for (int i = 1; i < bounds_i_width - 1; ++i) {
             const auto x = bounds_f_x + static_cast< float >(i);
-            const auto y = getYCoordinateFromMag(mags.at(i), bounds_f_y, bounds_f_bottom);
+            const auto y = getYCoordinateFromMag(mags.at(static_cast< size_t >(i)), bounds_f_y, bounds_f_bottom);
 
             path.lineTo(x, y);
         }
@@ -116,7 +116,7 @@ GraphControlLayer::paint(juce::Graphics& g)
 
         for (int i = 1; i < bounds_i_width; ++i) {
             const auto x = bounds_f_x + static_cast< float >(i);
-            const auto y = getYCoordinateFromMag(mags.at(i), bounds_f_y, bounds_f_bottom);
+            const auto y = getYCoordinateFromMag(mags.at(static_cast< size_t >(i)), bounds_f_y, bounds_f_bottom);
 
             path.lineTo(x, y);
         }
@@ -142,7 +142,9 @@ GraphControlLayer::paint(juce::Graphics& g)
         const auto x_raw = bounds_i_x + static_cast< int >(bounds_f_width * normalized_frequency);
         // Clamp the upper bounds for the x coordinate so that it can't go out of the vector bounds.
         const auto node_x = juce::jmin< int >(x_raw, bounds_i_width - GraphNode::RADIUS);
-        const int node_y = getYCoordinateFromMag(magnitudes_.at(i).at(node_x - bounds_i_x), bounds_i_y, bounds_i_bottom);
+        const int  node_y = getYCoordinateFromMag(magnitudes_.at(i).at(static_cast< size_t >(node_x - bounds_i_x)),
+                                                 bounds_i_y,
+                                                 bounds_i_bottom);
 
         node->setBounds(node_x - GraphNode::RADIUS, node_y - GraphNode::RADIUS, GraphNode::DIAMETER, GraphNode::DIAMETER);
         node->coordinates().setXY(node_x, node_y);
@@ -238,6 +240,8 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
 void
 GraphControlLayer::mouseUp(const juce::MouseEvent& event)
 {
+    juce::ignoreUnused(event);
+
     // Reset latched dragged node reference.
     latched_node_index_ = LATCHED_NODE_INDEX_UNSET;
 }
@@ -279,7 +283,7 @@ GraphControlLayer::timerCallback()
     if (parameters_changed_.compareAndSetBool(false, true)) {
         updateFilterChain();
 
-        for (auto i = 0; i < update_flags_.size(); ++i) {
+        for (size_t i = 0; i < update_flags_.size(); ++i) {
             if (update_flags_.at(i).get()) {
                 calculateFilterMagnitudeResponse(static_cast< ParametricEq::FILTER_ID >(i));
                 break;
@@ -351,7 +355,7 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_I
                 mag_at_hz *= cut_coefficients[SLOPE_48_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
             }
 
-            filter_mags.at(i) = juce::Decibels::gainToDecibels(mag_at_hz);
+            filter_mags.at(static_cast< size_t >(i)) = juce::Decibels::gainToDecibels(mag_at_hz);
         }
     }
     else {
@@ -360,10 +364,11 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_I
         }
 
         for (auto i = 0; i < bounds_width; ++i) {
-            const auto hz        = getHzFromPx(i);
-            const auto mag_at_hz = 1.0 * band_coefficients_.at(filter_id)->getMagnitudeForFrequency(hz, sample_rate);
+            const auto hz = getHzFromPx(i);
+            const auto mag_at_hz =
+                1.0 * band_coefficients_.at(static_cast< size_t >(filter_id))->getMagnitudeForFrequency(hz, sample_rate);
 
-            filter_mags.at(i) = juce::Decibels::gainToDecibels(mag_at_hz);
+            filter_mags.at(static_cast< size_t >(i)) = juce::Decibels::gainToDecibels(mag_at_hz);
         }
     }
 }
@@ -381,10 +386,11 @@ GraphControlLayer::calculateTotalMagnitudeResponse()
         double mag_all = 1.0;
 
         for (auto f = 0; f < ParametricEq::NUM_FILTERS; ++f) {
-            mag_all *= juce::Decibels::decibelsToGain(magnitudes_.at(f).at(i));
+            mag_all *= juce::Decibels::decibelsToGain(
+                magnitudes_.at(static_cast< size_t >(f)).at(static_cast< size_t >(i)));
         }
 
-        magnitudes_.back().at(i) = juce::Decibels::gainToDecibels(mag_all);
+        magnitudes_.back().at(static_cast< size_t >(i)) = juce::Decibels::gainToDecibels(mag_all);
     }
 }
 

@@ -179,7 +179,7 @@ ParametricEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
         .numChannels      = static_cast< uint32 >(getTotalNumOutputChannels()),
     };
 
-    filter_chains_.resize(getTotalNumInputChannels());
+    filter_chains_.resize(static_cast< size_t >(getTotalNumInputChannels()));
 
     for (auto& chain : filter_chains_) {
         chain.prepare(spec);
@@ -235,7 +235,7 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
     // Process the EQ.
     const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
 
-    for (int i = 0; i < getTotalNumInputChannels(); ++i) {
+    for (size_t i = 0; i < static_cast< size_t >(getTotalNumInputChannels()); ++i) {
         auto       single_channel_block   = audio_block.getSingleChannelBlock(i);
         const auto single_channel_context = juce::dsp::ProcessContextReplacing< float >(single_channel_block);
 
@@ -280,7 +280,7 @@ ParametricEqProcessor::getStateInformation(juce::MemoryBlock& dest_data)
 void
 ParametricEqProcessor::setStateInformation(const void* data, int size_in_bytes)
 {
-    const auto& tree = juce::ValueTree::readFromData(data, size_in_bytes);
+    const auto& tree = juce::ValueTree::readFromData(data, static_cast< size_t >(size_in_bytes));
 
     if (tree.isValid()) {
         apvts_.replaceState(tree);
@@ -537,7 +537,7 @@ ParametricEqProcessor::createParameterLayout()
     for (int i = 0; i < ParametricEq::NUM_PEAK_BANDS; ++i) {
         const auto& filter_id            = static_cast< ParametricEq::FILTER_ID >(ParametricEq::PEAK_BAND_1 + i);
         const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
-        const auto& default_hz           = ParametricEq::PEAK_BAND_DEFAULT_FREQUENCIES.at(i);
+        const auto& default_hz           = ParametricEq::PEAK_BAND_DEFAULT_FREQUENCIES.at(static_cast< size_t >(i));
 
         layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(peak_band_parameters.enabled_, 1),
                                                                 peak_band_parameters.enabled_,
