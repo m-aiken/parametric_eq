@@ -249,6 +249,68 @@ inline constexpr std::array< float, NUM_PEAK_BANDS > PEAK_BAND_DEFAULT_FREQUENCI
 
 inline constexpr bool PEAK_ENABLED_DEFAULT = true;
 
+inline void
+addListenerToAllParameters(juce::AudioProcessorValueTreeState&           apvts,
+                           juce::AudioProcessorValueTreeState::Listener* listener)
+{
+    if (listener == nullptr) {
+        return;
+    }
+
+    for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
+        if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.addParameterListener(parameters.enabled_, listener);
+        }
+
+        if (parameters.frequency_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.addParameterListener(parameters.frequency_, listener);
+        }
+
+        if (parameters.gain_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.addParameterListener(parameters.gain_, listener);
+        }
+
+        if (parameters.q_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.addParameterListener(parameters.q_, listener);
+        }
+
+        if (parameters.slope_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.addParameterListener(parameters.slope_, listener);
+        }
+    }
+}
+
+inline void
+removeListenerFromAllParameters(juce::AudioProcessorValueTreeState&           apvts,
+                                juce::AudioProcessorValueTreeState::Listener* listener)
+{
+    if (listener == nullptr) {
+        return;
+    }
+
+    for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
+        if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.removeParameterListener(parameters.enabled_, listener);
+        }
+
+        if (parameters.frequency_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.removeParameterListener(parameters.frequency_, listener);
+        }
+
+        if (parameters.gain_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.removeParameterListener(parameters.gain_, listener);
+        }
+
+        if (parameters.q_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.removeParameterListener(parameters.q_, listener);
+        }
+
+        if (parameters.slope_ != PARAMETER_NOT_SUPPORTED) {
+            apvts.removeParameterListener(parameters.slope_, listener);
+        }
+    }
+}
+
 namespace FFT
 {
 

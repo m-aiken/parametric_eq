@@ -27,6 +27,7 @@ private:
     void calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id);
     void calculateTotalMagnitudeResponse();
     void resetUpdateFlags();
+    void initialiseCoefficientsRefs();
 
     template < typename T >
     static T getYCoordinateFromMag(const double magnitude, const T bounds_top, const T bounds_bottom)
@@ -39,11 +40,6 @@ private:
 
         return static_cast< T >(mapped);
     }
-
-    void addListeners();
-    void removeListeners();
-    bool allControlPtrsValid() const;
-    void initialiseCoefficientsRefs();
 
     ParametricEqProcessor& processor_ref_;
     juce::Atomic< bool >   parameters_changed_;

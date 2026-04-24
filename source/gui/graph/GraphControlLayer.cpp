@@ -39,7 +39,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
         }
     }
 
-    addListeners();
+    ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
     updateFilterChain();
     startTimerHz(60);
 }
@@ -50,7 +50,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
 GraphControlLayer::~GraphControlLayer()
 {
     stopTimer();
-    removeListeners();
+    ParametricEq::removeListenerFromAllParameters(processor_ref_.getApvts(), this);
 }
 
 /*---------------------------------------------------------------------------
@@ -403,131 +403,6 @@ GraphControlLayer::resetUpdateFlags()
     for (auto& flag : update_flags_) {
         flag.set(false);
     }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphControlLayer::addListeners()
-{
-    if (!allControlPtrsValid()) {
-        return;
-    }
-
-    auto& apvts = processor_ref_.getApvts();
-
-    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    apvts.addParameterListener(low_cut_parameters.enabled_, this);
-    apvts.addParameterListener(low_cut_parameters.frequency_, this);
-    apvts.addParameterListener(low_cut_parameters.slope_, this);
-
-    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    apvts.addParameterListener(high_cut_parameters.enabled_, this);
-    apvts.addParameterListener(high_cut_parameters.frequency_, this);
-    apvts.addParameterListener(high_cut_parameters.slope_, this);
-
-    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    apvts.addParameterListener(low_shelf_parameters.enabled_, this);
-    apvts.addParameterListener(low_shelf_parameters.frequency_, this);
-    apvts.addParameterListener(low_shelf_parameters.gain_, this);
-
-    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    apvts.addParameterListener(high_shelf_parameters.enabled_, this);
-    apvts.addParameterListener(high_shelf_parameters.frequency_, this);
-    apvts.addParameterListener(high_shelf_parameters.gain_, this);
-
-    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
-
-        apvts.addParameterListener(peak_band_parameters.enabled_, this);
-        apvts.addParameterListener(peak_band_parameters.frequency_, this);
-        apvts.addParameterListener(peak_band_parameters.gain_, this);
-        apvts.addParameterListener(peak_band_parameters.q_, this);
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphControlLayer::removeListeners()
-{
-    if (!allControlPtrsValid()) {
-        return;
-    }
-
-    auto& apvts = processor_ref_.getApvts();
-
-    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    apvts.removeParameterListener(low_cut_parameters.enabled_, this);
-    apvts.removeParameterListener(low_cut_parameters.frequency_, this);
-    apvts.removeParameterListener(low_cut_parameters.slope_, this);
-
-    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    apvts.removeParameterListener(high_cut_parameters.enabled_, this);
-    apvts.removeParameterListener(high_cut_parameters.frequency_, this);
-    apvts.removeParameterListener(high_cut_parameters.slope_, this);
-
-    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    apvts.removeParameterListener(low_shelf_parameters.enabled_, this);
-    apvts.removeParameterListener(low_shelf_parameters.frequency_, this);
-    apvts.removeParameterListener(low_shelf_parameters.gain_, this);
-
-    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    apvts.removeParameterListener(high_shelf_parameters.enabled_, this);
-    apvts.removeParameterListener(high_shelf_parameters.frequency_, this);
-    apvts.removeParameterListener(high_shelf_parameters.gain_, this);
-
-    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
-
-        apvts.removeParameterListener(peak_band_parameters.enabled_, this);
-        apvts.removeParameterListener(peak_band_parameters.frequency_, this);
-        apvts.removeParameterListener(peak_band_parameters.gain_, this);
-        apvts.removeParameterListener(peak_band_parameters.q_, this);
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-bool
-GraphControlLayer::allControlPtrsValid() const
-{
-    const auto& apvts = processor_ref_.getApvts();
-    bool        ok    = true;
-
-    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    ok &= apvts.getParameter(low_cut_parameters.enabled_) != nullptr;
-    ok &= apvts.getParameter(low_cut_parameters.frequency_) != nullptr;
-    ok &= apvts.getParameter(low_cut_parameters.slope_) != nullptr;
-
-    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    ok &= apvts.getParameter(high_cut_parameters.enabled_) != nullptr;
-    ok &= apvts.getParameter(high_cut_parameters.frequency_) != nullptr;
-    ok &= apvts.getParameter(high_cut_parameters.slope_) != nullptr;
-
-    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    ok &= apvts.getParameter(low_shelf_parameters.enabled_) != nullptr;
-    ok &= apvts.getParameter(low_shelf_parameters.frequency_) != nullptr;
-    ok &= apvts.getParameter(low_shelf_parameters.gain_) != nullptr;
-
-    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    ok &= apvts.getParameter(high_shelf_parameters.enabled_) != nullptr;
-    ok &= apvts.getParameter(high_shelf_parameters.frequency_) != nullptr;
-    ok &= apvts.getParameter(high_shelf_parameters.gain_) != nullptr;
-
-    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
-
-        ok &= apvts.getParameter(peak_band_parameters.enabled_) != nullptr;
-        ok &= apvts.getParameter(peak_band_parameters.frequency_) != nullptr;
-        ok &= apvts.getParameter(peak_band_parameters.gain_) != nullptr;
-        ok &= apvts.getParameter(peak_band_parameters.q_) != nullptr;
-    }
-
-    return ok;
 }
 
 /*---------------------------------------------------------------------------
