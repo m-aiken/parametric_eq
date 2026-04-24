@@ -314,7 +314,8 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_I
 {
     using namespace ParametricEq;
 
-    auto& filter_mags = magnitudes_.at(filter_id);
+    const auto filter_id_t = static_cast< size_t >(filter_id);
+    auto&      filter_mags = magnitudes_.at(filter_id_t);
 
     if (!processor_ref_.getFilterEnabled(filter_id)) {
         std::fill(filter_mags.begin(), filter_mags.end(), juce::Decibels::gainToDecibels(1.0));
@@ -324,35 +325,31 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_I
     const int  bounds_width = getLocalBounds().getWidth();
     const auto sample_rate  = processor_ref_.getSampleRate();
 
-    const auto getHzFromPx = [&](const int px) {
-        return mapToLog10< double >(static_cast< double >(px) / bounds_width, MIN_HZ, MAX_HZ);
-    };
-
     if (filter_id == LOW_CUT || filter_id == HIGH_CUT) {
         const auto& filter = filter_id == LOW_CUT ? filter_chain_.get< LOW_CUT >() : filter_chain_.get< HIGH_CUT >();
-        const auto& cut_coefficients = filter_id == LOW_CUT ? low_cut_coefficients_ : high_cut_coefficients_;
+        const auto& coefficients = filter_id == LOW_CUT ? lcut_coefficients_ : hcut_coefficients_;
 
-        for (auto& c : cut_coefficients) {
+        for (auto& c : coefficients) {
             if (c == nullptr) {
                 return;
             }
         }
 
         for (auto i = 0; i < bounds_width; ++i) {
-            const auto hz        = getHzFromPx(i);
+            const auto hz        = getHzFromPx(i, bounds_width);
             auto       mag_at_hz = 1.0;
 
             if (!filter.isBypassed< SLOPE_12_DBPO >()) {
-                mag_at_hz *= cut_coefficients[SLOPE_12_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+                mag_at_hz *= coefficients[SLOPE_12_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
             }
             if (!filter.isBypassed< SLOPE_24_DBPO >()) {
-                mag_at_hz *= cut_coefficients[SLOPE_24_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+                mag_at_hz *= coefficients[SLOPE_24_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
             }
             if (!filter.isBypassed< SLOPE_36_DBPO >()) {
-                mag_at_hz *= cut_coefficients[SLOPE_36_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+                mag_at_hz *= coefficients[SLOPE_36_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
             }
             if (!filter.isBypassed< SLOPE_48_DBPO >()) {
-                mag_at_hz *= cut_coefficients[SLOPE_48_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
+                mag_at_hz *= coefficients[SLOPE_48_DBPO]->getMagnitudeForFrequency(hz, sample_rate);
             }
 
             filter_mags.at(static_cast< size_t >(i)) = juce::Decibels::gainToDecibels(mag_at_hz);
@@ -364,9 +361,8 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_I
         }
 
         for (auto i = 0; i < bounds_width; ++i) {
-            const auto hz = getHzFromPx(i);
-            const auto mag_at_hz =
-                1.0 * band_coefficients_.at(static_cast< size_t >(filter_id))->getMagnitudeForFrequency(hz, sample_rate);
+            const auto hz        = getHzFromPx(i, bounds_width);
+            const auto mag_at_hz = band_coefficients_.at(filter_id_t)->getMagnitudeForFrequency(hz, sample_rate);
 
             filter_mags.at(static_cast< size_t >(i)) = juce::Decibels::gainToDecibels(mag_at_hz);
         }
@@ -379,19 +375,27 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_I
 void
 GraphControlLayer::calculateTotalMagnitudeResponse()
 {
-    const int bounds_width = getLocalBounds().getWidth();
+    const auto bounds_width = static_cast< size_t >(getLocalBounds().getWidth());
 
     // Calculate the total magnitude across all filters.
-    for (auto i = 0; i < bounds_width; ++i) {
+    for (size_t px = 0; px < bounds_width; ++px) {
         double mag_all = 1.0;
 
-        for (auto f = 0; f < ParametricEq::NUM_FILTERS; ++f) {
-            mag_all *= juce::Decibels::decibelsToGain(
-                magnitudes_.at(static_cast< size_t >(f)).at(static_cast< size_t >(i)));
+        for (size_t filter = 0; filter < static_cast< size_t >(ParametricEq::NUM_FILTERS); ++filter) {
+            mag_all *= juce::Decibels::decibelsToGain(magnitudes_.at(filter).at(px));
         }
 
-        magnitudes_.back().at(static_cast< size_t >(i)) = juce::Decibels::gainToDecibels(mag_all);
+        magnitudes_.back().at(px) = juce::Decibels::gainToDecibels(mag_all);
     }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ double
+GraphControlLayer::getHzFromPx(const int px, const int max_px)
+{
+    return juce::mapToLog10< double >(static_cast< double >(px) / max_px, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
 }
 
 /*---------------------------------------------------------------------------
@@ -413,25 +417,23 @@ GraphControlLayer::initialiseCoefficientsRefs()
 {
     using namespace ParametricEq;
 
-    low_cut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_12_DBPO >().coefficients;
-    low_cut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_24_DBPO >().coefficients;
-    low_cut_coefficients_[SLOPE_36_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_36_DBPO >().coefficients;
-    low_cut_coefficients_[SLOPE_48_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_48_DBPO >().coefficients;
-
-    high_cut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_12_DBPO >().coefficients;
-    high_cut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_24_DBPO >().coefficients;
-    high_cut_coefficients_[SLOPE_36_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_36_DBPO >().coefficients;
-    high_cut_coefficients_[SLOPE_48_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_48_DBPO >().coefficients;
-
-    band_coefficients_[LOW_CUT]     = nullptr;
-    band_coefficients_[LOW_SHELF]   = filter_chain_.get< LOW_SHELF >().coefficients;
-    band_coefficients_[PEAK_BAND_1] = filter_chain_.get< PEAK_BAND_1 >().coefficients;
-    band_coefficients_[PEAK_BAND_2] = filter_chain_.get< PEAK_BAND_2 >().coefficients;
-    band_coefficients_[PEAK_BAND_3] = filter_chain_.get< PEAK_BAND_3 >().coefficients;
-    band_coefficients_[PEAK_BAND_4] = filter_chain_.get< PEAK_BAND_4 >().coefficients;
-    band_coefficients_[PEAK_BAND_5] = filter_chain_.get< PEAK_BAND_5 >().coefficients;
-    band_coefficients_[HIGH_SHELF]  = filter_chain_.get< HIGH_SHELF >().coefficients;
-    band_coefficients_[HIGH_CUT]    = nullptr;
+    lcut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_12_DBPO >().coefficients;
+    lcut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_24_DBPO >().coefficients;
+    lcut_coefficients_[SLOPE_36_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_36_DBPO >().coefficients;
+    lcut_coefficients_[SLOPE_48_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_48_DBPO >().coefficients;
+    hcut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_12_DBPO >().coefficients;
+    hcut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_24_DBPO >().coefficients;
+    hcut_coefficients_[SLOPE_36_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_36_DBPO >().coefficients;
+    hcut_coefficients_[SLOPE_48_DBPO] = filter_chain_.get< HIGH_CUT >().get< SLOPE_48_DBPO >().coefficients;
+    band_coefficients_[LOW_CUT]       = nullptr;
+    band_coefficients_[LOW_SHELF]     = filter_chain_.get< LOW_SHELF >().coefficients;
+    band_coefficients_[PEAK_BAND_1]   = filter_chain_.get< PEAK_BAND_1 >().coefficients;
+    band_coefficients_[PEAK_BAND_2]   = filter_chain_.get< PEAK_BAND_2 >().coefficients;
+    band_coefficients_[PEAK_BAND_3]   = filter_chain_.get< PEAK_BAND_3 >().coefficients;
+    band_coefficients_[PEAK_BAND_4]   = filter_chain_.get< PEAK_BAND_4 >().coefficients;
+    band_coefficients_[PEAK_BAND_5]   = filter_chain_.get< PEAK_BAND_5 >().coefficients;
+    band_coefficients_[HIGH_SHELF]    = filter_chain_.get< HIGH_SHELF >().coefficients;
+    band_coefficients_[HIGH_CUT]      = nullptr;
 }
 
 /*---------------------------------------------------------------------------

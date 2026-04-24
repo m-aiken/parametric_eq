@@ -24,8 +24,11 @@ public:
 
 private:
     void updateFilterChain();
-    void calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id);
-    void calculateTotalMagnitudeResponse();
+
+    void          calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id);
+    void          calculateTotalMagnitudeResponse();
+    static double getHzFromPx(const int px, const int max_px);
+
     void resetUpdateFlags();
     void initialiseCoefficientsRefs();
 
@@ -58,8 +61,8 @@ private:
     std::array< juce::Atomic< bool >, ParametricEq::NUM_FILTERS > update_flags_;
 
     typedef juce::dsp::IIR::Filter< float >::CoefficientsPtr              FilterCoefficients;
-    std::array< FilterCoefficients, ParametricEq::NUM_CUT_SLOPE_OPTIONS > low_cut_coefficients_;
-    std::array< FilterCoefficients, ParametricEq::NUM_CUT_SLOPE_OPTIONS > high_cut_coefficients_;
+    std::array< FilterCoefficients, ParametricEq::NUM_CUT_SLOPE_OPTIONS > lcut_coefficients_;
+    std::array< FilterCoefficients, ParametricEq::NUM_CUT_SLOPE_OPTIONS > hcut_coefficients_;
     std::array< FilterCoefficients, ParametricEq::NUM_FILTERS >           band_coefficients_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphControlLayer)
