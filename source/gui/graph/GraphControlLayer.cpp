@@ -286,13 +286,11 @@ GraphControlLayer::timerCallback()
         for (size_t i = 0; i < update_flags_.size(); ++i) {
             if (update_flags_.at(i).get()) {
                 calculateFilterMagnitudeResponse(static_cast< ParametricEq::FILTER_ID >(i));
-                break;
             }
         }
 
         calculateTotalMagnitudeResponse();
         resetUpdateFlags();
-
         repaint();
     }
 }
