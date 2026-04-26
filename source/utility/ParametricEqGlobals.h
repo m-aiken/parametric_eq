@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 
+// #define SHOW_WAVEFORM
+
 namespace ParametricEq
 {
 

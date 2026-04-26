@@ -229,8 +229,10 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         buffer.clear(i, 0, buffer.getNumSamples());
     }
 
+#ifdef SHOW_WAVEFORM
     // Push the buffer in its dry state to the pre-EQ FFT FIFO.
     pre_eq_fft_fifo_.pushData(buffer);
+#endif
 
     // Process the EQ.
     const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
@@ -242,8 +244,10 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         filter_chains_.at(i).process(single_channel_context);
     }
 
+#ifdef SHOW_WAVEFORM
     // Push the buffer in its wet state to the post-EQ FFT FIFO.
     post_eq_fft_fifo_.pushData(buffer);
+#endif
 }
 
 /*---------------------------------------------------------------------------
