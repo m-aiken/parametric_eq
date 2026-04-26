@@ -17,6 +17,8 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     , high_shelf_controls_(apvts, ParametricEq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
     , high_cut_controls_(apvts, ParametricEq::HIGH_CUT, EqBandWidget::CUT_BAND)
 {
+    ParametricEq::addListenerToAllParameters(apvts_, this);
+
     addAndMakeVisible(low_cut_controls_);
     addAndMakeVisible(low_shelf_controls_);
     addAndMakeVisible(peak_band_1_);
@@ -28,32 +30,6 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(high_cut_controls_);
 
     setActiveBand(ParametricEq::NULL_BAND);
-
-    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
-
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
-
-        if (enabled_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.addParameterListener(enabled_, this);
-        }
-
-        if (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.addParameterListener(frequency_, this);
-        }
-
-        if (gain_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.addParameterListener(gain_, this);
-        }
-
-        if (q_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.addParameterListener(q_, this);
-        }
-
-        if (slope_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.addParameterListener(slope_, this);
-        }
-    }
 }
 
 /*---------------------------------------------------------------------------
@@ -61,31 +37,7 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
 */
 EqControls::~EqControls()
 {
-    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
-
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
-
-        if (enabled_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.removeParameterListener(enabled_, this);
-        }
-
-        if (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.removeParameterListener(frequency_, this);
-        }
-
-        if (gain_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.removeParameterListener(gain_, this);
-        }
-
-        if (q_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.removeParameterListener(q_, this);
-        }
-
-        if (slope_ != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            apvts_.removeParameterListener(slope_, this);
-        }
-    }
+    ParametricEq::removeListenerFromAllParameters(apvts_, this);
 }
 
 /*---------------------------------------------------------------------------
