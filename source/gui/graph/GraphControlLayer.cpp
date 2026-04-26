@@ -208,7 +208,7 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
             const auto& node_xy  = node->coordinates();
             const auto  distance = std::abs(node_xy.getX() - x) + std::abs(node_xy.getY() - y);
 
-            if (distance < shortest_distance) {
+            if (distance < shortest_distance && distance <= DRAG_PROXIMITY_LIMIT) {
                 latched_node_index_ = i;
                 shortest_distance   = distance;
             }

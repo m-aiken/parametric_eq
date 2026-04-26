@@ -13,7 +13,7 @@ public:
 
     enum {
         DIAMETER = 6,
-        RADIUS   = 3,
+        RADIUS   = DIAMETER / 2,
     };
 
 private:

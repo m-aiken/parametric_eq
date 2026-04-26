@@ -57,6 +57,7 @@ private:
 
     size_t                  latched_node_index_;
     static constexpr size_t LATCHED_NODE_INDEX_UNSET = 0xFFFF;
+    static constexpr int    DRAG_PROXIMITY_LIMIT     = 36;
 
     std::array< juce::Atomic< bool >, ParametricEq::NUM_FILTERS > update_flags_;
 
