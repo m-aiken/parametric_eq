@@ -7,6 +7,7 @@
 class EqControls final
     : public juce::Component
     , public juce::AudioProcessorValueTreeState::Listener
+    , public juce::Timer
 {
 public:
     explicit EqControls(juce::AudioProcessorValueTreeState& apvts);
@@ -14,6 +15,7 @@ public:
 
     void resized() override;
     void parameterChanged(const juce::String& parameter_id, float new_value) override;
+    void timerCallback() override;
 
 private:
     void setActiveBand(const ParametricEq::FILTER_ID& active_band);
@@ -29,6 +31,8 @@ private:
     EqBandWidget peak_band_5_;
     EqBandWidget high_shelf_controls_;
     EqBandWidget high_cut_controls_;
+
+    ParametricEq::FILTER_ID queued_active_band_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EqControls)
 };

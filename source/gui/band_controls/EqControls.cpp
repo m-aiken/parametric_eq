@@ -16,6 +16,7 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     , peak_band_5_(apvts, ParametricEq::PEAK_BAND_5, EqBandWidget::PEAK_BAND)
     , high_shelf_controls_(apvts, ParametricEq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
     , high_cut_controls_(apvts, ParametricEq::HIGH_CUT, EqBandWidget::CUT_BAND)
+    , queued_active_band_(ParametricEq::NULL_BAND)
 {
     ParametricEq::addListenerToAllParameters(apvts_, this);
 
@@ -30,6 +31,7 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(high_cut_controls_);
 
     setActiveBand(ParametricEq::NULL_BAND);
+    startTimerHz(60);
 }
 
 /*---------------------------------------------------------------------------
@@ -37,6 +39,7 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
 */
 EqControls::~EqControls()
 {
+    stopTimer();
     ParametricEq::removeListenerFromAllParameters(apvts_, this);
 }
 
@@ -114,7 +117,24 @@ EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
         }
     }
 
-    setActiveBand(active_band);
+    // Queue the change for the next timer callback.
+    // This prevents having to lock the message thread (with juce::MessageManagerLock)
+    // because technically we're not repainting due to a trigger from another thread;
+    // we're repainting due to a class member having a non-NULL_BAND value.
+    queued_active_band_ = active_band;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+EqControls::timerCallback()
+{
+    if (queued_active_band_ != ParametricEq::NULL_BAND) {
+        setActiveBand(queued_active_band_);
+
+        queued_active_band_ = ParametricEq::NULL_BAND;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -123,7 +143,6 @@ EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
 void
 EqControls::setActiveBand(const ParametricEq::FILTER_ID& active_band)
 {
-    juce::MessageManagerLock mml;
     low_cut_controls_.setIsActiveBand(active_band == ParametricEq::LOW_CUT);
     low_shelf_controls_.setIsActiveBand(active_band == ParametricEq::LOW_SHELF);
     peak_band_1_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_1);
