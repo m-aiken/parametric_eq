@@ -18,7 +18,6 @@
 /*static*/ const juce::Colour Theme::ANALYSER_TEXT          = DARK_GREY.withAlpha(0.7f);
 /*static*/ const juce::Colour Theme::ROTARY_FILL            = RED;
 /*static*/ const juce::Colour Theme::ROTARY_THUMB           = DARK_GREY;
-/*static*/ const juce::Colour Theme::RESPONSE_CURVE         = RED;
 /*static*/ const juce::Colour Theme::RESPONSE_CURVE_FILL    = RED.withAlpha(0.2f);
 /*static*/ const juce::Colour Theme::RESPONSE_CURVE_AVG     = DARK_GREY;
 /*static*/ const juce::Colour Theme::NODE_ON                = RED;

@@ -77,6 +77,8 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
+    g.setColour(Theme::RESPONSE_CURVE_FILL);
+
     for (size_t band_index = 0; band_index < paths_.size() - 1; ++band_index) {
         auto&       path = paths_.at(band_index);
         const auto& mags = magnitudes_.at(band_index);
@@ -92,38 +94,26 @@ GraphControlLayer::paint(juce::Graphics& g)
 
         path.lineTo(bounds_f_width - 1.f, getYCoordinateFromMag(0.0, bounds_f_y, bounds_f_bottom));
         path.closeSubPath();
-    }
 
-    // Draw the bolder outline.
-    g.setColour(Theme::RESPONSE_CURVE);
-    for (size_t path_index = 0; path_index < paths_.size() - 1; ++path_index) {
-        g.strokePath(paths_.at(path_index), juce::PathStrokeType(1.f));
-    }
-
-    // Draw the faded fill.
-    g.setColour(Theme::RESPONSE_CURVE_FILL);
-    for (size_t path_index = 0; path_index < paths_.size() - 1; ++path_index) {
-        g.fillPath(paths_.at(path_index));
+        g.fillPath(path);
     }
 
     // Plot the path for total filter response.
     // This should NOT be closed so that it's just a single line.
-    for (size_t band_index = 0; band_index < paths_.size(); ++band_index) {
-        auto&       path = paths_.at(band_index);
-        const auto& mags = magnitudes_.at(band_index);
+    auto&       final_path = paths_.back();
+    const auto& final_mags = magnitudes_.back();
 
-        path.startNewSubPath(bounds_f_x, getYCoordinateFromMag(mags.at(0), bounds_f_y, bounds_f_bottom));
+    final_path.startNewSubPath(bounds_f_x, getYCoordinateFromMag(final_mags.front(), bounds_f_y, bounds_f_bottom));
 
-        for (int i = 1; i < bounds_i_width; ++i) {
-            const auto x = bounds_f_x + static_cast< float >(i);
-            const auto y = getYCoordinateFromMag(mags.at(static_cast< size_t >(i)), bounds_f_y, bounds_f_bottom);
+    for (int i = 1; i < bounds_i_width; ++i) {
+        const auto x = bounds_f_x + static_cast< float >(i);
+        const auto y = getYCoordinateFromMag(final_mags.at(static_cast< size_t >(i)), bounds_f_y, bounds_f_bottom);
 
-            path.lineTo(x, y);
-        }
+        final_path.lineTo(x, y);
     }
 
     g.setColour(Theme::RESPONSE_CURVE_AVG);
-    g.strokePath(paths_.at(paths_.size() - 1), juce::PathStrokeType(1.f));
+    g.strokePath(final_path, juce::PathStrokeType(1.f));
 
     // Draw the nodes.
     for (size_t i = 0; i < nodes_.size(); ++i) {
