@@ -5,23 +5,32 @@
 **
 */
 TextOnlyRotary::TextOnlyRotary(juce::AudioProcessorValueTreeState& apvts, const juce::String& parameter_id)
-    : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
+    : juce::Slider(RotaryHorizontalVerticalDrag, TextBoxBelow)
     , slider_attachment_(apvts, parameter_id, *this)
     , param_(apvts.getParameter(parameter_id))
 {
+    hideTextBox(true);
+
+    setLookAndFeel(&lnf_);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+TextOnlyRotary::~TextOnlyRotary()
+{
+    setLookAndFeel(nullptr);
 }
 
 /*---------------------------------------------------------------------------
 **
 */
 void
-TextOnlyRotary::paint(juce::Graphics& g)
+TextOnlyRotary::mouseDoubleClick(const juce::MouseEvent& event)
 {
-    if (param_ != nullptr) {
-        g.setFont(Theme::getFont());
-        g.setColour(Theme::TEXT);
-        g.drawFittedText(param_->getCurrentValueAsText(), getLocalBounds(), juce::Justification::centred, 1);
-    }
+    juce::ignoreUnused(event);
+
+    showTextBox();
 }
 
 /*---------------------------------------------------------------------------
