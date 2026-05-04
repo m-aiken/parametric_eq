@@ -237,7 +237,7 @@ inline constexpr float PEAK_Q_MIN      = 0.1f;
 inline constexpr float PEAK_Q_MAX      = 10.f;
 inline constexpr float PEAK_Q_DEFAULT  = 1.f;
 
-inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { MIN_HZ, MAX_HZ, 1.f, 1.f };
+inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { MIN_HZ, MAX_HZ, 0.01f, 1.f };
 inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE = { PEAK_DB_MIN, PEAK_DB_MAX, 0.01f, 1.f };
 inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE    = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
 

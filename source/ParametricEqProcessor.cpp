@@ -482,11 +482,13 @@ ParametricEqProcessor::createParameterLayout()
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     const auto hz_string_from_value_func = [](const float value, int /*maximum_string_length*/) -> juce::String {
-        if (value >= 1000.0f) {
-            return juce::String(value / 1000.0f, 2) + " kHz";
+        const auto rounded_hz = std::round(value);
+
+        if (rounded_hz >= 1000.0f) {
+            return juce::String(rounded_hz / 1000.0f, 2) + " kHz";
         }
 
-        return juce::String(value) + " Hz";
+        return juce::String(rounded_hz) + " Hz";
     };
 
     const auto hz_param_attributes = juce::AudioParameterFloatAttributes().withStringFromValueFunction(

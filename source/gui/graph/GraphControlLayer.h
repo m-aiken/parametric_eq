@@ -28,21 +28,12 @@ private:
     void          calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id);
     void          calculateTotalMagnitudeResponse();
     static double getHzFromPx(const int px, const int max_px);
+    static float  getPathYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom);
+    static int    getNodeYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom);
+    int           getNodeXCoordinate(const ParametricEq::FILTER_ID& filter_id, const float bounds_width) const;
 
     void resetUpdateFlags();
     void initialiseCoefficientsRefs();
-
-    template < typename T >
-    static T getYCoordinateFromMag(const double magnitude, const T bounds_top, const T bounds_bottom)
-    {
-        const auto mapped = juce::jmap< float >(static_cast< float >(magnitude),
-                                                ParametricEq::MIN_DB,
-                                                ParametricEq::MAX_DB,
-                                                static_cast< float >(bounds_bottom),
-                                                static_cast< float >(bounds_top));
-
-        return static_cast< T >(mapped);
-    }
 
     ParametricEqProcessor& processor_ref_;
     juce::Atomic< bool >   parameters_changed_;
