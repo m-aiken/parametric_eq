@@ -26,16 +26,10 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
         // Map the x coordinate to the band frequency.
         x_values_.at(i).referTo(apvts.getParameterAsValue(band_parameters.frequency_));
 
-        // For the cut filters map the y coordinate to the band slope.
-        // For all other filters map the y coordinate to the band gain.
-        auto y_parameter = band_parameters.gain_;
-
-        if (filter_id == ParametricEq::LOW_CUT || filter_id == ParametricEq::HIGH_CUT) {
-            y_parameter = band_parameters.slope_;
-        }
-
-        if (y_parameter != ParametricEq::PARAMETER_NOT_SUPPORTED) {
-            y_values_.at(i).referTo(apvts.getParameterAsValue(y_parameter));
+        // Map the y coordinate to the band gain except for the cut filters.
+        // Up/down drag on the cut filters currently does nothing.
+        if (filter_id != ParametricEq::LOW_CUT && filter_id != ParametricEq::HIGH_CUT) {
+            y_values_.at(i).referTo(apvts.getParameterAsValue(band_parameters.gain_));
         }
     }
 
