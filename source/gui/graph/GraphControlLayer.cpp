@@ -117,10 +117,23 @@ GraphControlLayer::paint(juce::Graphics& g)
             continue;
         }
 
+        // Low cut / high cut:
+        // x coordinate = correct frequency.
+        // y coordinate = fixed at 0dB.
+        // All other bands:
+        // x coordinate = correct frequency.
+        // y coordinate = correct magnitude.
+
         const auto& filter_id = static_cast< ParametricEq::FILTER_ID >(i);
         const int   node_x    = getNodeXCoordinate(filter_id, bounds_width);
-        const auto  mag_it    = static_cast< size_t >(node_x) - static_cast< size_t >(bounds_x);
-        const int   node_y    = getNodeYCoordinate(magnitudes_.at(i).at(mag_it), bounds_y, bounds_bottom);
+        double      magnitude = 0.0;
+
+        if (filter_id != ParametricEq::LOW_CUT && filter_id != ParametricEq::HIGH_CUT) {
+            const auto mag_it = static_cast< size_t >(node_x) - static_cast< size_t >(bounds_x);
+            magnitude         = magnitudes_.at(i).at(mag_it);
+        }
+
+        const int node_y = getNodeYCoordinate(magnitude, bounds_y, bounds_bottom);
 
         node->setBounds(node_x - GraphNode::RADIUS, node_y - GraphNode::RADIUS, GraphNode::DIAMETER, GraphNode::DIAMETER);
         node->coordinates().setXY(node_x, node_y);
