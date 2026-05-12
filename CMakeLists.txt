@@ -44,10 +44,10 @@ set(PROJECT_SOURCES
         source/dsp/FilterFactory.cpp
         source/gui/band_controls/EqControls.cpp
         source/gui/band_controls/bands/EqBandWidget.cpp
+        source/gui/band_controls/bands/FilterToggleButton.cpp
         source/gui/band_controls/bands/SliderTextBox.cpp
         source/gui/band_controls/bands/TextOnlyRotary.cpp
         source/gui/band_controls/bands/TextOnlyRotaryLnf.cpp
-        source/gui/band_controls/bands/TextToggleButton.cpp
         source/gui/colour_theme/Theme.cpp
         source/gui/graph/Graph.cpp
         source/gui/graph/GraphBackground.cpp
@@ -64,10 +64,10 @@ set(PROJECT_HEADERS
         source/dsp/FilterFactory.h
         source/gui/band_controls/EqControls.h
         source/gui/band_controls/bands/EqBandWidget.h
+        source/gui/band_controls/bands/FilterToggleButton.h
         source/gui/band_controls/bands/SliderTextBox.h
         source/gui/band_controls/bands/TextOnlyRotary.h
         source/gui/band_controls/bands/TextOnlyRotaryLnf.h
-        source/gui/band_controls/bands/TextToggleButton.h
         source/gui/colour_theme/Theme.h
         source/gui/graph/Graph.h
         source/gui/graph/GraphBackground.h

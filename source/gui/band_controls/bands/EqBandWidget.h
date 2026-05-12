@@ -2,9 +2,9 @@
 
 #include <JuceHeader.h>
 
+#include "FilterToggleButton.h"
 #include "ParametricEqGlobals.h"
 #include "TextOnlyRotary.h"
-#include "TextToggleButton.h"
 
 class EqBandWidget final : public juce::Component
 {
@@ -32,7 +32,7 @@ private:
     const ParametricEq::FILTER_ID       filter_id_;
     bool                                is_active_band_;
 
-    TextToggleButton                  band_enablement_button_;
+    FilterToggleButton                band_enablement_button_;
     std::unique_ptr< TextOnlyRotary > slider_1_;
     std::unique_ptr< TextOnlyRotary > slider_2_;
     std::unique_ptr< TextOnlyRotary > slider_3_;

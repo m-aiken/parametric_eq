@@ -150,45 +150,6 @@ inline const std::map< FILTER_ID, FilterParameterIds > PARAMETER_MAP = {
       } },
 };
 
-inline juce::String
-getFilterButtonLabel(const FILTER_ID filter_id)
-{
-    switch (filter_id) {
-    case LOW_CUT:
-        return "Low Cut";
-
-    case LOW_SHELF:
-        return "Low Shelf";
-
-    case PEAK_BAND_1:
-        return "Peak 1";
-
-    case PEAK_BAND_2:
-        return "Peak 2";
-
-    case PEAK_BAND_3:
-        return "Peak 3";
-
-    case PEAK_BAND_4:
-        return "Peak 4";
-
-    case PEAK_BAND_5:
-        return "Peak 5";
-
-    case HIGH_SHELF:
-        return "High Shelf";
-
-    case HIGH_CUT:
-        return "High Cut";
-
-    case NULL_BAND:
-        return "NULL_BAND";
-
-    default:
-        return {};
-    }
-}
-
 inline const juce::StringArray CUT_FILTER_SLOPE_CHOICES = {
     "12 dB/Oct",
     "24 dB/Oct",
