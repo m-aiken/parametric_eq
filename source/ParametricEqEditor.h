@@ -6,20 +6,27 @@
 #include "Graph.h"
 #include "ParametricEqProcessor.h"
 
-class ParametricEqEditor final : public juce::AudioProcessorEditor
+class ParametricEqEditor final
+    : public juce::AudioProcessorEditor
+    , public juce::AudioProcessorValueTreeState::Listener
+    , public juce::Timer
 {
 public:
     explicit ParametricEqEditor(ParametricEqProcessor& p);
-    ~ParametricEqEditor() override = default;
+    ~ParametricEqEditor() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void parameterChanged(const juce::String& parameter_id, float new_value) override;
+    void timerCallback() override;
 
 private:
     ParametricEqProcessor& processor_ref_;
 
     Graph      graph_;
     EqControls eq_controls_;
+
+    ParametricEq::FILTER_ID queued_active_band_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqEditor)
 };

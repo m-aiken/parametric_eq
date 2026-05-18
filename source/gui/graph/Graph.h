@@ -15,6 +15,8 @@ public:
 
     void resized() override;
 
+    void setActiveBand(const ParametricEq::FILTER_ID& active_band) const;
+
 private:
     GraphBackground background_;
 #ifdef SHOW_WAVEFORM

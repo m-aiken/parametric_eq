@@ -4,24 +4,16 @@
 
 #include "EqBandWidget.h"
 
-class EqControls final
-    : public juce::Component
-    , public juce::AudioProcessorValueTreeState::Listener
-    , public juce::Timer
+class EqControls final : public juce::Component
 {
 public:
     explicit EqControls(juce::AudioProcessorValueTreeState& apvts);
-    ~EqControls() override;
 
     void resized() override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
-    void timerCallback() override;
 
-private:
     void setActiveBand(const ParametricEq::FILTER_ID& active_band);
 
-    juce::AudioProcessorValueTreeState& apvts_;
-
+private:
     EqBandWidget low_cut_controls_;
     EqBandWidget low_shelf_controls_;
     EqBandWidget peak_band_1_;
@@ -31,8 +23,6 @@ private:
     EqBandWidget peak_band_5_;
     EqBandWidget high_shelf_controls_;
     EqBandWidget high_cut_controls_;
-
-    ParametricEq::FILTER_ID queued_active_band_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EqControls)
 };

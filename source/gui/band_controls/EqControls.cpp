@@ -6,8 +6,7 @@
 **
 */
 EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
-    : apvts_(apvts)
-    , low_cut_controls_(apvts, ParametricEq::LOW_CUT, EqBandWidget::CUT_BAND)
+    : low_cut_controls_(apvts, ParametricEq::LOW_CUT, EqBandWidget::CUT_BAND)
     , low_shelf_controls_(apvts, ParametricEq::LOW_SHELF, EqBandWidget::SHELF_BAND)
     , peak_band_1_(apvts, ParametricEq::PEAK_BAND_1, EqBandWidget::PEAK_BAND)
     , peak_band_2_(apvts, ParametricEq::PEAK_BAND_2, EqBandWidget::PEAK_BAND)
@@ -16,10 +15,7 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     , peak_band_5_(apvts, ParametricEq::PEAK_BAND_5, EqBandWidget::PEAK_BAND)
     , high_shelf_controls_(apvts, ParametricEq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
     , high_cut_controls_(apvts, ParametricEq::HIGH_CUT, EqBandWidget::CUT_BAND)
-    , queued_active_band_(ParametricEq::NULL_BAND)
 {
-    ParametricEq::addListenerToAllParameters(apvts_, this);
-
     addAndMakeVisible(low_cut_controls_);
     addAndMakeVisible(low_shelf_controls_);
     addAndMakeVisible(peak_band_1_);
@@ -31,16 +27,6 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(high_cut_controls_);
 
     setActiveBand(ParametricEq::NULL_BAND);
-    startTimerHz(60);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-EqControls::~EqControls()
-{
-    stopTimer();
-    ParametricEq::removeListenerFromAllParameters(apvts_, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -83,58 +69,6 @@ EqControls::resized()
 
     const auto& bounds = getLocalBounds();
     grid.performLayout(bounds.withSizeKeepingCentre(bounds.getWidth() - (margin * 2), bounds.getHeight() - (margin * 2)));
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-EqControls::parameterChanged(const juce::String& parameter_id, float new_value)
-{
-    juce::ignoreUnused(new_value);
-
-    ParametricEq::FILTER_ID active_band = ParametricEq::NULL_BAND;
-
-    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
-
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
-
-        // Enablement button: this band is active if its enablement button was toggled to on/true.
-        if (parameter_id == enabled_) {
-            const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(parameter_id));
-
-            if (p != nullptr && p->get()) {
-                active_band = filter_id;
-                break;
-            }
-        }
-
-        // All other parameters: this band is active if any of their values have changed.
-        if (parameter_id == frequency_ || parameter_id == gain_ || parameter_id == q_ || parameter_id == slope_) {
-            active_band = filter_id;
-            break;
-        }
-    }
-
-    // Queue the change for the next timer callback.
-    // This prevents having to lock the message thread (with juce::MessageManagerLock)
-    // because technically we're not repainting due to a trigger from another thread;
-    // we're repainting due to a class member having a non-NULL_BAND value.
-    queued_active_band_ = active_band;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-EqControls::timerCallback()
-{
-    if (queued_active_band_ != ParametricEq::NULL_BAND) {
-        setActiveBand(queued_active_band_);
-
-        queued_active_band_ = ParametricEq::NULL_BAND;
-    }
 }
 
 /*---------------------------------------------------------------------------

@@ -41,5 +41,14 @@ Graph::resized()
 }
 
 /*---------------------------------------------------------------------------
+**
+*/
+void
+Graph::setActiveBand(const ParametricEq::FILTER_ID& active_band) const
+{
+    control_layer_.setActiveBand(active_band);
+}
+
+/*---------------------------------------------------------------------------
 ** End of File
 */

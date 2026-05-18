@@ -282,6 +282,17 @@ GraphControlLayer::timerCallback()
 **
 */
 void
+GraphControlLayer::setActiveBand(const ParametricEq::FILTER_ID& active_band) const
+{
+    for (size_t i = 0; i < nodes_.size(); ++i) {
+        nodes_.at(i)->setIsActiveBand(static_cast< size_t >(active_band) == i);
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
 GraphControlLayer::updateFilterChain()
 {
     processor_ref_.updateFilterChain(filter_chain_);
