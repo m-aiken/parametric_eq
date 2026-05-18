@@ -18,15 +18,16 @@ GraphNode::GraphNode(juce::AudioProcessorValueTreeState& apvts, const juce::Stri
 void
 GraphNode::paint(juce::Graphics& g)
 {
-    const auto& bounds = getLocalBounds();
+    const auto& bounds     = getLocalBounds();
+    const bool  is_enabled = getToggleState();
 
-    g.setColour(getToggleState() ? Theme::NODE_ON : Theme::NODE_OFF);
+    g.setColour(is_enabled ? Theme::NODE_ON : Theme::NODE_OFF);
 
     // Always draw the centre circle.
     g.fillEllipse(bounds.withSizeKeepingCentre(CENTRE_DIAMETER, CENTRE_DIAMETER).toFloat());
 
-    // If this is the active band, draw an outer ring.
-    if (is_active_band_) {
+    // If this is the active band, and it's enabled draw an outer ring.
+    if (is_active_band_ && is_enabled) {
         const auto ring_w = bounds.getWidth() - (OUTER_RING_THICKNESS * 2);
         const auto ring_h = bounds.getHeight() - (OUTER_RING_THICKNESS * 2);
 

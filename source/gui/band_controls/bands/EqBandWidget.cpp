@@ -70,7 +70,8 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
 void
 EqBandWidget::paint(juce::Graphics& g)
 {
-    g.setColour(is_active_band_ ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
+    const bool is_enabled = band_enablement_button_.getToggleState();
+    g.setColour(is_active_band_ && is_enabled ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
     g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
 }
 
