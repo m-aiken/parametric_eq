@@ -25,8 +25,6 @@ EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(peak_band_5_);
     addAndMakeVisible(high_shelf_controls_);
     addAndMakeVisible(high_cut_controls_);
-
-    setActiveBand(ParametricEq::NULL_BAND);
 }
 
 /*---------------------------------------------------------------------------
