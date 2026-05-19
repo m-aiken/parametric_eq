@@ -34,7 +34,7 @@ private:
     static int    getNodeYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom);
     int           getNodeXCoordinate(const ParametricEq::FILTER_ID& filter_id, const float bounds_width) const;
 
-    void resetUpdateFlags();
+    void resetUpdateFlags(const bool should_update = false);
     void initialiseCoefficientsRefs();
 
     ParametricEqProcessor& processor_ref_;

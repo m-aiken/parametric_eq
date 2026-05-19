@@ -7,11 +7,10 @@
 */
 GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
-    , parameters_changed_(false)
+    , parameters_changed_(true)
     , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
     initialiseCoefficientsRefs();
-    resetUpdateFlags();
 
     auto& apvts = processor_ref_.getApvts();
 
@@ -34,7 +33,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     }
 
     ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
-    updateFilterChain();
+    resetUpdateFlags(true);
     startTimerHz(60);
 }
 
@@ -432,10 +431,10 @@ GraphControlLayer::getNodeXCoordinate(const ParametricEq::FILTER_ID& filter_id, 
 **
 */
 void
-GraphControlLayer::resetUpdateFlags()
+GraphControlLayer::resetUpdateFlags(const bool should_update)
 {
     for (auto& flag : update_flags_) {
-        flag.set(false);
+        flag.set(should_update);
     }
 }
 
