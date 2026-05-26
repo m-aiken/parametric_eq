@@ -161,13 +161,13 @@ inline constexpr bool  LOW_CUT_ENABLED_DEFAULT = false;
 inline constexpr float LOW_CUT_FREQ_MIN        = MIN_HZ;
 inline constexpr float LOW_CUT_FREQ_MAX        = 200.f;
 inline constexpr float LOW_CUT_FREQ_DEFAULT    = 50.f;
-inline constexpr int   LOW_CUT_SLOPE_DEFAULT   = SLOPE_48_DBPO;
 
 inline constexpr bool  HIGH_CUT_ENABLED_DEFAULT = false;
 inline constexpr float HIGH_CUT_FREQ_MIN        = 5000.f;
 inline constexpr float HIGH_CUT_FREQ_MAX        = MAX_HZ;
 inline constexpr float HIGH_CUT_FREQ_DEFAULT    = 15000.f;
-inline constexpr int   HIGH_CUT_SLOPE_DEFAULT   = SLOPE_48_DBPO;
+
+inline constexpr int CUT_FILTER_SLOPE_DEFAULT = SLOPE_48_DBPO;  //! Same for low and high cut.
 
 inline constexpr bool  LOW_SHELF_ENABLED_DEFAULT = false;
 inline constexpr float LOW_SHELF_FREQ_MIN        = MIN_HZ;

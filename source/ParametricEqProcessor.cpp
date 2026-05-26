@@ -1,3 +1,5 @@
+#include <regex>
+
 #include "ParametricEqEditor.h"
 #include "ParametricEqProcessor.h"
 
@@ -501,6 +503,32 @@ ParametricEqProcessor::createParameterLayout()
     const auto db_param_attributes = juce::AudioParameterFloatAttributes().withStringFromValueFunction(
         db_string_from_value_func);
 
+    const auto slope_value_from_string_func = [](const juce::String& string) -> int {
+        int ret = ParametricEq::CUT_FILTER_SLOPE_DEFAULT;
+
+        // If the user-provided string can be converted to a 2 digit integer find the
+        // closest slope option to the value provided.
+        if (std::regex_match(string.toStdString(), std::regex("^[0-9]{1,2}$"))) {
+            const auto input   = string.getIntValue();
+            int        closest = 0xffff;
+
+            for (int i = 0; i < ParametricEq::CUT_FILTER_SLOPE_CHOICES.size(); ++i) {
+                const auto slope    = (i + 1) * 12;
+                const auto distance = std::abs(input - slope);
+
+                if (distance < closest) {
+                    closest = distance;
+                    ret     = i;
+                }
+            }
+        }
+
+        return ret;
+    };
+
+    const auto slope_param_attributes = juce::AudioParameterChoiceAttributes().withValueFromStringFunction(
+        slope_value_from_string_func);
+
     const auto& low_cut_parameters    = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
     const auto& high_cut_parameters   = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
     const auto& low_shelf_parameters  = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
@@ -520,7 +548,8 @@ ParametricEqProcessor::createParameterLayout()
     layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(low_cut_parameters.slope_, 1),
                                                               low_cut_parameters.slope_,
                                                               ParametricEq::CUT_FILTER_SLOPE_CHOICES,
-                                                              ParametricEq::LOW_CUT_SLOPE_DEFAULT));
+                                                              ParametricEq::CUT_FILTER_SLOPE_DEFAULT,
+                                                              slope_param_attributes));
 
     // Low shelf parameters.
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(low_shelf_parameters.enabled_, 1),
@@ -598,7 +627,8 @@ ParametricEqProcessor::createParameterLayout()
     layout.add(std::make_unique< juce::AudioParameterChoice >(juce::ParameterID(high_cut_parameters.slope_, 1),
                                                               high_cut_parameters.slope_,
                                                               ParametricEq::CUT_FILTER_SLOPE_CHOICES,
-                                                              ParametricEq::HIGH_CUT_SLOPE_DEFAULT));
+                                                              ParametricEq::CUT_FILTER_SLOPE_DEFAULT,
+                                                              slope_param_attributes));
 
     return layout;
 }
