@@ -127,7 +127,7 @@ EqBandWidget::setIsActiveBand(const bool is_active)
 **
 */
 void
-EqBandWidget::setSubWidgetEnablement() const
+EqBandWidget::setSubWidgetEnablement()
 {
     const bool enabled = band_enablement_button_.getToggleState();
 
@@ -142,6 +142,8 @@ EqBandWidget::setSubWidgetEnablement() const
     if (slider_3_ != nullptr) {
         slider_3_->setEnablement(enabled);
     }
+
+    repaint();
 }
 
 /*---------------------------------------------------------------------------

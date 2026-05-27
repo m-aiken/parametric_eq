@@ -26,7 +26,7 @@ public:
     void setIsActiveBand(const bool is_active);
 
 private:
-    void setSubWidgetEnablement() const;
+    void setSubWidgetEnablement();
 
     juce::AudioProcessorValueTreeState& apvts_;
     const ParametricEq::FILTER_ID       filter_id_;
