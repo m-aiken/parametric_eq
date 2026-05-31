@@ -7,7 +7,7 @@
 
 class ParametricEqProcessor final
     : public juce::AudioProcessor
-    , public juce::AudioProcessorParameter::Listener
+    , public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     ParametricEqProcessor();
@@ -38,8 +38,7 @@ public:
     void                        getStateInformation(juce::MemoryBlock& dest_data) override;
     void                        setStateInformation(const void* data, int size_in_bytes) override;
 
-    void parameterValueChanged(int parameter_index, float new_value) override;
-    void parameterGestureChanged(int parameter_index, bool gesture_is_starting) override;
+    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
     juce::AudioProcessorValueTreeState& getApvts();
 

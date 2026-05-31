@@ -13,34 +13,7 @@ ParametricEqProcessor::ParametricEqProcessor()
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
     , filter_factory_(*this)
 {
-    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    apvts_.getParameter(low_cut_parameters.enabled_)->addListener(this);
-    apvts_.getParameter(low_cut_parameters.frequency_)->addListener(this);
-    apvts_.getParameter(low_cut_parameters.slope_)->addListener(this);
-
-    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    apvts_.getParameter(high_cut_parameters.enabled_)->addListener(this);
-    apvts_.getParameter(high_cut_parameters.frequency_)->addListener(this);
-    apvts_.getParameter(high_cut_parameters.slope_)->addListener(this);
-
-    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    apvts_.getParameter(low_shelf_parameters.enabled_)->addListener(this);
-    apvts_.getParameter(low_shelf_parameters.frequency_)->addListener(this);
-    apvts_.getParameter(low_shelf_parameters.gain_)->addListener(this);
-
-    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    apvts_.getParameter(high_shelf_parameters.enabled_)->addListener(this);
-    apvts_.getParameter(high_shelf_parameters.frequency_)->addListener(this);
-    apvts_.getParameter(high_shelf_parameters.gain_)->addListener(this);
-
-    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
-
-        apvts_.getParameter(peak_band_parameters.enabled_)->addListener(this);
-        apvts_.getParameter(peak_band_parameters.frequency_)->addListener(this);
-        apvts_.getParameter(peak_band_parameters.gain_)->addListener(this);
-        apvts_.getParameter(peak_band_parameters.q_)->addListener(this);
-    }
+    ParametricEq::addListenerToAllParameters(apvts_, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -48,34 +21,7 @@ ParametricEqProcessor::ParametricEqProcessor()
 */
 ParametricEqProcessor::~ParametricEqProcessor()
 {
-    const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
-    apvts_.getParameter(low_cut_parameters.enabled_)->removeListener(this);
-    apvts_.getParameter(low_cut_parameters.frequency_)->removeListener(this);
-    apvts_.getParameter(low_cut_parameters.slope_)->removeListener(this);
-
-    const auto& high_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_CUT);
-    apvts_.getParameter(high_cut_parameters.enabled_)->removeListener(this);
-    apvts_.getParameter(high_cut_parameters.frequency_)->removeListener(this);
-    apvts_.getParameter(high_cut_parameters.slope_)->removeListener(this);
-
-    const auto& low_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_SHELF);
-    apvts_.getParameter(low_shelf_parameters.enabled_)->removeListener(this);
-    apvts_.getParameter(low_shelf_parameters.frequency_)->removeListener(this);
-    apvts_.getParameter(low_shelf_parameters.gain_)->removeListener(this);
-
-    const auto& high_shelf_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::HIGH_SHELF);
-    apvts_.getParameter(high_shelf_parameters.enabled_)->removeListener(this);
-    apvts_.getParameter(high_shelf_parameters.frequency_)->removeListener(this);
-    apvts_.getParameter(high_shelf_parameters.gain_)->removeListener(this);
-
-    for (int i = ParametricEq::PEAK_BAND_1; i <= ParametricEq::PEAK_BAND_5; ++i) {
-        const auto& peak_band_parameters = ParametricEq::PARAMETER_MAP.at(static_cast< ParametricEq::FILTER_ID >(i));
-
-        apvts_.getParameter(peak_band_parameters.enabled_)->removeListener(this);
-        apvts_.getParameter(peak_band_parameters.frequency_)->removeListener(this);
-        apvts_.getParameter(peak_band_parameters.gain_)->removeListener(this);
-        apvts_.getParameter(peak_band_parameters.q_)->removeListener(this);
-    }
+    ParametricEq::removeListenerFromAllParameters(apvts_, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -297,24 +243,13 @@ ParametricEqProcessor::setStateInformation(const void* data, int size_in_bytes)
 **
 */
 void
-ParametricEqProcessor::parameterValueChanged(int parameter_index, float new_value)
+ParametricEqProcessor::parameterChanged(const juce::String& parameter_id, float new_value)
 {
-    juce::ignoreUnused(parameter_index, new_value);
+    juce::ignoreUnused(parameter_id, new_value);
 
     for (auto& chain : filter_chains_) {
         updateFilterChain(chain);
     }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-ParametricEqProcessor::parameterGestureChanged(int parameter_index, bool gesture_is_starting)
-{
-    juce::ignoreUnused(parameter_index, gesture_is_starting);
-
-    // Do nothing. Only implemented because it's a pure virtual method of juce::AudioProcessorParameter::Listener.
 }
 
 /*---------------------------------------------------------------------------
