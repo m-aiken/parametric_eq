@@ -11,7 +11,7 @@ ParametricEqProcessor::ParametricEqProcessor()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true))
     , apvts_(*this, nullptr, "Parameters", createParameterLayout())
-    , filter_factory_(this)
+    , filter_factory_(*this)
 {
     const auto& low_cut_parameters = ParametricEq::PARAMETER_MAP.at(ParametricEq::LOW_CUT);
     apvts_.getParameter(low_cut_parameters.enabled_)->addListener(this);
