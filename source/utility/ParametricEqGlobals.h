@@ -17,6 +17,11 @@ inline constexpr int   WAVEFORM_PATH_RESOLUTION          = 2;
 inline constexpr float WAVEFORM_DECAY_RATE_DB_PER_SECOND = 30.f;
 inline constexpr float WAVEFORM_DECAY_RATE               = WAVEFORM_DECAY_RATE_DB_PER_SECOND / 60.f;
 
+// Plugin bypass parameter.
+inline const juce::String PLUGIN_BYPASS_PARAMETER = "Bypass";
+inline constexpr bool     PLUGIN_BYPASS_DEFAULT   = false;
+
+// Filter constants.
 using Filter = juce::dsp::IIR::Filter< float >;
 
 // Cut filter chain: x4 filters to allow for 12/24/36/48 dB/oct options.
@@ -65,6 +70,7 @@ struct FilterParameterIds {
     juce::String slope_;
 };
 
+// Filter parameters.
 inline const juce::String PARAMETER_NOT_SUPPORTED = "PARAMETER_NOT_SUPPORTED";
 
 inline const std::map< FILTER_ID, FilterParameterIds > PARAMETER_MAP = {
@@ -220,6 +226,8 @@ addListenerToAllParameters(juce::AudioProcessorValueTreeState&           apvts,
         return;
     }
 
+    apvts.addParameterListener(PLUGIN_BYPASS_PARAMETER, listener);
+
     for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
         if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
             apvts.addParameterListener(parameters.enabled_, listener);
@@ -250,6 +258,8 @@ removeListenerFromAllParameters(juce::AudioProcessorValueTreeState&           ap
     if (listener == nullptr) {
         return;
     }
+
+    apvts.removeParameterListener(PLUGIN_BYPASS_PARAMETER, listener);
 
     for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
         if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {

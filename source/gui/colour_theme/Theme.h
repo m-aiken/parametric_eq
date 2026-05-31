@@ -15,6 +15,7 @@ private:
 public:
     static const juce::Colour MAIN_BACKGROUND;
     static const juce::Colour TEXT;
+    static const juce::Colour TEXT_DISABLED;
     static const juce::Colour ANALYSER_TEXT;
     static const juce::Colour ROTARY_FILL;
     static const juce::Colour ROTARY_THUMB;
@@ -29,6 +30,12 @@ public:
     static const juce::Colour ACTIVE_BAND_BACKGROUND;
     static const juce::Colour TEXT_BUTTON_BG_STD;
     static const juce::Colour TEXT_BUTTON_BG_HOVER;
+
+    static const juce::Colour PLUGIN_DISABLED_ANALYSER_TEXT;
+    static const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_FILL;
+    static const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_AVG;
+    static const juce::Colour PLUGIN_DISABLED_NODE;
+    static const juce::Colour PLUGIN_DISABLED_BAND_BACKGROUND;
 
     static constexpr float ENABLED_ALPHA  = 1.f;
     static constexpr float DISABLED_ALPHA = 0.2f;

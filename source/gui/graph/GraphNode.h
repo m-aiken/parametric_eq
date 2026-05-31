@@ -2,12 +2,18 @@
 
 #include <JuceHeader.h>
 
-class GraphNode final : public juce::ToggleButton
+#include "ParametricEqProcessor.h"
+
+class GraphNode final
+    : public juce::ToggleButton
+    , public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    GraphNode(juce::AudioProcessorValueTreeState& apvts, const juce::String& band_enablement_parameter);
+    GraphNode(ParametricEqProcessor& processor_ref, const juce::String& band_enablement_parameter);
+    ~GraphNode() override;
 
     void paint(juce::Graphics& g) override;
+    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
     juce::Point< int >& coordinates();
 
@@ -21,10 +27,10 @@ public:
     };
 
 private:
+    ParametricEqProcessor&                               processor_ref_;
     juce::AudioProcessorValueTreeState::ButtonAttachment attachment_;
-
-    juce::Point< int > coordinates_;
-    bool               is_active_band_;
+    juce::Point< int >                                   coordinates_;
+    bool                                                 is_active_band_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphNode)
 };

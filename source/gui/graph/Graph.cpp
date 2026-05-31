@@ -1,5 +1,4 @@
 #include "Graph.h"
-#include "ParametricEqProcessor.h"
 #ifdef SHOW_WAVEFORM
     #include "Theme.h"
 #endif
@@ -8,13 +7,12 @@
 **
 */
 Graph::Graph(ParametricEqProcessor& processor_ref)
+    : background_(processor_ref)
 #ifdef SHOW_WAVEFORM
-    : waveform_pre_eq_(processor_ref.getSampleRate(), processor_ref.getPreEqFftFifo(), Theme::ANALYSER_PRE_EQ)
-    , waveform_post_eq_(processor_ref.getSampleRate(), processor_ref.getPostEqFftFifo(), Theme::ANALYSER_POST_EQ)
-    , control_layer_(processor_ref)
-#else
-    : control_layer_(processor_ref)
+    , waveform_pre_eq_(processor_ref, processor_ref.getPreEqFftFifo(), Theme::ANALYSER_PRE_EQ)
+    , waveform_post_eq_(processor_ref, processor_ref.getPostEqFftFifo(), Theme::ANALYSER_POST_EQ)
 #endif
+    , control_layer_(processor_ref)
 {
     addAndMakeVisible(background_);
 #ifdef SHOW_WAVEFORM

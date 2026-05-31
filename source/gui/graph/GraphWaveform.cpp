@@ -3,9 +3,11 @@
 /*---------------------------------------------------------------------------
 **
 */
-GraphWaveform::GraphWaveform(const double sample_rate, FftInputDataFifo& fft_input_data_fifo, const juce::Colour& colour)
-    : colour_(colour)
-    , sample_rate_(sample_rate)
+GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref,
+                             FftInputDataFifo&      fft_input_data_fifo,
+                             const juce::Colour&    colour)
+    : processor_ref_(processor_ref)
+    , colour_(colour)
     , fft_input_data_fifo_(fft_input_data_fifo)
     , fft_(ParametricEq::FFT::ORDER)
     , windowing_func_(ParametricEq::FFT::SIZE, juce::dsp::WindowingFunction< float >::blackmanHarris)
@@ -16,6 +18,7 @@ GraphWaveform::GraphWaveform(const double sample_rate, FftInputDataFifo& fft_inp
     std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), ParametricEq::FFT::MIN_DB);
     std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), ParametricEq::FFT::MIN_DB);
 
+    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
     startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ);
 }
 
@@ -25,6 +28,7 @@ GraphWaveform::GraphWaveform(const double sample_rate, FftInputDataFifo& fft_inp
 GraphWaveform::~GraphWaveform()
 {
     stopTimer();
+    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -39,6 +43,19 @@ GraphWaveform::paint(juce::Graphics& g)
 
     path_.applyTransform(juce::AffineTransform::translation(bounds.getX(), bounds.getY()));
     g.fillPath(path_);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_value)
+{
+    juce::ignoreUnused(new_value);
+
+    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+        processor_ref_.pluginIsEnabled() ? startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -97,7 +114,7 @@ void
 GraphWaveform::generatePath()
 {
     const auto& path_bounds = getLocalBounds().toFloat();
-    const auto  bin_width   = static_cast< float >(ParametricEq::FFT::getBinWidth(sample_rate_));
+    const auto  bin_width   = static_cast< float >(ParametricEq::FFT::getBinWidth(processor_ref_.getSampleRate()));
 
     const auto bounds_bottom = path_bounds.getBottom();
     const auto bounds_y      = path_bounds.getY();
@@ -135,6 +152,17 @@ GraphWaveform::generatePath()
     path.closeSubPath();
 
     path_ = path;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphWaveform::shutdown()
+{
+    stopTimer();
+    path_.clear();
+    repaint();
 }
 
 /*---------------------------------------------------------------------------

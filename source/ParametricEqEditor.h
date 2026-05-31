@@ -4,7 +4,6 @@
 
 #include "EqControls.h"
 #include "Graph.h"
-#include "ParametricEqProcessor.h"
 
 class ParametricEqEditor final
     : public juce::AudioProcessorEditor

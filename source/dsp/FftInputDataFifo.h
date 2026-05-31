@@ -9,6 +9,7 @@ public:
 
     void pushData(const juce::AudioBuffer< float >& input_buffer);
     void pullData(juce::AudioBuffer< float >& buffer_to_fill) const;
+    void clear();
 
 private:
     juce::AudioBuffer< float > fifo_;

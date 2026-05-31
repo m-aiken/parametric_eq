@@ -5,16 +5,16 @@
 /*---------------------------------------------------------------------------
 **
 */
-EqControls::EqControls(juce::AudioProcessorValueTreeState& apvts)
-    : low_cut_controls_(apvts, ParametricEq::LOW_CUT, EqBandWidget::CUT_BAND)
-    , low_shelf_controls_(apvts, ParametricEq::LOW_SHELF, EqBandWidget::SHELF_BAND)
-    , peak_band_1_(apvts, ParametricEq::PEAK_BAND_1, EqBandWidget::PEAK_BAND)
-    , peak_band_2_(apvts, ParametricEq::PEAK_BAND_2, EqBandWidget::PEAK_BAND)
-    , peak_band_3_(apvts, ParametricEq::PEAK_BAND_3, EqBandWidget::PEAK_BAND)
-    , peak_band_4_(apvts, ParametricEq::PEAK_BAND_4, EqBandWidget::PEAK_BAND)
-    , peak_band_5_(apvts, ParametricEq::PEAK_BAND_5, EqBandWidget::PEAK_BAND)
-    , high_shelf_controls_(apvts, ParametricEq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
-    , high_cut_controls_(apvts, ParametricEq::HIGH_CUT, EqBandWidget::CUT_BAND)
+EqControls::EqControls(ParametricEqProcessor& processor_ref)
+    : low_cut_controls_(processor_ref, ParametricEq::LOW_CUT, EqBandWidget::CUT_BAND)
+    , low_shelf_controls_(processor_ref, ParametricEq::LOW_SHELF, EqBandWidget::SHELF_BAND)
+    , peak_band_1_(processor_ref, ParametricEq::PEAK_BAND_1, EqBandWidget::PEAK_BAND)
+    , peak_band_2_(processor_ref, ParametricEq::PEAK_BAND_2, EqBandWidget::PEAK_BAND)
+    , peak_band_3_(processor_ref, ParametricEq::PEAK_BAND_3, EqBandWidget::PEAK_BAND)
+    , peak_band_4_(processor_ref, ParametricEq::PEAK_BAND_4, EqBandWidget::PEAK_BAND)
+    , peak_band_5_(processor_ref, ParametricEq::PEAK_BAND_5, EqBandWidget::PEAK_BAND)
+    , high_shelf_controls_(processor_ref, ParametricEq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
+    , high_cut_controls_(processor_ref, ParametricEq::HIGH_CUT, EqBandWidget::CUT_BAND)
 {
     addAndMakeVisible(low_cut_controls_);
     addAndMakeVisible(low_shelf_controls_);

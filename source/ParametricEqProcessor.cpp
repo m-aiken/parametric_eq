@@ -165,6 +165,16 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
 {
     juce::ignoreUnused(midi_messages);
 
+    if (!pluginIsEnabled()) {
+#ifdef SHOW_WAVEFORM
+        pre_eq_fft_fifo_.clear();
+        post_eq_fft_fifo_.clear();
+#endif
+
+        // Plugin is bypassed.
+        return;
+    }
+
     juce::ScopedNoDenormals no_denormals;
 
     // In case we have more outputs than inputs, this code clears any output
@@ -237,6 +247,15 @@ ParametricEqProcessor::setStateInformation(const void* data, int size_in_bytes)
     if (tree.isValid()) {
         apvts_.replaceState(tree);
     }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+juce::AudioProcessorParameter*
+ParametricEqProcessor::getBypassParameter() const
+{
+    return apvts_.getParameter(ParametricEq::PLUGIN_BYPASS_PARAMETER);
 }
 
 /*---------------------------------------------------------------------------
@@ -413,10 +432,30 @@ ParametricEqProcessor::updateFilterChain(ParametricEq::FilterChain& filter_chain
 /*---------------------------------------------------------------------------
 **
 */
+bool
+ParametricEqProcessor::pluginIsEnabled() const
+{
+    bool bypassed = ParametricEq::PLUGIN_BYPASS_DEFAULT;
+
+    if (const auto p = dynamic_cast< juce::AudioParameterBool* >(getBypassParameter()); p != nullptr) {
+        bypassed = p->get();
+    }
+
+    return !bypassed;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
 juce::AudioProcessorValueTreeState::ParameterLayout
 ParametricEqProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    // Plugin bypass parameter.
+    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(ParametricEq::PLUGIN_BYPASS_PARAMETER, 1),
+                                                            ParametricEq::PLUGIN_BYPASS_PARAMETER,
+                                                            ParametricEq::PLUGIN_BYPASS_DEFAULT));
 
     const auto hz_string_from_value_func = [](const float value, int /*maximum_string_length*/) -> juce::String {
         const auto rounded_hz = std::round(value);

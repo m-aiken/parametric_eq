@@ -4,26 +4,31 @@
 
 #include "FftInputDataFifo.h"
 #include "ParametricEqGlobals.h"
+#include "ParametricEqProcessor.h"
 
 class GraphWaveform final
     : public juce::Component
+    , public juce::AudioProcessorValueTreeState::Listener
     , public juce::Timer
 {
 public:
-    GraphWaveform(const double sample_rate, FftInputDataFifo& fft_input_data_fifo, const juce::Colour& colour);
+    GraphWaveform(ParametricEqProcessor& processor_ref, FftInputDataFifo& fft_input_data_fifo, const juce::Colour& colour);
     ~GraphWaveform() override;
 
     void paint(juce::Graphics& g) override;
+    void parameterChanged(const juce::String& parameter_id, float new_value) override;
     void timerCallback() override;
 
 private:
     void performFft();
     void smoothFftOutput();
     void generatePath();
+    void shutdown();
+
+    ParametricEqProcessor& processor_ref_;
 
     juce::Colour colour_;
     juce::Path   path_;
-    double       sample_rate_;
 
     // FFT.
     FftInputDataFifo&                     fft_input_data_fifo_;

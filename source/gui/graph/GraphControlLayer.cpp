@@ -7,7 +7,8 @@
 */
 GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
-    , parameters_changed_(true)
+    , plugin_enablement_changed_(false)
+    , filter_parameters_changed_(true)
     , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
     initialiseCoefficientsRefs();
@@ -18,7 +19,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
         const auto& filter_id       = static_cast< ParametricEq::FILTER_ID >(i);
         const auto& band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
 
-        nodes_.at(i) = std::make_unique< GraphNode >(apvts, band_parameters.enabled_);
+        nodes_.at(i) = std::make_unique< GraphNode >(processor_ref_, band_parameters.enabled_);
 
         addAndMakeVisible(*nodes_.at(i));
 
@@ -52,11 +53,12 @@ GraphControlLayer::~GraphControlLayer()
 void
 GraphControlLayer::paint(juce::Graphics& g)
 {
-    const auto& bounds        = getLocalBounds().toFloat();
-    const auto  bounds_width  = bounds.getWidth();
-    const auto  bounds_x      = bounds.getX();
-    const auto  bounds_y      = bounds.getY();
-    const auto  bounds_bottom = bounds.getBottom();
+    const bool  plugin_enabled = processor_ref_.pluginIsEnabled();
+    const auto& bounds         = getLocalBounds().toFloat();
+    const auto  bounds_width   = bounds.getWidth();
+    const auto  bounds_x       = bounds.getX();
+    const auto  bounds_y       = bounds.getY();
+    const auto  bounds_bottom  = bounds.getBottom();
 
     for (auto& path : paths_) {
         path.clear();
@@ -64,7 +66,7 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
-    g.setColour(Theme::RESPONSE_CURVE_FILL);
+    g.setColour(plugin_enabled ? Theme::RESPONSE_CURVE_FILL : Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL);
 
     for (size_t band_index = 0; band_index < paths_.size() - 1; ++band_index) {
         auto&       path = paths_.at(band_index);
@@ -99,7 +101,7 @@ GraphControlLayer::paint(juce::Graphics& g)
         final_path.lineTo(x, y);
     }
 
-    g.setColour(Theme::RESPONSE_CURVE_AVG);
+    g.setColour(plugin_enabled ? Theme::RESPONSE_CURVE_AVG : Theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG);
     g.strokePath(final_path, juce::PathStrokeType(1.f));
 
     // Draw the nodes.
@@ -159,6 +161,10 @@ GraphControlLayer::resized()
 void
 GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
 {
+    if (!processor_ref_.pluginIsEnabled()) {
+        return;
+    }
+
     const auto x = static_cast< int >(std::round(event.position.getX()));
     const auto y = static_cast< int >(std::round(event.position.getY()));
 
@@ -236,6 +242,11 @@ GraphControlLayer::parameterChanged(const juce::String& parameter_id, float new_
 {
     juce::ignoreUnused(new_value);
 
+    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+        plugin_enablement_changed_.set(true);
+        return;
+    }
+
     for (auto i = 0; i < ParametricEq::NUM_FILTERS; ++i) {
         const auto filter_id                                 = static_cast< ParametricEq::FILTER_ID >(i);
         const auto [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
@@ -250,7 +261,7 @@ GraphControlLayer::parameterChanged(const juce::String& parameter_id, float new_
 
         if (is_match) {
             update_flags_.at(filter_id).set(true);
-            parameters_changed_.set(true);
+            filter_parameters_changed_.set(true);
             break;
         }
     }
@@ -262,7 +273,13 @@ GraphControlLayer::parameterChanged(const juce::String& parameter_id, float new_
 void
 GraphControlLayer::timerCallback()
 {
-    if (parameters_changed_.compareAndSetBool(false, true)) {
+    bool should_repaint = false;
+
+    if (plugin_enablement_changed_.compareAndSetBool(false, true)) {
+        should_repaint = true;
+    }
+
+    if (filter_parameters_changed_.compareAndSetBool(false, true)) {
         updateFilterChain();
 
         for (size_t i = 0; i < update_flags_.size(); ++i) {
@@ -273,6 +290,10 @@ GraphControlLayer::timerCallback()
 
         calculateTotalMagnitudeResponse();
         resetUpdateFlags();
+        should_repaint = true;
+    }
+
+    if (should_repaint) {
         repaint();
     }
 }

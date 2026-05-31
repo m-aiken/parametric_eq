@@ -5,12 +5,23 @@
 /*---------------------------------------------------------------------------
 **
 */
-FilterToggleButton::FilterToggleButton(juce::AudioProcessorValueTreeState& apvts, const ParametricEq::FILTER_ID& filter_id)
-    : filter_id_(filter_id)
-    , button_attachment_(apvts, ParametricEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
+FilterToggleButton::FilterToggleButton(ParametricEqProcessor& processor_ref, const ParametricEq::FILTER_ID& filter_id)
+    : processor_ref_(processor_ref)
+    , filter_id_(filter_id)
+    , button_attachment_(processor_ref.getApvts(), ParametricEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
     , background_colour_(Theme::TEXT_BUTTON_BG_STD)
 {
     setMouseCursor(juce::MouseCursor::PointingHandCursor);
+
+    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+FilterToggleButton::~FilterToggleButton()
+{
+    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -36,7 +47,7 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
     g.fillRoundedRectangle(bounds, Theme::BORDER_RADIUS);
 
     // Icon.
-    g.setColour(Theme::TEXT.withAlpha(getToggleState() ? Theme::ENABLED_ALPHA : Theme::DISABLED_ALPHA));
+    g.setColour(processor_ref_.pluginIsEnabled() && getToggleState() ? Theme::TEXT : Theme::TEXT_DISABLED);
 
     switch (filter_id_) {
     case ParametricEq::LOW_CUT:
@@ -209,6 +220,10 @@ FilterToggleButton::mouseEnter(const juce::MouseEvent& event)
 {
     juce::ToggleButton::mouseEnter(event);
 
+    if (!processor_ref_.pluginIsEnabled()) {
+        return;
+    }
+
     background_colour_ = Theme::TEXT_BUTTON_BG_HOVER;
     repaint();
 }
@@ -223,6 +238,21 @@ FilterToggleButton::mouseExit(const MouseEvent& event)
 
     background_colour_ = Theme::TEXT_BUTTON_BG_STD;
     repaint();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+FilterToggleButton::parameterChanged(const juce::String& parameter_id, float new_value)
+{
+    juce::ignoreUnused(new_value);
+
+    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+        setMouseCursor(processor_ref_.pluginIsEnabled() ? juce::MouseCursor::PointingHandCursor :
+                                                          juce::MouseCursor::NormalCursor);
+        repaint();
+    }
 }
 
 /*---------------------------------------------------------------------------

@@ -57,5 +57,15 @@ FftInputDataFifo::pullData(juce::AudioBuffer< float >& buffer_to_fill) const
 }
 
 /*---------------------------------------------------------------------------
+**
+*/
+void
+FftInputDataFifo::clear()
+{
+    const juce::ScopedLock fifo_lock(fifo_critical_section_);
+    fifo_.clear();
+}
+
+/*---------------------------------------------------------------------------
 ** End of File
 */

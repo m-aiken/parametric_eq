@@ -15,6 +15,7 @@
 */
 /*static*/ const juce::Colour Theme::MAIN_BACKGROUND        = PARCHMENT;
 /*static*/ const juce::Colour Theme::TEXT                   = DARK_GREY;
+/*static*/ const juce::Colour Theme::TEXT_DISABLED          = TEXT.withAlpha(DISABLED_ALPHA);
 /*static*/ const juce::Colour Theme::ANALYSER_TEXT          = DARK_GREY.withAlpha(0.7f);
 /*static*/ const juce::Colour Theme::ROTARY_FILL            = RED;
 /*static*/ const juce::Colour Theme::ROTARY_THUMB           = DARK_GREY;
@@ -29,6 +30,12 @@
 /*static*/ const juce::Colour Theme::ACTIVE_BAND_BACKGROUND = RED.withAlpha(0.5f);
 /*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_STD     = DARK_GREY.withAlpha(0.05f);
 /*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.08f);
+
+/*static*/ const juce::Colour Theme::PLUGIN_DISABLED_ANALYSER_TEXT       = TEXT_DISABLED;
+/*static*/ const juce::Colour Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL = DARK_GREY.withAlpha(0.05f);
+/*static*/ const juce::Colour Theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG  = TEXT_DISABLED;
+/*static*/ const juce::Colour Theme::PLUGIN_DISABLED_NODE                = TEXT_DISABLED;
+/*static*/ const juce::Colour Theme::PLUGIN_DISABLED_BAND_BACKGROUND     = DARK_GREY.withAlpha(0.05f);
 
 /*---------------------------------------------------------------------------
 **

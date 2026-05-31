@@ -5,13 +5,13 @@
 /*---------------------------------------------------------------------------
 **
 */
-EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
-                           const ParametricEq::FILTER_ID&      filter_id,
-                           const BAND_TYPE&                    band_type)
-    : apvts_(apvts)
+EqBandWidget::EqBandWidget(ParametricEqProcessor&         processor_ref,
+                           const ParametricEq::FILTER_ID& filter_id,
+                           const BAND_TYPE&               band_type)
+    : processor_ref_(processor_ref)
     , filter_id_(filter_id)
     , is_active_band_(false)
-    , band_enablement_button_(apvts, filter_id)
+    , band_enablement_button_(processor_ref, filter_id)
 {
     addAndMakeVisible(band_enablement_button_);
 
@@ -44,6 +44,8 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
         break;
     }
 
+    auto& apvts = processor_ref_.getApvts();
+
     if (slider_1_parameter_id.isNotEmpty()) {
         slider_1_ = std::make_unique< TextOnlyRotary >(apvts, slider_1_parameter_id);
         addAndMakeVisible(slider_1_.get());
@@ -62,6 +64,16 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
     band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
 
     setSubWidgetEnablement();
+
+    apvts.addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+EqBandWidget::~EqBandWidget()
+{
+    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -70,8 +82,14 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
 void
 EqBandWidget::paint(juce::Graphics& g)
 {
-    const bool is_enabled = band_enablement_button_.getToggleState();
-    g.setColour(is_active_band_ && is_enabled ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
+    if (processor_ref_.pluginIsEnabled()) {
+        const bool band_enabled = band_enablement_button_.getToggleState();
+        g.setColour(is_active_band_ && band_enabled ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
+    }
+    else {
+        g.setColour(Theme::PLUGIN_DISABLED_BAND_BACKGROUND);
+    }
+
     g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
 }
 
@@ -116,6 +134,19 @@ EqBandWidget::resized()
 **
 */
 void
+EqBandWidget::parameterChanged(const juce::String& parameter_id, float new_value)
+{
+    juce::ignoreUnused(new_value);
+
+    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+        setSubWidgetEnablement();
+    }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
 EqBandWidget::setIsActiveBand(const bool is_active)
 {
     is_active_band_ = is_active;
@@ -129,7 +160,7 @@ EqBandWidget::setIsActiveBand(const bool is_active)
 void
 EqBandWidget::setSubWidgetEnablement()
 {
-    const bool enabled = band_enablement_button_.getToggleState();
+    const bool enabled = processor_ref_.pluginIsEnabled() && band_enablement_button_.getToggleState();
 
     if (slider_1_ != nullptr) {
         slider_1_->setEnablement(enabled);

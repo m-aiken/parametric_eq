@@ -38,6 +38,8 @@ public:
     void                        getStateInformation(juce::MemoryBlock& dest_data) override;
     void                        setStateInformation(const void* data, int size_in_bytes) override;
 
+    juce::AudioProcessorParameter* getBypassParameter() const override;
+
     void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
     juce::AudioProcessorValueTreeState& getApvts();
@@ -52,6 +54,8 @@ public:
     int   getFilterOrder(const ParametricEq::FILTER_ID& filter_id) const;
 
     void updateFilterChain(ParametricEq::FilterChain& filter_chain) const;
+
+    bool pluginIsEnabled() const;
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
