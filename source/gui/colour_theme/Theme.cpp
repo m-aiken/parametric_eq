@@ -30,6 +30,9 @@
 /*static*/ const juce::Colour Theme::ACTIVE_BAND_BACKGROUND = RED.withAlpha(0.5f);
 /*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_STD     = DARK_GREY.withAlpha(0.05f);
 /*static*/ const juce::Colour Theme::TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.08f);
+/*static*/ const juce::Colour Theme::POWER_ICON             = TEXT;
+/*static*/ const juce::Colour Theme::POWER_ORB_ON           = GREEN;
+/*static*/ const juce::Colour Theme::POWER_ORB_OFF          = RED;
 
 /*static*/ const juce::Colour Theme::PLUGIN_DISABLED_ANALYSER_TEXT       = TEXT_DISABLED;
 /*static*/ const juce::Colour Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL = DARK_GREY.withAlpha(0.05f);

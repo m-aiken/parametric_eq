@@ -30,6 +30,9 @@ public:
     static const juce::Colour ACTIVE_BAND_BACKGROUND;
     static const juce::Colour TEXT_BUTTON_BG_STD;
     static const juce::Colour TEXT_BUTTON_BG_HOVER;
+    static const juce::Colour POWER_ICON;
+    static const juce::Colour POWER_ORB_ON;
+    static const juce::Colour POWER_ORB_OFF;
 
     static const juce::Colour PLUGIN_DISABLED_ANALYSER_TEXT;
     static const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_FILL;

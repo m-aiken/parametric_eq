@@ -49,6 +49,7 @@ set(PROJECT_SOURCES
         source/gui/band_controls/bands/TextOnlyRotary.cpp
         source/gui/band_controls/bands/TextOnlyRotaryLnf.cpp
         source/gui/colour_theme/Theme.cpp
+        source/gui/DisableButton.cpp
         source/gui/graph/Graph.cpp
         source/gui/graph/GraphBackground.cpp
         source/gui/graph/GraphControlLayer.cpp
@@ -69,6 +70,7 @@ set(PROJECT_HEADERS
         source/gui/band_controls/bands/TextOnlyRotary.h
         source/gui/band_controls/bands/TextOnlyRotaryLnf.h
         source/gui/colour_theme/Theme.h
+        source/gui/DisableButton.h
         source/gui/graph/Graph.h
         source/gui/graph/GraphBackground.h
         source/gui/graph/GraphControlLayer.h

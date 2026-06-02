@@ -7,12 +7,14 @@
 ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
+    , disable_button_(p)
     , graph_(p)
     , eq_controls_(processor_ref_)
     , queued_active_band_(ParametricEq::NULL_BAND)
 {
     ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
 
+    addAndMakeVisible(disable_button_);
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
 
@@ -53,14 +55,20 @@ ParametricEqEditor::resized()
     grid.autoColumns = Track(Fr(100));
 
     grid.templateRows = {
-        Track(Fr(80)),  //! Graph.
+        Track(Fr(4)),   //! Disable button.
+        Track(Fr(76)),  //! Graph.
         Track(Fr(20)),  //! Band controls.
     };
 
+    grid.items.add(juce::GridItem());
     grid.items.add(juce::GridItem(graph_));
     grid.items.add(juce::GridItem(eq_controls_));
 
     grid.performLayout(getLocalBounds());
+
+    const auto button_height = getLocalBounds().toFloat().getHeight() * 0.04f;
+    const auto button_width  = button_height * 1.75f;
+    disable_button_.setBounds(0, 0, static_cast< int >(button_width), static_cast< int >(button_height));
 }
 
 /*---------------------------------------------------------------------------
