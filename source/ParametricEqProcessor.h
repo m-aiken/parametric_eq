@@ -56,6 +56,7 @@ public:
     void updateFilterChain(ParametricEq::FilterChain& filter_chain) const;
 
     bool pluginIsEnabled() const;
+    bool showWaveform() const;
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

@@ -19,6 +19,8 @@ public:
     void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
 private:
+    void setEnablement();
+
     ParametricEqProcessor&                               processor_ref_;
     const ParametricEq::FILTER_ID                        filter_id_;
     juce::AudioProcessorValueTreeState::ButtonAttachment button_attachment_;

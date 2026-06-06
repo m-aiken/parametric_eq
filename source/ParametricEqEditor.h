@@ -5,6 +5,7 @@
 #include "DisableButton.h"
 #include "EqControls.h"
 #include "Graph.h"
+#include "WaveformButton.h"
 
 class ParametricEqEditor final
     : public juce::AudioProcessorEditor
@@ -23,9 +24,10 @@ public:
 private:
     ParametricEqProcessor& processor_ref_;
 
-    DisableButton disable_button_;
-    Graph         graph_;
-    EqControls    eq_controls_;
+    DisableButton  disable_button_;
+    WaveformButton waveform_button_;
+    Graph          graph_;
+    EqControls     eq_controls_;
 
     ParametricEq::FILTER_ID queued_active_band_;
 

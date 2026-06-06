@@ -33,6 +33,8 @@
 /*static*/ const juce::Colour Theme::POWER_ICON             = TEXT;
 /*static*/ const juce::Colour Theme::POWER_ORB_ON           = GREEN;
 /*static*/ const juce::Colour Theme::POWER_ORB_OFF          = RED;
+/*static*/ const juce::Colour Theme::WAVEFORM_BUTTON_ON     = TEXT;
+/*static*/ const juce::Colour Theme::WAVEFORM_BUTTON_OFF    = TEXT_DISABLED;
 
 /*static*/ const juce::Colour Theme::PLUGIN_DISABLED_ANALYSER_TEXT       = TEXT_DISABLED;
 /*static*/ const juce::Colour Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL = DARK_GREY.withAlpha(0.05f);

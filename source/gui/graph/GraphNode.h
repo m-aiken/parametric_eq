@@ -27,6 +27,8 @@ public:
     };
 
 private:
+    void setEnablement();
+
     ParametricEqProcessor&                               processor_ref_;
     juce::AudioProcessorValueTreeState::ButtonAttachment attachment_;
     juce::Point< int >                                   coordinates_;

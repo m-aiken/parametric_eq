@@ -10,9 +10,8 @@ GraphNode::GraphNode(ParametricEqProcessor& processor_ref, const juce::String& b
     , coordinates_(0, 0)
     , is_active_band_(false)
 {
-    setMouseCursor(juce::MouseCursor::PointingHandCursor);
-
     processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    setEnablement();
 }
 
 /*---------------------------------------------------------------------------
@@ -61,8 +60,7 @@ GraphNode::parameterChanged(const juce::String& parameter_id, float new_value)
     juce::ignoreUnused(new_value);
 
     if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
-        setMouseCursor(processor_ref_.pluginIsEnabled() ? juce::MouseCursor::PointingHandCursor :
-                                                          juce::MouseCursor::NormalCursor);
+        setEnablement();
         repaint();
     }
 }
@@ -85,6 +83,18 @@ GraphNode::setIsActiveBand(const bool is_active)
     is_active_band_ = is_active;
 
     repaint();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+GraphNode::setEnablement()
+{
+    const bool plugin_enabled = processor_ref_.pluginIsEnabled();
+
+    setMouseCursor(plugin_enabled ? juce::MouseCursor::PointingHandCursor : juce::MouseCursor::NormalCursor);
+    setEnabled(plugin_enabled);
 }
 
 /*---------------------------------------------------------------------------

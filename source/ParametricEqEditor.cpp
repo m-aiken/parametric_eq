@@ -8,6 +8,7 @@ ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
     , disable_button_(p)
+    , waveform_button_(p)
     , graph_(p)
     , eq_controls_(processor_ref_)
     , queued_active_band_(ParametricEq::NULL_BAND)
@@ -15,6 +16,7 @@ ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
 
     addAndMakeVisible(disable_button_);
+    addAndMakeVisible(waveform_button_);
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
 
@@ -50,13 +52,14 @@ ParametricEqEditor::resized()
     using Track = juce::Grid::TrackInfo;
     using Fr    = juce::Grid::Fr;
 
-    juce::Grid grid;
+    const auto& bounds = getLocalBounds();
+    juce::Grid  grid;
 
     grid.autoColumns = Track(Fr(100));
 
     grid.templateRows = {
-        Track(Fr(4)),   //! Disable button.
-        Track(Fr(76)),  //! Graph.
+        Track(Fr(3)),   //! Disable button.
+        Track(Fr(77)),  //! Graph.
         Track(Fr(20)),  //! Band controls.
     };
 
@@ -64,11 +67,15 @@ ParametricEqEditor::resized()
     grid.items.add(juce::GridItem(graph_));
     grid.items.add(juce::GridItem(eq_controls_));
 
-    grid.performLayout(getLocalBounds());
+    grid.performLayout(bounds);
 
-    const auto button_height = getLocalBounds().toFloat().getHeight() * 0.04f;
-    const auto button_width  = button_height * 1.75f;
-    disable_button_.setBounds(0, 0, static_cast< int >(button_width), static_cast< int >(button_height));
+    // Draw the top buttons.
+    const auto button_strip_height = bounds.toFloat().getHeight() * 0.03f;
+    const auto button_width        = static_cast< int >(button_strip_height * 1.75f);
+    const auto button_height       = static_cast< int >(button_strip_height);
+
+    disable_button_.setBounds(0, 0, button_width, button_height);
+    waveform_button_.setBounds(bounds.getRight() - button_width, 0, button_width, button_height);
 }
 
 /*---------------------------------------------------------------------------

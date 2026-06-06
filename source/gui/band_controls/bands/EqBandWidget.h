@@ -31,7 +31,7 @@ public:
     void setIsActiveBand(const bool is_active);
 
 private:
-    void setSubWidgetEnablement();
+    void setEnablement();
 
     ParametricEqProcessor&        processor_ref_;
     const ParametricEq::FILTER_ID filter_id_;

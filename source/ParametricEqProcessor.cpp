@@ -166,10 +166,10 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
     juce::ignoreUnused(midi_messages);
 
     if (!pluginIsEnabled()) {
-#ifdef SHOW_WAVEFORM
-        pre_eq_fft_fifo_.clear();
-        post_eq_fft_fifo_.clear();
-#endif
+        if (showWaveform()) {
+            pre_eq_fft_fifo_.clear();
+            post_eq_fft_fifo_.clear();
+        }
 
         // Plugin is bypassed.
         return;
@@ -187,10 +187,10 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         buffer.clear(i, 0, buffer.getNumSamples());
     }
 
-#ifdef SHOW_WAVEFORM
-    // Push the buffer in its dry state to the pre-EQ FFT FIFO.
-    pre_eq_fft_fifo_.pushData(buffer);
-#endif
+    if (showWaveform()) {
+        // Push the buffer in its dry state to the pre-EQ FFT FIFO.
+        pre_eq_fft_fifo_.pushData(buffer);
+    }
 
     // Process the EQ.
     const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
@@ -202,10 +202,10 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         filter_chains_.at(i).process(single_channel_context);
     }
 
-#ifdef SHOW_WAVEFORM
-    // Push the buffer in its wet state to the post-EQ FFT FIFO.
-    post_eq_fft_fifo_.pushData(buffer);
-#endif
+    if (showWaveform()) {
+        // Push the buffer in its wet state to the post-EQ FFT FIFO.
+        post_eq_fft_fifo_.pushData(buffer);
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -447,6 +447,22 @@ ParametricEqProcessor::pluginIsEnabled() const
 /*---------------------------------------------------------------------------
 **
 */
+bool
+ParametricEqProcessor::showWaveform() const
+{
+    const auto id            = ParametricEq::SHOW_WAVEFORM_PARAMETER;
+    bool       show_waveform = ParametricEq::SHOW_WAVEFORM_DEFAULT;
+
+    if (const auto p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(id)); p != nullptr) {
+        show_waveform = p->get();
+    }
+
+    return show_waveform;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
 juce::AudioProcessorValueTreeState::ParameterLayout
 ParametricEqProcessor::createParameterLayout()
 {
@@ -456,6 +472,11 @@ ParametricEqProcessor::createParameterLayout()
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(ParametricEq::PLUGIN_BYPASS_PARAMETER, 1),
                                                             ParametricEq::PLUGIN_BYPASS_PARAMETER,
                                                             ParametricEq::PLUGIN_BYPASS_DEFAULT));
+
+    // Show waveform parameter.
+    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(ParametricEq::SHOW_WAVEFORM_PARAMETER, 1),
+                                                            ParametricEq::SHOW_WAVEFORM_PARAMETER,
+                                                            ParametricEq::SHOW_WAVEFORM_DEFAULT));
 
     const auto hz_string_from_value_func = [](const float value, int /*maximum_string_length*/) -> juce::String {
         const auto rounded_hz = std::round(value);

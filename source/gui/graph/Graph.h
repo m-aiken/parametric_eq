@@ -4,9 +4,7 @@
 
 #include "GraphBackground.h"
 #include "GraphControlLayer.h"
-#ifdef SHOW_WAVEFORM
-    #include "GraphWaveform.h"
-#endif
+#include "GraphWaveform.h"
 
 class Graph final : public juce::Component
 {
@@ -18,11 +16,9 @@ public:
     void setActiveBand(const ParametricEq::FILTER_ID& active_band) const;
 
 private:
-    GraphBackground background_;
-#ifdef SHOW_WAVEFORM
-    GraphWaveform waveform_pre_eq_;
-    GraphWaveform waveform_post_eq_;
-#endif
+    GraphBackground   background_;
+    GraphWaveform     waveform_pre_eq_;
+    GraphWaveform     waveform_post_eq_;
     GraphControlLayer control_layer_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Graph)

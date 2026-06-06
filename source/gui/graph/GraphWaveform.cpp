@@ -18,8 +18,12 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref,
     std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), ParametricEq::FFT::MIN_DB);
     std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), ParametricEq::FFT::MIN_DB);
 
+    processor_ref_.getApvts().addParameterListener(ParametricEq::SHOW_WAVEFORM_PARAMETER, this);
     processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
-    startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ);
+
+    if (processor_ref_.showWaveform()) {
+        startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ);
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -28,6 +32,7 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref,
 GraphWaveform::~GraphWaveform()
 {
     stopTimer();
+    processor_ref_.getApvts().removeParameterListener(ParametricEq::SHOW_WAVEFORM_PARAMETER, this);
     processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
@@ -53,8 +58,10 @@ GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_valu
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
-        processor_ref_.pluginIsEnabled() ? startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
+    if (parameter_id == ParametricEq::SHOW_WAVEFORM_PARAMETER || parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+        const bool show_waveform = (processor_ref_.pluginIsEnabled() && processor_ref_.showWaveform());
+
+        show_waveform ? startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
     }
 }
 

@@ -33,6 +33,8 @@ public:
     static const juce::Colour POWER_ICON;
     static const juce::Colour POWER_ORB_ON;
     static const juce::Colour POWER_ORB_OFF;
+    static const juce::Colour WAVEFORM_BUTTON_ON;
+    static const juce::Colour WAVEFORM_BUTTON_OFF;
 
     static const juce::Colour PLUGIN_DISABLED_ANALYSER_TEXT;
     static const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_FILL;

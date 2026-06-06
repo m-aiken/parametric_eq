@@ -11,9 +11,8 @@ FilterToggleButton::FilterToggleButton(ParametricEqProcessor& processor_ref, con
     , button_attachment_(processor_ref.getApvts(), ParametricEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
     , background_colour_(Theme::TEXT_BUTTON_BG_STD)
 {
-    setMouseCursor(juce::MouseCursor::PointingHandCursor);
-
     processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    setEnablement();
 }
 
 /*---------------------------------------------------------------------------
@@ -249,10 +248,21 @@ FilterToggleButton::parameterChanged(const juce::String& parameter_id, float new
     juce::ignoreUnused(new_value);
 
     if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
-        setMouseCursor(processor_ref_.pluginIsEnabled() ? juce::MouseCursor::PointingHandCursor :
-                                                          juce::MouseCursor::NormalCursor);
+        setEnablement();
         repaint();
     }
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+FilterToggleButton::setEnablement()
+{
+    const bool plugin_enabled = processor_ref_.pluginIsEnabled();
+
+    setMouseCursor(plugin_enabled ? juce::MouseCursor::PointingHandCursor : juce::MouseCursor::NormalCursor);
+    setEnabled(plugin_enabled);
 }
 
 /*---------------------------------------------------------------------------

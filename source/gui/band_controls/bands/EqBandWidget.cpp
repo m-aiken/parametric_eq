@@ -61,9 +61,12 @@ EqBandWidget::EqBandWidget(ParametricEqProcessor&         processor_ref,
         addAndMakeVisible(slider_3_.get());
     }
 
-    band_enablement_button_.onClick = [this]() { setSubWidgetEnablement(); };
+    band_enablement_button_.onClick = [this]() {
+        setEnablement();
+        repaint();
+    };
 
-    setSubWidgetEnablement();
+    setEnablement();
 
     apvts.addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
 }
@@ -139,7 +142,8 @@ EqBandWidget::parameterChanged(const juce::String& parameter_id, float new_value
     juce::ignoreUnused(new_value);
 
     if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
-        setSubWidgetEnablement();
+        setEnablement();
+        repaint();
     }
 }
 
@@ -158,7 +162,7 @@ EqBandWidget::setIsActiveBand(const bool is_active)
 **
 */
 void
-EqBandWidget::setSubWidgetEnablement()
+EqBandWidget::setEnablement()
 {
     const bool enabled = processor_ref_.pluginIsEnabled() && band_enablement_button_.getToggleState();
 
@@ -173,8 +177,6 @@ EqBandWidget::setSubWidgetEnablement()
     if (slider_3_ != nullptr) {
         slider_3_->setEnablement(enabled);
     }
-
-    repaint();
 }
 
 /*---------------------------------------------------------------------------

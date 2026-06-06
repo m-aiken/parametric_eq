@@ -2,8 +2,6 @@
 
 #include <JuceHeader.h>
 
-// #define SHOW_WAVEFORM
-
 namespace ParametricEq
 {
 
@@ -20,6 +18,10 @@ inline constexpr float WAVEFORM_DECAY_RATE               = WAVEFORM_DECAY_RATE_D
 // Plugin bypass parameter.
 inline const juce::String PLUGIN_BYPASS_PARAMETER = "Bypass";
 inline constexpr bool     PLUGIN_BYPASS_DEFAULT   = false;
+
+// Show waveform parameter.
+inline const juce::String SHOW_WAVEFORM_PARAMETER = "Show Waveform";
+inline constexpr bool     SHOW_WAVEFORM_DEFAULT   = true;
 
 // Filter constants.
 using Filter = juce::dsp::IIR::Filter< float >;
@@ -227,6 +229,7 @@ addListenerToAllParameters(juce::AudioProcessorValueTreeState&           apvts,
     }
 
     apvts.addParameterListener(PLUGIN_BYPASS_PARAMETER, listener);
+    apvts.addParameterListener(SHOW_WAVEFORM_PARAMETER, listener);
 
     for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
         if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
@@ -260,6 +263,7 @@ removeListenerFromAllParameters(juce::AudioProcessorValueTreeState&           ap
     }
 
     apvts.removeParameterListener(PLUGIN_BYPASS_PARAMETER, listener);
+    apvts.removeParameterListener(SHOW_WAVEFORM_PARAMETER, listener);
 
     for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
         if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
