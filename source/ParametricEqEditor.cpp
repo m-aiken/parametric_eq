@@ -7,16 +7,14 @@
 ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
-    , disable_button_(p)
-    , waveform_button_(p)
+    , menu_bar_(p)
     , graph_(p)
     , eq_controls_(processor_ref_)
     , queued_active_band_(ParametricEq::NULL_BAND)
 {
     ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
 
-    addAndMakeVisible(disable_button_);
-    addAndMakeVisible(waveform_button_);
+    addAndMakeVisible(menu_bar_);
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
 
@@ -58,24 +56,16 @@ ParametricEqEditor::resized()
     grid.autoColumns = Track(Fr(100));
 
     grid.templateRows = {
-        Track(Fr(3)),   //! Disable button.
+        Track(Fr(3)),   //! Menu bar.
         Track(Fr(77)),  //! Graph.
         Track(Fr(20)),  //! Band controls.
     };
 
-    grid.items.add(juce::GridItem());
+    grid.items.add(juce::GridItem(menu_bar_));
     grid.items.add(juce::GridItem(graph_));
     grid.items.add(juce::GridItem(eq_controls_));
 
     grid.performLayout(bounds);
-
-    // Draw the top buttons.
-    const auto button_strip_height = bounds.toFloat().getHeight() * 0.03f;
-    const auto button_width        = static_cast< int >(button_strip_height * 1.75f);
-    const auto button_height       = static_cast< int >(button_strip_height);
-
-    disable_button_.setBounds(0, 0, button_width, button_height);
-    waveform_button_.setBounds(bounds.getRight() - button_width, 0, button_width, button_height);
 }
 
 /*---------------------------------------------------------------------------
