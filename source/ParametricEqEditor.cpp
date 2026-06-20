@@ -7,14 +7,12 @@
 ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
-    , menu_bar_(p)
     , graph_(p)
     , eq_controls_(processor_ref_)
     , queued_active_band_(ParametricEq::NULL_BAND)
 {
     ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
 
-    addAndMakeVisible(menu_bar_);
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
 
@@ -56,12 +54,10 @@ ParametricEqEditor::resized()
     grid.autoColumns = Track(Fr(100));
 
     grid.templateRows = {
-        Track(Fr(3)),   //! Menu bar.
-        Track(Fr(77)),  //! Graph.
+        Track(Fr(80)),  //! Graph.
         Track(Fr(20)),  //! Band controls.
     };
 
-    grid.items.add(juce::GridItem(menu_bar_));
     grid.items.add(juce::GridItem(graph_));
     grid.items.add(juce::GridItem(eq_controls_));
 

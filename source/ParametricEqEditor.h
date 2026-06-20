@@ -4,7 +4,6 @@
 
 #include "EqControls.h"
 #include "Graph.h"
-#include "MenuBar.h"
 
 class ParametricEqEditor final
     : public juce::AudioProcessorEditor
@@ -23,7 +22,6 @@ public:
 private:
     ParametricEqProcessor& processor_ref_;
 
-    MenuBar    menu_bar_;
     Graph      graph_;
     EqControls eq_controls_;
 
