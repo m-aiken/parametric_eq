@@ -3,12 +3,10 @@
 /*---------------------------------------------------------------------------
 **
 */
-GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref,
-                             FftInputDataFifo&      fft_input_data_fifo,
-                             const juce::Colour&    colour)
+GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::Colour& colour)
     : processor_ref_(processor_ref)
     , colour_(colour)
-    , fft_input_data_fifo_(fft_input_data_fifo)
+    , fft_input_data_fifo_(processor_ref.getFftFifo())
     , fft_(ParametricEq::FFT::ORDER)
     , windowing_func_(ParametricEq::FFT::SIZE, juce::dsp::WindowingFunction< float >::blackmanHarris)
     , fft_output_buffer_()

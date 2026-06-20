@@ -44,8 +44,7 @@ public:
 
     juce::AudioProcessorValueTreeState& getApvts();
 
-    FftInputDataFifo& getPreEqFftFifo();
-    FftInputDataFifo& getPostEqFftFifo();
+    FftInputDataFifo& getFftFifo();
 
     bool  getFilterEnabled(const ParametricEq::FILTER_ID& filter_id) const;
     float getFilterFrequency(const ParametricEq::FILTER_ID& filter_id) const;
@@ -67,8 +66,7 @@ private:
     // vector of filter chains; one per channel.
     std::vector< ParametricEq::FilterChain > filter_chains_;
 
-    FftInputDataFifo pre_eq_fft_fifo_;
-    FftInputDataFifo post_eq_fft_fifo_;
+    FftInputDataFifo fft_fifo_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqProcessor)
 };

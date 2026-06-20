@@ -17,8 +17,7 @@ public:
 
 private:
     GraphBackground   background_;
-    GraphWaveform     waveform_pre_eq_;
-    GraphWaveform     waveform_post_eq_;
+    GraphWaveform     waveform_;
     GraphControlLayer control_layer_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Graph)

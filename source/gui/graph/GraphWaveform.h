@@ -12,7 +12,7 @@ class GraphWaveform final
     , public juce::Timer
 {
 public:
-    GraphWaveform(ParametricEqProcessor& processor_ref, FftInputDataFifo& fft_input_data_fifo, const juce::Colour& colour);
+    GraphWaveform(ParametricEqProcessor& processor_ref, const juce::Colour& colour);
     ~GraphWaveform() override;
 
     void paint(juce::Graphics& g) override;

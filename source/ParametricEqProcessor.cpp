@@ -167,8 +167,7 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
 
     if (!pluginIsEnabled()) {
         if (showWaveform()) {
-            pre_eq_fft_fifo_.clear();
-            post_eq_fft_fifo_.clear();
+            fft_fifo_.clear();
         }
 
         // Plugin is bypassed.
@@ -187,11 +186,6 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         buffer.clear(i, 0, buffer.getNumSamples());
     }
 
-    if (showWaveform()) {
-        // Push the buffer in its dry state to the pre-EQ FFT FIFO.
-        pre_eq_fft_fifo_.pushData(buffer);
-    }
-
     // Process the EQ.
     const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
 
@@ -203,8 +197,8 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
     }
 
     if (showWaveform()) {
-        // Push the buffer in its wet state to the post-EQ FFT FIFO.
-        post_eq_fft_fifo_.pushData(buffer);
+        // Push the buffer to the FFT FIFO.
+        fft_fifo_.pushData(buffer);
     }
 }
 
@@ -284,18 +278,9 @@ ParametricEqProcessor::getApvts()
 **
 */
 FftInputDataFifo&
-ParametricEqProcessor::getPreEqFftFifo()
+ParametricEqProcessor::getFftFifo()
 {
-    return pre_eq_fft_fifo_;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-FftInputDataFifo&
-ParametricEqProcessor::getPostEqFftFifo()
-{
-    return post_eq_fft_fifo_;
+    return fft_fifo_;
 }
 
 /*---------------------------------------------------------------------------
