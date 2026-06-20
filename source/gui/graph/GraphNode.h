@@ -20,10 +20,10 @@ public:
     void setIsActiveBand(const bool is_active);
 
     enum {
-        DIAMETER             = 12,
+        DIAMETER             = 16,
         RADIUS               = DIAMETER / 2,
-        CENTRE_DIAMETER      = 6,
-        OUTER_RING_THICKNESS = 1,
+        CENTRE_DIAMETER      = 8,
+        OUTER_RING_THICKNESS = 2,
     };
 
 private:
