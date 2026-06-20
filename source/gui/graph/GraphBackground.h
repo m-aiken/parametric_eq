@@ -25,8 +25,8 @@ private:
     static bool  shouldDrawFrequency(const int hz);
 
     static constexpr int              TEXT_WIDTH         = ParametricEq::Theme::UI_PADDING * 16;
-    static constexpr float            LINE_ALPHA_BOLDER  = 0.2f;
-    static constexpr float            LINE_ALPHA_LIGHTER = 0.07f;
+    static constexpr float            LINE_ALPHA_BOLDER  = 0.1f;
+    static constexpr float            LINE_ALPHA_LIGHTER = 0.05f;
     static constexpr int              DB_LABEL_INTERVAL  = 3;
     static const std::vector< float > HZ_LIST;
 
