@@ -9,8 +9,6 @@ extern const juce::Colour MAIN_BACKGROUND;
 extern const juce::Colour TEXT;
 extern const juce::Colour TEXT_DISABLED;
 extern const juce::Colour ANALYSER_TEXT;
-extern const juce::Colour ROTARY_FILL;
-extern const juce::Colour ROTARY_THUMB;
 extern const juce::Colour RESPONSE_CURVE_FILL;
 extern const juce::Colour RESPONSE_CURVE_AVG;
 extern const juce::Colour NODE_ON;
