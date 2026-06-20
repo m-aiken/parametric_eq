@@ -40,7 +40,7 @@ GraphBackground::paint(juce::Graphics& g)
         const auto y =
             juce::jmap< float >(static_cast< float >(i), ParametricEq::MIN_DB, ParametricEq::MAX_DB, full_height_f, 0.f);
 
-        g.setColour(Theme::ANALYSER_GRID.withAlpha(getAlphaForDb(i)));
+        g.setColour(ParametricEq::Theme::ANALYSER_GRID.withAlpha(getAlphaForDb(i)));
         g.drawLine(2, y, full_width_f - 2, y, 1.f);
     }
 
@@ -52,13 +52,14 @@ GraphBackground::paint(juce::Graphics& g)
                                                            ParametricEq::MAX_HZ);
             const auto x_coord = static_cast< int >(full_width_f * raw_x);
 
-            g.setColour(Theme::ANALYSER_GRID.withAlpha(getAlphaForFrequency(i)));
+            g.setColour(ParametricEq::Theme::ANALYSER_GRID.withAlpha(getAlphaForFrequency(i)));
             g.drawVerticalLine(x_coord, 0.f, full_height_f);
         }
     }
 
-    g.setFont(Theme::getFont());
-    g.setColour(processor_ref_.pluginIsEnabled() ? Theme::ANALYSER_TEXT : Theme::PLUGIN_DISABLED_ANALYSER_TEXT);
+    g.setFont(ParametricEq::Theme::getFont());
+    g.setColour(processor_ref_.pluginIsEnabled() ? ParametricEq::Theme::ANALYSER_TEXT :
+                                                   ParametricEq::Theme::PLUGIN_DISABLED_ANALYSER_TEXT);
 
     // dB labels.
     drawDbLabels(g);
@@ -99,10 +100,16 @@ GraphBackground::drawDbLabels(const juce::Graphics& g) const
                                              static_cast< int >(ParametricEq::MAX_DB),
                                              bounds_height,
                                              0);
-        const auto shifted_y = raw_y - text_height - Theme::UI_PADDING;
+        const auto shifted_y = raw_y - text_height - ParametricEq::Theme::UI_PADDING;
         const auto text      = (i > 0 ? "+" : "") + juce::String(i) + " dB";
 
-        g.drawFittedText(text, Theme::UI_PADDING, shifted_y, TEXT_WIDTH, text_height, juce::Justification::centredLeft, 1);
+        g.drawFittedText(text,
+                         ParametricEq::Theme::UI_PADDING,
+                         shifted_y,
+                         TEXT_WIDTH,
+                         text_height,
+                         juce::Justification::centredLeft,
+                         1);
     }
 }
 
@@ -112,14 +119,14 @@ GraphBackground::drawDbLabels(const juce::Graphics& g) const
 void
 GraphBackground::drawFrequencyLabels(const juce::Graphics& g) const
 {
-    const auto& text_height  = static_cast< int >(Theme::getFont().getHeight());
-    const auto& bounds_y     = Theme::UI_PADDING;
+    const auto& text_height  = static_cast< int >(ParametricEq::Theme::getFont().getHeight());
+    const auto& bounds_y     = ParametricEq::Theme::UI_PADDING;
     const auto& bounds_width = getLocalBounds().toFloat().getWidth();
 
     for (size_t i = 1; i < HZ_LIST.size() - 1; ++i) {
         auto       hz        = HZ_LIST.at(i);
         const auto raw_x     = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
-        const auto shifted_x = static_cast< int >(bounds_width * raw_x) + Theme::UI_PADDING;
+        const auto shifted_x = static_cast< int >(bounds_width * raw_x) + ParametricEq::Theme::UI_PADDING;
 
         juce::String suffix = " Hz";
 

@@ -9,7 +9,7 @@ FilterToggleButton::FilterToggleButton(ParametricEqProcessor& processor_ref, con
     : processor_ref_(processor_ref)
     , filter_id_(filter_id)
     , button_attachment_(processor_ref.getApvts(), ParametricEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
-    , background_colour_(Theme::TEXT_BUTTON_BG_STD)
+    , background_colour_(ParametricEq::Theme::TEXT_BUTTON_BG_STD)
 {
     processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
     setEnablement();
@@ -43,10 +43,11 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
 
     // Background.
     g.setColour(background_colour_);
-    g.fillRoundedRectangle(bounds, Theme::BORDER_RADIUS);
+    g.fillRoundedRectangle(bounds, ParametricEq::Theme::BORDER_RADIUS);
 
     // Icon.
-    g.setColour(processor_ref_.pluginIsEnabled() && getToggleState() ? Theme::TEXT : Theme::TEXT_DISABLED);
+    g.setColour(processor_ref_.pluginIsEnabled() && getToggleState() ? ParametricEq::Theme::TEXT :
+                                                                       ParametricEq::Theme::TEXT_DISABLED);
 
     switch (filter_id_) {
     case ParametricEq::LOW_CUT:
@@ -223,7 +224,7 @@ FilterToggleButton::mouseEnter(const juce::MouseEvent& event)
         return;
     }
 
-    background_colour_ = Theme::TEXT_BUTTON_BG_HOVER;
+    background_colour_ = ParametricEq::Theme::TEXT_BUTTON_BG_HOVER;
     repaint();
 }
 
@@ -235,7 +236,7 @@ FilterToggleButton::mouseExit(const MouseEvent& event)
 {
     juce::ToggleButton::mouseExit(event);
 
-    background_colour_ = Theme::TEXT_BUTTON_BG_STD;
+    background_colour_ = ParametricEq::Theme::TEXT_BUTTON_BG_STD;
     repaint();
 }
 

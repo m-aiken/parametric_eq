@@ -29,28 +29,29 @@ DisableButton::paintButton(juce::Graphics& g, bool should_draw_button_as_highlig
     const auto  orb_bounds    = right.withSizeKeepingCentre(ORB_DIAMETER, ORB_DIAMETER);
 
     // Background.
-    g.fillAll(Theme::MAIN_BACKGROUND);
+    g.fillAll(ParametricEq::Theme::MAIN_BACKGROUND);
 
     // Power icon: Outer ring.
-    g.setColour(Theme::POWER_ICON);
+    g.setColour(ParametricEq::Theme::POWER_ICON);
     g.drawEllipse(icon_bounds, ICON_LINE_THICKNESS);
 
     // Power icon: Split in outer ring.
-    g.setColour(Theme::MAIN_BACKGROUND);
+    g.setColour(ParametricEq::Theme::MAIN_BACKGROUND);
     g.fillRect(icon_bounds.getCentreX() - (ICON_LINE_THICKNESS * 2.f),
                icon_bounds.getY() - ICON_LINE_THICKNESS,
                ICON_LINE_THICKNESS * 4.f,
                ICON_LINE_THICKNESS * 2.f);
 
     // Power icon: Thumb.
-    g.setColour(Theme::POWER_ICON);
+    g.setColour(ParametricEq::Theme::POWER_ICON);
     g.fillRect(icon_bounds.getCentreX() - (ICON_LINE_THICKNESS / 2.f),
                icon_bounds.getY() - 1.f,
                ICON_LINE_THICKNESS,
                icon_diameter / 2.f);
 
     // Orb.
-    g.setColour(processor_ref_.pluginIsEnabled() ? Theme::POWER_ORB_ON : Theme::POWER_ORB_OFF);
+    g.setColour(processor_ref_.pluginIsEnabled() ? ParametricEq::Theme::POWER_ORB_ON :
+                                                   ParametricEq::Theme::POWER_ORB_OFF);
     g.fillEllipse(orb_bounds);
 }
 

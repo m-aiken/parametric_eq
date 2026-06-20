@@ -87,13 +87,14 @@ EqBandWidget::paint(juce::Graphics& g)
 {
     if (processor_ref_.pluginIsEnabled()) {
         const bool band_enabled = band_enablement_button_.getToggleState();
-        g.setColour(is_active_band_ && band_enabled ? Theme::ACTIVE_BAND_BACKGROUND : Theme::BAND_BACKGROUND);
+        g.setColour(is_active_band_ && band_enabled ? ParametricEq::Theme::ACTIVE_BAND_BACKGROUND :
+                                                      ParametricEq::Theme::BAND_BACKGROUND);
     }
     else {
-        g.setColour(Theme::PLUGIN_DISABLED_BAND_BACKGROUND);
+        g.setColour(ParametricEq::Theme::PLUGIN_DISABLED_BAND_BACKGROUND);
     }
 
-    g.fillRoundedRectangle(getLocalBounds().toFloat(), Theme::BORDER_RADIUS);
+    g.fillRoundedRectangle(getLocalBounds().toFloat(), ParametricEq::Theme::BORDER_RADIUS);
 }
 
 /*---------------------------------------------------------------------------

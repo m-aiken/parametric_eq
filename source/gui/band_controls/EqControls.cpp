@@ -62,7 +62,7 @@ EqControls::resized()
     grid.items.add(juce::GridItem(high_shelf_controls_));
     grid.items.add(juce::GridItem(high_cut_controls_));
 
-    constexpr auto margin = Theme::UI_PADDING * 2;
+    constexpr auto margin = ParametricEq::Theme::UI_PADDING * 2;
     grid.setGap(juce::Grid::Px(margin));
 
     const auto& bounds = getLocalBounds();

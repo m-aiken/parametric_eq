@@ -56,7 +56,9 @@ WaveformButton::paintButton(juce::Graphics& g, bool should_draw_button_as_highli
     path.lineTo(p3);
     path.lineTo(p4);
 
-    g.setColour(show_waveform && plugin_enabled ? Theme::WAVEFORM_BUTTON_ON : Theme::WAVEFORM_BUTTON_OFF);
+    g.setColour(show_waveform && plugin_enabled ? ParametricEq::Theme::WAVEFORM_BUTTON_ON :
+                                                  ParametricEq::Theme::WAVEFORM_BUTTON_OFF);
+
     g.strokePath(path.createPathWithRoundedCorners(corner_radius), juce::PathStrokeType(ICON_LINE_THICKNESS));
 }
 

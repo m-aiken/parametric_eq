@@ -38,7 +38,7 @@ ParametricEqEditor::~ParametricEqEditor()
 void
 ParametricEqEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(Theme::MAIN_BACKGROUND);
+    g.fillAll(ParametricEq::Theme::MAIN_BACKGROUND);
 }
 
 /*---------------------------------------------------------------------------

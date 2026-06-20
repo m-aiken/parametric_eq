@@ -6,8 +6,8 @@
 */
 Graph::Graph(ParametricEqProcessor& processor_ref)
     : background_(processor_ref)
-    , waveform_pre_eq_(processor_ref, processor_ref.getPreEqFftFifo(), Theme::ANALYSER_PRE_EQ)
-    , waveform_post_eq_(processor_ref, processor_ref.getPostEqFftFifo(), Theme::ANALYSER_POST_EQ)
+    , waveform_pre_eq_(processor_ref, processor_ref.getPreEqFftFifo(), ParametricEq::Theme::ANALYSER_PRE_EQ)
+    , waveform_post_eq_(processor_ref, processor_ref.getPostEqFftFifo(), ParametricEq::Theme::ANALYSER_POST_EQ)
     , control_layer_(processor_ref)
 {
     addAndMakeVisible(background_);

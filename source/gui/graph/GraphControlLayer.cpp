@@ -66,7 +66,8 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
-    g.setColour(plugin_enabled ? Theme::RESPONSE_CURVE_FILL : Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL);
+    g.setColour(plugin_enabled ? ParametricEq::Theme::RESPONSE_CURVE_FILL :
+                                 ParametricEq::Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL);
 
     for (size_t band_index = 0; band_index < paths_.size() - 1; ++band_index) {
         auto&       path = paths_.at(band_index);
@@ -101,7 +102,8 @@ GraphControlLayer::paint(juce::Graphics& g)
         final_path.lineTo(x, y);
     }
 
-    g.setColour(plugin_enabled ? Theme::RESPONSE_CURVE_AVG : Theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG);
+    g.setColour(plugin_enabled ? ParametricEq::Theme::RESPONSE_CURVE_AVG :
+                                 ParametricEq::Theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG);
     g.strokePath(final_path, juce::PathStrokeType(1.f));
 
     // Draw the nodes.
@@ -135,7 +137,7 @@ GraphControlLayer::paint(juce::Graphics& g)
     }
 
     // Vertical lines on both ends of the container to hide the edge of the response curve.
-    g.setColour(Theme::MAIN_BACKGROUND);
+    g.setColour(ParametricEq::Theme::MAIN_BACKGROUND);
     constexpr auto line_thickness = 3.f;
 
     g.drawLine(0.f, 0.f, 0.f, bounds.getBottom(), line_thickness);

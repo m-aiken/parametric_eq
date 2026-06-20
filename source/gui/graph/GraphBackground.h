@@ -24,7 +24,7 @@ private:
     static float getAlphaForFrequency(const int hz);
     static bool  shouldDrawFrequency(const int hz);
 
-    static constexpr int              TEXT_WIDTH         = Theme::UI_PADDING * 16;
+    static constexpr int              TEXT_WIDTH         = ParametricEq::Theme::UI_PADDING * 16;
     static constexpr float            LINE_ALPHA_BOLDER  = 0.2f;
     static constexpr float            LINE_ALPHA_LIGHTER = 0.07f;
     static constexpr int              DB_LABEL_INTERVAL  = 3;

@@ -2,52 +2,43 @@
 
 #include <JuceHeader.h>
 
-class Theme
+namespace ParametricEq::Theme
 {
-private:
-    static const juce::Colour DARK_GREY;
-    static const juce::Colour PARCHMENT;
-    static const juce::Colour RED;
-    static const juce::Colour TEAL;
-    static const juce::Colour PURPLE;
-    static const juce::Colour GREEN;
 
-public:
-    static const juce::Colour MAIN_BACKGROUND;
-    static const juce::Colour TEXT;
-    static const juce::Colour TEXT_DISABLED;
-    static const juce::Colour ANALYSER_TEXT;
-    static const juce::Colour ROTARY_FILL;
-    static const juce::Colour ROTARY_THUMB;
-    static const juce::Colour RESPONSE_CURVE_FILL;
-    static const juce::Colour RESPONSE_CURVE_AVG;
-    static const juce::Colour NODE_ON;
-    static const juce::Colour NODE_OFF;
-    static const juce::Colour ANALYSER_GRID;
-    static const juce::Colour ANALYSER_PRE_EQ;
-    static const juce::Colour ANALYSER_POST_EQ;
-    static const juce::Colour BAND_BACKGROUND;
-    static const juce::Colour ACTIVE_BAND_BACKGROUND;
-    static const juce::Colour TEXT_BUTTON_BG_STD;
-    static const juce::Colour TEXT_BUTTON_BG_HOVER;
-    static const juce::Colour POWER_ICON;
-    static const juce::Colour POWER_ORB_ON;
-    static const juce::Colour POWER_ORB_OFF;
-    static const juce::Colour WAVEFORM_BUTTON_ON;
-    static const juce::Colour WAVEFORM_BUTTON_OFF;
+extern const juce::Colour MAIN_BACKGROUND;
+extern const juce::Colour TEXT;
+extern const juce::Colour TEXT_DISABLED;
+extern const juce::Colour ANALYSER_TEXT;
+extern const juce::Colour ROTARY_FILL;
+extern const juce::Colour ROTARY_THUMB;
+extern const juce::Colour RESPONSE_CURVE_FILL;
+extern const juce::Colour RESPONSE_CURVE_AVG;
+extern const juce::Colour NODE_ON;
+extern const juce::Colour NODE_OFF;
+extern const juce::Colour ANALYSER_GRID;
+extern const juce::Colour ANALYSER_PRE_EQ;
+extern const juce::Colour ANALYSER_POST_EQ;
+extern const juce::Colour BAND_BACKGROUND;
+extern const juce::Colour ACTIVE_BAND_BACKGROUND;
+extern const juce::Colour TEXT_BUTTON_BG_STD;
+extern const juce::Colour TEXT_BUTTON_BG_HOVER;
+extern const juce::Colour POWER_ICON;
+extern const juce::Colour POWER_ORB_ON;
+extern const juce::Colour POWER_ORB_OFF;
+extern const juce::Colour WAVEFORM_BUTTON_ON;
+extern const juce::Colour WAVEFORM_BUTTON_OFF;
 
-    static const juce::Colour PLUGIN_DISABLED_ANALYSER_TEXT;
-    static const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_FILL;
-    static const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_AVG;
-    static const juce::Colour PLUGIN_DISABLED_NODE;
-    static const juce::Colour PLUGIN_DISABLED_BAND_BACKGROUND;
+extern const juce::Colour PLUGIN_DISABLED_ANALYSER_TEXT;
+extern const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_FILL;
+extern const juce::Colour PLUGIN_DISABLED_RESPONSE_CURVE_AVG;
+extern const juce::Colour PLUGIN_DISABLED_NODE;
+extern const juce::Colour PLUGIN_DISABLED_BAND_BACKGROUND;
 
-    static constexpr float ENABLED_ALPHA  = 1.f;
-    static constexpr float DISABLED_ALPHA = 0.2f;
-    static constexpr int   UI_PADDING     = 4;
-    static constexpr float BORDER_RADIUS  = 4.f;
+inline constexpr float ENABLED_ALPHA  = 1.f;
+inline constexpr float DISABLED_ALPHA = 0.2f;
+inline constexpr int   UI_PADDING     = 4;
+inline constexpr float BORDER_RADIUS  = 4.f;
 
-    static juce::Font getFont();
+extern juce::Font getFont();
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Theme)
-};
+}  // namespace ParametricEq::Theme

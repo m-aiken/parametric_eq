@@ -33,10 +33,10 @@ GraphNode::paint(juce::Graphics& g)
     const bool  band_enabled   = getToggleState();
 
     if (plugin_enabled) {
-        g.setColour(band_enabled ? Theme::NODE_ON : Theme::NODE_OFF);
+        g.setColour(band_enabled ? ParametricEq::Theme::NODE_ON : ParametricEq::Theme::NODE_OFF);
     }
     else {
-        g.setColour(Theme::PLUGIN_DISABLED_NODE);
+        g.setColour(ParametricEq::Theme::PLUGIN_DISABLED_NODE);
     }
 
     // Always draw the centre circle.
