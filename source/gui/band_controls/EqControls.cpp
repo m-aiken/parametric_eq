@@ -6,15 +6,15 @@
 **
 */
 EqControls::EqControls(ParametricEqProcessor& processor_ref)
-    : low_cut_controls_(processor_ref, ParametricEq::LOW_CUT, EqBandWidget::CUT_BAND)
-    , low_shelf_controls_(processor_ref, ParametricEq::LOW_SHELF, EqBandWidget::SHELF_BAND)
-    , peak_band_1_(processor_ref, ParametricEq::PEAK_BAND_1, EqBandWidget::PEAK_BAND)
-    , peak_band_2_(processor_ref, ParametricEq::PEAK_BAND_2, EqBandWidget::PEAK_BAND)
-    , peak_band_3_(processor_ref, ParametricEq::PEAK_BAND_3, EqBandWidget::PEAK_BAND)
-    , peak_band_4_(processor_ref, ParametricEq::PEAK_BAND_4, EqBandWidget::PEAK_BAND)
-    , peak_band_5_(processor_ref, ParametricEq::PEAK_BAND_5, EqBandWidget::PEAK_BAND)
-    , high_shelf_controls_(processor_ref, ParametricEq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
-    , high_cut_controls_(processor_ref, ParametricEq::HIGH_CUT, EqBandWidget::CUT_BAND)
+    : low_cut_controls_(processor_ref, parametric_eq::LOW_CUT, EqBandWidget::CUT_BAND)
+    , low_shelf_controls_(processor_ref, parametric_eq::LOW_SHELF, EqBandWidget::SHELF_BAND)
+    , peak_band_1_(processor_ref, parametric_eq::PEAK_BAND_1, EqBandWidget::PEAK_BAND)
+    , peak_band_2_(processor_ref, parametric_eq::PEAK_BAND_2, EqBandWidget::PEAK_BAND)
+    , peak_band_3_(processor_ref, parametric_eq::PEAK_BAND_3, EqBandWidget::PEAK_BAND)
+    , peak_band_4_(processor_ref, parametric_eq::PEAK_BAND_4, EqBandWidget::PEAK_BAND)
+    , peak_band_5_(processor_ref, parametric_eq::PEAK_BAND_5, EqBandWidget::PEAK_BAND)
+    , high_shelf_controls_(processor_ref, parametric_eq::HIGH_SHELF, EqBandWidget::SHELF_BAND)
+    , high_cut_controls_(processor_ref, parametric_eq::HIGH_CUT, EqBandWidget::CUT_BAND)
 {
     addAndMakeVisible(low_cut_controls_);
     addAndMakeVisible(low_shelf_controls_);
@@ -62,7 +62,7 @@ EqControls::resized()
     grid.items.add(juce::GridItem(high_shelf_controls_));
     grid.items.add(juce::GridItem(high_cut_controls_));
 
-    constexpr auto margin = ParametricEq::Theme::UI_PADDING * 2;
+    constexpr auto margin = parametric_eq::theme::UI_PADDING * 2;
     grid.setGap(juce::Grid::Px(margin));
 
     const auto& bounds = getLocalBounds();
@@ -73,17 +73,17 @@ EqControls::resized()
 **
 */
 void
-EqControls::setActiveBand(const ParametricEq::FILTER_ID& active_band)
+EqControls::setActiveBand(const parametric_eq::FILTER_ID& active_band)
 {
-    low_cut_controls_.setIsActiveBand(active_band == ParametricEq::LOW_CUT);
-    low_shelf_controls_.setIsActiveBand(active_band == ParametricEq::LOW_SHELF);
-    peak_band_1_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_1);
-    peak_band_2_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_2);
-    peak_band_3_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_3);
-    peak_band_4_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_4);
-    peak_band_5_.setIsActiveBand(active_band == ParametricEq::PEAK_BAND_5);
-    high_shelf_controls_.setIsActiveBand(active_band == ParametricEq::HIGH_SHELF);
-    high_cut_controls_.setIsActiveBand(active_band == ParametricEq::HIGH_CUT);
+    low_cut_controls_.setIsActiveBand(active_band == parametric_eq::LOW_CUT);
+    low_shelf_controls_.setIsActiveBand(active_band == parametric_eq::LOW_SHELF);
+    peak_band_1_.setIsActiveBand(active_band == parametric_eq::PEAK_BAND_1);
+    peak_band_2_.setIsActiveBand(active_band == parametric_eq::PEAK_BAND_2);
+    peak_band_3_.setIsActiveBand(active_band == parametric_eq::PEAK_BAND_3);
+    peak_band_4_.setIsActiveBand(active_band == parametric_eq::PEAK_BAND_4);
+    peak_band_5_.setIsActiveBand(active_band == parametric_eq::PEAK_BAND_5);
+    high_shelf_controls_.setIsActiveBand(active_band == parametric_eq::HIGH_SHELF);
+    high_cut_controls_.setIsActiveBand(active_band == parametric_eq::HIGH_CUT);
 }
 
 /*---------------------------------------------------------------------------

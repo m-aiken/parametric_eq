@@ -35,10 +35,10 @@ private:
     juce::dsp::FFT                        fft_;
     juce::dsp::WindowingFunction< float > windowing_func_;
     juce::AudioBuffer< float >            fft_input_buffer_;
-    ParametricEq::FFT::OutputBuffer       fft_output_buffer_;
+    parametric_eq::fft::OutputBuffer      fft_output_buffer_;
 
     // Smoothed FFT output.
-    ParametricEq::FFT::OutputBuffer smoothed_fft_output_;
+    parametric_eq::fft::OutputBuffer smoothed_fft_output_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphWaveform)
 };

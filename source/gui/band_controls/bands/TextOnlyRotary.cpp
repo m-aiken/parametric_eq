@@ -40,7 +40,7 @@ void
 TextOnlyRotary::setEnablement(const bool enable)
 {
     setEnabled(enable);
-    setAlpha(enable ? ParametricEq::Theme::ENABLED_ALPHA : ParametricEq::Theme::DISABLED_ALPHA);
+    setAlpha(enable ? parametric_eq::theme::ENABLED_ALPHA : parametric_eq::theme::DISABLED_ALPHA);
 }
 
 /*---------------------------------------------------------------------------

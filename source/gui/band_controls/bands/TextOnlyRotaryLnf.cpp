@@ -41,7 +41,7 @@ TextOnlyRotaryLnf::getSliderLayout(juce::Slider& slider)
     juce::Slider::SliderLayout layout;
 
     const auto& full_bounds = slider.getLocalBounds();
-    const auto& font_height = static_cast< int >(ParametricEq::Theme::getFont().getHeight());
+    const auto& font_height = static_cast< int >(parametric_eq::theme::getFont().getHeight());
 
     layout.sliderBounds  = full_bounds;
     layout.textBoxBounds = full_bounds.withSizeKeepingCentre(full_bounds.getWidth(), font_height);

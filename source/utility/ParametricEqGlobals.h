@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-namespace ParametricEq
+namespace parametric_eq
 {
 
 inline constexpr float MIN_HZ = 20.f;
@@ -288,7 +288,7 @@ removeListenerFromAllParameters(juce::AudioProcessorValueTreeState&           ap
     }
 }
 
-namespace FFT
+namespace fft
 {
 
     enum {
@@ -314,6 +314,6 @@ namespace FFT
         return sample_rate / static_cast< double >(SIZE);
     }
 
-}  // namespace FFT
+}  // namespace fft
 
-}  // namespace ParametricEq
+}  // namespace parametric_eq

@@ -6,7 +6,7 @@
 */
 Graph::Graph(ParametricEqProcessor& processor_ref)
     : background_(processor_ref)
-    , waveform_(processor_ref, ParametricEq::Theme::ANALYSER_WAVEFORM)
+    , waveform_(processor_ref, parametric_eq::theme::ANALYSER_WAVEFORM)
     , control_layer_(processor_ref)
 {
     addAndMakeVisible(background_);
@@ -31,7 +31,7 @@ Graph::resized()
 **
 */
 void
-Graph::setActiveBand(const ParametricEq::FILTER_ID& active_band) const
+Graph::setActiveBand(const parametric_eq::FILTER_ID& active_band) const
 {
     control_layer_.setActiveBand(active_band);
 }

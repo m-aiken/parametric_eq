@@ -10,7 +10,7 @@ const juce::Colour GREEN     = { 96u, 162u, 107u };
 /*---------------------------------------------------------------------------
 **
 */
-namespace ParametricEq::Theme
+namespace parametric_eq::theme
 {
 
 const juce::Colour MAIN_BACKGROUND        = DARK_GREY;
@@ -48,7 +48,7 @@ getFont()
     return juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 10.f, juce::Font::plain);
 }
 
-}  // namespace ParametricEq::Theme
+}  // namespace parametric_eq::theme
 
 /*---------------------------------------------------------------------------
 ** End of File

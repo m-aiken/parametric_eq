@@ -5,9 +5,9 @@
 /*---------------------------------------------------------------------------
 **
 */
-EqBandWidget::EqBandWidget(ParametricEqProcessor&         processor_ref,
-                           const ParametricEq::FILTER_ID& filter_id,
-                           const BAND_TYPE&               band_type)
+EqBandWidget::EqBandWidget(ParametricEqProcessor&          processor_ref,
+                           const parametric_eq::FILTER_ID& filter_id,
+                           const BAND_TYPE&                band_type)
     : processor_ref_(processor_ref)
     , filter_id_(filter_id)
     , is_active_band_(false)
@@ -15,7 +15,7 @@ EqBandWidget::EqBandWidget(ParametricEqProcessor&         processor_ref,
 {
     addAndMakeVisible(band_enablement_button_);
 
-    const auto& parameters_ids = ParametricEq::PARAMETER_MAP.at(filter_id);
+    const auto& parameters_ids = parametric_eq::PARAMETER_MAP.at(filter_id);
 
     juce::String slider_1_parameter_id;
     juce::String slider_2_parameter_id;
@@ -68,7 +68,7 @@ EqBandWidget::EqBandWidget(ParametricEqProcessor&         processor_ref,
 
     setEnablement();
 
-    apvts.addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    apvts.addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ EqBandWidget::EqBandWidget(ParametricEqProcessor&         processor_ref,
 */
 EqBandWidget::~EqBandWidget()
 {
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -87,14 +87,14 @@ EqBandWidget::paint(juce::Graphics& g)
 {
     if (processor_ref_.pluginIsEnabled()) {
         const bool band_enabled = band_enablement_button_.getToggleState();
-        g.setColour(is_active_band_ && band_enabled ? ParametricEq::Theme::ACTIVE_BAND_BACKGROUND :
-                                                      ParametricEq::Theme::BAND_BACKGROUND);
+        g.setColour(is_active_band_ && band_enabled ? parametric_eq::theme::ACTIVE_BAND_BACKGROUND :
+                                                      parametric_eq::theme::BAND_BACKGROUND);
     }
     else {
-        g.setColour(ParametricEq::Theme::PLUGIN_DISABLED_BAND_BACKGROUND);
+        g.setColour(parametric_eq::theme::PLUGIN_DISABLED_BAND_BACKGROUND);
     }
 
-    g.fillRoundedRectangle(getLocalBounds().toFloat(), ParametricEq::Theme::BORDER_RADIUS);
+    g.fillRoundedRectangle(getLocalBounds().toFloat(), parametric_eq::theme::BORDER_RADIUS);
 }
 
 /*---------------------------------------------------------------------------
@@ -142,7 +142,7 @@ EqBandWidget::parameterChanged(const juce::String& parameter_id, float new_value
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         setEnablement();
         repaint();
     }

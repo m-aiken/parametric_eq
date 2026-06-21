@@ -14,7 +14,7 @@ GraphBackground::GraphBackground(ParametricEqProcessor& processor_ref)
 {
     setBufferedToImage(true);
 
-    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -22,7 +22,7 @@ GraphBackground::GraphBackground(ParametricEqProcessor& processor_ref)
 */
 GraphBackground::~GraphBackground()
 {
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -36,30 +36,33 @@ GraphBackground::paint(juce::Graphics& g)
     const auto& full_height_f = bounds_f.getHeight();
 
     // dB grid lines.
-    for (auto i = static_cast< int >(ParametricEq::MIN_DB); i <= static_cast< int >(ParametricEq::MAX_DB); ++i) {
-        const auto y =
-            juce::jmap< float >(static_cast< float >(i), ParametricEq::MIN_DB, ParametricEq::MAX_DB, full_height_f, 0.f);
+    for (auto i = static_cast< int >(parametric_eq::MIN_DB); i <= static_cast< int >(parametric_eq::MAX_DB); ++i) {
+        const auto y = juce::jmap< float >(static_cast< float >(i),
+                                           parametric_eq::MIN_DB,
+                                           parametric_eq::MAX_DB,
+                                           full_height_f,
+                                           0.f);
 
-        g.setColour(ParametricEq::Theme::ANALYSER_GRID.withAlpha(getAlphaForDb(i)));
+        g.setColour(parametric_eq::theme::ANALYSER_GRID.withAlpha(getAlphaForDb(i)));
         g.drawLine(2, y, full_width_f - 2, y, 1.f);
     }
 
     // Hz grid lines.
-    for (auto i = static_cast< int >(ParametricEq::MIN_HZ) + 1; i < static_cast< int >(ParametricEq::MAX_HZ) - 1; ++i) {
+    for (auto i = static_cast< int >(parametric_eq::MIN_HZ) + 1; i < static_cast< int >(parametric_eq::MAX_HZ) - 1; ++i) {
         if (shouldDrawFrequency(i)) {
             const auto raw_x   = juce::mapFromLog10< float >(static_cast< float >(i),
-                                                           ParametricEq::MIN_HZ,
-                                                           ParametricEq::MAX_HZ);
+                                                           parametric_eq::MIN_HZ,
+                                                           parametric_eq::MAX_HZ);
             const auto x_coord = static_cast< int >(full_width_f * raw_x);
 
-            g.setColour(ParametricEq::Theme::ANALYSER_GRID.withAlpha(getAlphaForFrequency(i)));
+            g.setColour(parametric_eq::theme::ANALYSER_GRID.withAlpha(getAlphaForFrequency(i)));
             g.drawVerticalLine(x_coord, 0.f, full_height_f);
         }
     }
 
-    g.setFont(ParametricEq::Theme::getFont());
-    g.setColour(processor_ref_.pluginIsEnabled() ? ParametricEq::Theme::ANALYSER_TEXT :
-                                                   ParametricEq::Theme::PLUGIN_DISABLED_ANALYSER_TEXT);
+    g.setFont(parametric_eq::theme::getFont());
+    g.setColour(processor_ref_.pluginIsEnabled() ? parametric_eq::theme::ANALYSER_TEXT :
+                                                   parametric_eq::theme::PLUGIN_DISABLED_ANALYSER_TEXT);
 
     // dB labels.
     drawDbLabels(g);
@@ -76,7 +79,7 @@ GraphBackground::parameterChanged(const juce::String& parameter_id, float new_va
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         repaint();
     }
 }
@@ -90,21 +93,21 @@ GraphBackground::drawDbLabels(const juce::Graphics& g) const
     const auto& text_height   = static_cast< int >(g.getCurrentFont().getHeight());
     const auto& bounds_height = getLocalBounds().getHeight();
 
-    for (auto i = static_cast< int >(ParametricEq::MIN_DB) + 3; i <= static_cast< int >(ParametricEq::MAX_DB) - 3; ++i) {
+    for (auto i = static_cast< int >(parametric_eq::MIN_DB) + 3; i <= static_cast< int >(parametric_eq::MAX_DB) - 3; ++i) {
         if (i % DB_LABEL_INTERVAL != 0) {
             continue;
         }
 
         const auto raw_y     = juce::jmap< int >(i,
-                                             static_cast< int >(ParametricEq::MIN_DB),
-                                             static_cast< int >(ParametricEq::MAX_DB),
+                                             static_cast< int >(parametric_eq::MIN_DB),
+                                             static_cast< int >(parametric_eq::MAX_DB),
                                              bounds_height,
                                              0);
-        const auto shifted_y = raw_y - text_height - ParametricEq::Theme::UI_PADDING;
+        const auto shifted_y = raw_y - text_height - parametric_eq::theme::UI_PADDING;
         const auto text      = (i > 0 ? "+" : "") + juce::String(i) + " dB";
 
         g.drawFittedText(text,
-                         ParametricEq::Theme::UI_PADDING,
+                         parametric_eq::theme::UI_PADDING,
                          shifted_y,
                          TEXT_WIDTH,
                          text_height,
@@ -119,14 +122,14 @@ GraphBackground::drawDbLabels(const juce::Graphics& g) const
 void
 GraphBackground::drawFrequencyLabels(const juce::Graphics& g) const
 {
-    const auto& text_height  = static_cast< int >(ParametricEq::Theme::getFont().getHeight());
-    const auto& bounds_y     = ParametricEq::Theme::UI_PADDING;
+    const auto& text_height  = static_cast< int >(parametric_eq::theme::getFont().getHeight());
+    const auto& bounds_y     = parametric_eq::theme::UI_PADDING;
     const auto& bounds_width = getLocalBounds().toFloat().getWidth();
 
     for (size_t i = 1; i < HZ_LIST.size() - 1; ++i) {
         auto       hz        = HZ_LIST.at(i);
-        const auto raw_x     = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
-        const auto shifted_x = static_cast< int >(bounds_width * raw_x) + ParametricEq::Theme::UI_PADDING;
+        const auto raw_x     = juce::mapFromLog10< float >(hz, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
+        const auto shifted_x = static_cast< int >(bounds_width * raw_x) + parametric_eq::theme::UI_PADDING;
 
         juce::String suffix = " Hz";
 

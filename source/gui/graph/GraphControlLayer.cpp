@@ -16,8 +16,8 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     auto& apvts = processor_ref_.getApvts();
 
     for (size_t i = 0; i < nodes_.size(); ++i) {
-        const auto& filter_id       = static_cast< ParametricEq::FILTER_ID >(i);
-        const auto& band_parameters = ParametricEq::PARAMETER_MAP.at(filter_id);
+        const auto& filter_id       = static_cast< parametric_eq::FILTER_ID >(i);
+        const auto& band_parameters = parametric_eq::PARAMETER_MAP.at(filter_id);
 
         nodes_.at(i) = std::make_unique< GraphNode >(processor_ref_, band_parameters.enabled_);
 
@@ -28,12 +28,12 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
 
         // Map the y coordinate to the band gain except for the cut filters.
         // Up/down drag on the cut filters currently does nothing.
-        if (filter_id != ParametricEq::LOW_CUT && filter_id != ParametricEq::HIGH_CUT) {
+        if (filter_id != parametric_eq::LOW_CUT && filter_id != parametric_eq::HIGH_CUT) {
             y_values_.at(i).referTo(apvts.getParameterAsValue(band_parameters.gain_));
         }
     }
 
-    ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
+    parametric_eq::addListenerToAllParameters(processor_ref_.getApvts(), this);
     resetUpdateFlags(true);
     startTimerHz(60);
 }
@@ -44,7 +44,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
 GraphControlLayer::~GraphControlLayer()
 {
     stopTimer();
-    ParametricEq::removeListenerFromAllParameters(processor_ref_.getApvts(), this);
+    parametric_eq::removeListenerFromAllParameters(processor_ref_.getApvts(), this);
 }
 
 /*---------------------------------------------------------------------------
@@ -66,8 +66,8 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
-    g.setColour(plugin_enabled ? ParametricEq::Theme::RESPONSE_CURVE_FILL :
-                                 ParametricEq::Theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL);
+    g.setColour(plugin_enabled ? parametric_eq::theme::RESPONSE_CURVE_FILL :
+                                 parametric_eq::theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL);
 
     for (size_t band_index = 0; band_index < paths_.size() - 1; ++band_index) {
         auto&       path = paths_.at(band_index);
@@ -102,8 +102,8 @@ GraphControlLayer::paint(juce::Graphics& g)
         final_path.lineTo(x, y);
     }
 
-    g.setColour(plugin_enabled ? ParametricEq::Theme::RESPONSE_CURVE_AVG :
-                                 ParametricEq::Theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG);
+    g.setColour(plugin_enabled ? parametric_eq::theme::RESPONSE_CURVE_AVG :
+                                 parametric_eq::theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG);
     g.strokePath(final_path, juce::PathStrokeType(1.f));
 
     // Draw the nodes.
@@ -121,11 +121,11 @@ GraphControlLayer::paint(juce::Graphics& g)
         // x coordinate = correct frequency.
         // y coordinate = correct magnitude.
 
-        const auto& filter_id = static_cast< ParametricEq::FILTER_ID >(i);
+        const auto& filter_id = static_cast< parametric_eq::FILTER_ID >(i);
         const int   node_x    = getNodeXCoordinate(filter_id, bounds_width);
         double      magnitude = 0.0;
 
-        if (filter_id != ParametricEq::LOW_CUT && filter_id != ParametricEq::HIGH_CUT) {
+        if (filter_id != parametric_eq::LOW_CUT && filter_id != parametric_eq::HIGH_CUT) {
             const auto mag_it = static_cast< size_t >(node_x) - static_cast< size_t >(bounds_x);
             magnitude         = magnitudes_.at(i).at(mag_it);
         }
@@ -137,7 +137,7 @@ GraphControlLayer::paint(juce::Graphics& g)
     }
 
     // Vertical lines on both ends of the container to hide the edge of the response curve.
-    g.setColour(ParametricEq::Theme::MAIN_BACKGROUND);
+    g.setColour(parametric_eq::theme::MAIN_BACKGROUND);
     constexpr auto line_thickness = 3.f;
 
     g.drawLine(0.f, 0.f, 0.f, bounds.getBottom(), line_thickness);
@@ -211,14 +211,14 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
 
     // Update the frequency and gain parameters for the node being dragged.
     const auto hz = mapToLog10< float >(static_cast< float >(x) / static_cast< float >(bounds_width),
-                                        ParametricEq::MIN_HZ,
-                                        ParametricEq::MAX_HZ);
+                                        parametric_eq::MIN_HZ,
+                                        parametric_eq::MAX_HZ);
 
     const auto db = juce::jmap< float >(static_cast< float >(y),
                                         0.f,
                                         static_cast< float >(bounds_height),
-                                        ParametricEq::MAX_DB,
-                                        ParametricEq::MIN_DB);
+                                        parametric_eq::MAX_DB,
+                                        parametric_eq::MIN_DB);
 
     x_values_.at(latched_node_index_) = hz;
     y_values_.at(latched_node_index_) = db;
@@ -244,22 +244,22 @@ GraphControlLayer::parameterChanged(const juce::String& parameter_id, float new_
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         plugin_enablement_changed_.set(true);
         return;
     }
 
-    for (auto i = 0; i < ParametricEq::NUM_FILTERS; ++i) {
-        const auto filter_id                                 = static_cast< ParametricEq::FILTER_ID >(i);
-        const auto [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
+    for (auto i = 0; i < parametric_eq::NUM_FILTERS; ++i) {
+        const auto filter_id                                 = static_cast< parametric_eq::FILTER_ID >(i);
+        const auto [enabled_, frequency_, gain_, q_, slope_] = parametric_eq::PARAMETER_MAP.at(filter_id);
 
         bool is_match = false;
 
-        is_match |= (enabled_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == enabled_);
-        is_match |= (frequency_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == frequency_);
-        is_match |= (gain_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == gain_);
-        is_match |= (q_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == q_);
-        is_match |= (slope_ != ParametricEq::PARAMETER_NOT_SUPPORTED && parameter_id == slope_);
+        is_match |= (enabled_ != parametric_eq::PARAMETER_NOT_SUPPORTED && parameter_id == enabled_);
+        is_match |= (frequency_ != parametric_eq::PARAMETER_NOT_SUPPORTED && parameter_id == frequency_);
+        is_match |= (gain_ != parametric_eq::PARAMETER_NOT_SUPPORTED && parameter_id == gain_);
+        is_match |= (q_ != parametric_eq::PARAMETER_NOT_SUPPORTED && parameter_id == q_);
+        is_match |= (slope_ != parametric_eq::PARAMETER_NOT_SUPPORTED && parameter_id == slope_);
 
         if (is_match) {
             update_flags_.at(filter_id).set(true);
@@ -286,7 +286,7 @@ GraphControlLayer::timerCallback()
 
         for (size_t i = 0; i < update_flags_.size(); ++i) {
             if (update_flags_.at(i).get()) {
-                calculateFilterMagnitudeResponse(static_cast< ParametricEq::FILTER_ID >(i));
+                calculateFilterMagnitudeResponse(static_cast< parametric_eq::FILTER_ID >(i));
             }
         }
 
@@ -304,7 +304,7 @@ GraphControlLayer::timerCallback()
 **
 */
 void
-GraphControlLayer::setActiveBand(const ParametricEq::FILTER_ID& active_band) const
+GraphControlLayer::setActiveBand(const parametric_eq::FILTER_ID& active_band) const
 {
     for (size_t i = 0; i < nodes_.size(); ++i) {
         nodes_.at(i)->setIsActiveBand(static_cast< size_t >(active_band) == i);
@@ -324,9 +324,9 @@ GraphControlLayer::updateFilterChain()
 **
 */
 void
-GraphControlLayer::calculateFilterMagnitudeResponse(const ParametricEq::FILTER_ID& filter_id)
+GraphControlLayer::calculateFilterMagnitudeResponse(const parametric_eq::FILTER_ID& filter_id)
 {
-    using namespace ParametricEq;
+    using namespace parametric_eq;
 
     const auto filter_id_t = static_cast< size_t >(filter_id);
     auto&      filter_mags = magnitudes_.at(filter_id_t);
@@ -395,7 +395,7 @@ GraphControlLayer::calculateTotalMagnitudeResponse()
     for (size_t px = 0; px < bounds_width; ++px) {
         double mag_all = 1.0;
 
-        for (size_t filter = 0; filter < static_cast< size_t >(ParametricEq::NUM_FILTERS); ++filter) {
+        for (size_t filter = 0; filter < static_cast< size_t >(parametric_eq::NUM_FILTERS); ++filter) {
             mag_all *= juce::Decibels::decibelsToGain(magnitudes_.at(filter).at(px));
         }
 
@@ -409,7 +409,7 @@ GraphControlLayer::calculateTotalMagnitudeResponse()
 /*static*/ double
 GraphControlLayer::getHzFromPx(const int px, const int max_px)
 {
-    return juce::mapToLog10< double >(static_cast< double >(px) / max_px, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
+    return juce::mapToLog10< double >(static_cast< double >(px) / max_px, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
 }
 
 /*---------------------------------------------------------------------------
@@ -419,8 +419,8 @@ GraphControlLayer::getHzFromPx(const int px, const int max_px)
 GraphControlLayer::getPathYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom)
 {
     return juce::jmap< float >(static_cast< float >(magnitude),
-                               ParametricEq::MIN_DB,
-                               ParametricEq::MAX_DB,
+                               parametric_eq::MIN_DB,
+                               parametric_eq::MAX_DB,
                                bounds_bottom,
                                bounds_top);
 }
@@ -440,10 +440,10 @@ GraphControlLayer::getNodeYCoordinate(const double magnitude, const float bounds
 **
 */
 int
-GraphControlLayer::getNodeXCoordinate(const ParametricEq::FILTER_ID& filter_id, const float bounds_width) const
+GraphControlLayer::getNodeXCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_width) const
 {
     const auto hz      = processor_ref_.getFilterFrequency(filter_id);
-    const auto norm_hz = juce::mapFromLog10< float >(hz, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
+    const auto norm_hz = juce::mapFromLog10< float >(hz, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
     const auto x       = static_cast< int >(std::round(bounds_width * norm_hz));  //! Round, don't truncate!
 
     // Clamp the value to keep the node within the graph bounds.
@@ -467,7 +467,7 @@ GraphControlLayer::resetUpdateFlags(const bool should_update)
 void
 GraphControlLayer::initialiseCoefficientsRefs()
 {
-    using namespace ParametricEq;
+    using namespace parametric_eq;
 
     lcut_coefficients_[SLOPE_12_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_12_DBPO >().coefficients;
     lcut_coefficients_[SLOPE_24_DBPO] = filter_chain_.get< LOW_CUT >().get< SLOPE_24_DBPO >().coefficients;

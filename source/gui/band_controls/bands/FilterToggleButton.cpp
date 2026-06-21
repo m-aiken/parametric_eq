@@ -5,13 +5,13 @@
 /*---------------------------------------------------------------------------
 **
 */
-FilterToggleButton::FilterToggleButton(ParametricEqProcessor& processor_ref, const ParametricEq::FILTER_ID& filter_id)
+FilterToggleButton::FilterToggleButton(ParametricEqProcessor& processor_ref, const parametric_eq::FILTER_ID& filter_id)
     : processor_ref_(processor_ref)
     , filter_id_(filter_id)
-    , button_attachment_(processor_ref.getApvts(), ParametricEq::PARAMETER_MAP.at(filter_id).enabled_, *this)
-    , background_colour_(ParametricEq::Theme::TEXT_BUTTON_BG_STD)
+    , button_attachment_(processor_ref.getApvts(), parametric_eq::PARAMETER_MAP.at(filter_id).enabled_, *this)
+    , background_colour_(parametric_eq::theme::TEXT_BUTTON_BG_STD)
 {
-    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
     setEnablement();
 }
 
@@ -20,7 +20,7 @@ FilterToggleButton::FilterToggleButton(ParametricEqProcessor& processor_ref, con
 */
 FilterToggleButton::~FilterToggleButton()
 {
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -43,14 +43,14 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
 
     // Background.
     g.setColour(background_colour_);
-    g.fillRoundedRectangle(bounds, ParametricEq::Theme::BORDER_RADIUS);
+    g.fillRoundedRectangle(bounds, parametric_eq::theme::BORDER_RADIUS);
 
     // Icon.
-    g.setColour(processor_ref_.pluginIsEnabled() && getToggleState() ? ParametricEq::Theme::TEXT :
-                                                                       ParametricEq::Theme::TEXT_DISABLED);
+    g.setColour(processor_ref_.pluginIsEnabled() && getToggleState() ? parametric_eq::theme::TEXT :
+                                                                       parametric_eq::theme::TEXT_DISABLED);
 
     switch (filter_id_) {
-    case ParametricEq::LOW_CUT:
+    case parametric_eq::LOW_CUT:
     {
         const auto knee = (icon_width * 0.33f);
 
@@ -67,7 +67,7 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
         break;
     }
 
-    case ParametricEq::LOW_SHELF:
+    case parametric_eq::LOW_SHELF:
     {
         const auto knee_1 = (icon_width * 0.45f);
         const auto knee_2 = (icon_width * 0.65f);
@@ -103,11 +103,11 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
         break;
     }
 
-    case ParametricEq::PEAK_BAND_1:
-    case ParametricEq::PEAK_BAND_2:
-    case ParametricEq::PEAK_BAND_3:
-    case ParametricEq::PEAK_BAND_4:
-    case ParametricEq::PEAK_BAND_5:
+    case parametric_eq::PEAK_BAND_1:
+    case parametric_eq::PEAK_BAND_2:
+    case parametric_eq::PEAK_BAND_3:
+    case parametric_eq::PEAK_BAND_4:
+    case parametric_eq::PEAK_BAND_5:
     {
         const auto knee_1 = (icon_width * 0.25f);
         const auto knee_2 = (icon_width * 0.40f);
@@ -153,7 +153,7 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
         break;
     }
 
-    case ParametricEq::HIGH_SHELF:
+    case parametric_eq::HIGH_SHELF:
     {
         const auto knee_1 = (icon_width * 0.35f);
         const auto knee_2 = (icon_width * 0.55f);
@@ -189,7 +189,7 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
         break;
     }
 
-    case ParametricEq::HIGH_CUT:
+    case parametric_eq::HIGH_CUT:
     {
         const auto knee = (icon_width * 0.66f);
 
@@ -206,7 +206,7 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
         break;
     }
 
-    case ParametricEq::NULL_BAND:
+    case parametric_eq::NULL_BAND:
     default:
         break;
     }
@@ -224,7 +224,7 @@ FilterToggleButton::mouseEnter(const juce::MouseEvent& event)
         return;
     }
 
-    background_colour_ = ParametricEq::Theme::TEXT_BUTTON_BG_HOVER;
+    background_colour_ = parametric_eq::theme::TEXT_BUTTON_BG_HOVER;
     repaint();
 }
 
@@ -236,7 +236,7 @@ FilterToggleButton::mouseExit(const MouseEvent& event)
 {
     juce::ToggleButton::mouseExit(event);
 
-    background_colour_ = ParametricEq::Theme::TEXT_BUTTON_BG_STD;
+    background_colour_ = parametric_eq::theme::TEXT_BUTTON_BG_STD;
     repaint();
 }
 
@@ -248,7 +248,7 @@ FilterToggleButton::parameterChanged(const juce::String& parameter_id, float new
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         setEnablement();
         repaint();
     }

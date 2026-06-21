@@ -46,13 +46,13 @@ public:
 
     FftInputDataFifo& getFftFifo();
 
-    bool  getFilterEnabled(const ParametricEq::FILTER_ID& filter_id) const;
-    float getFilterFrequency(const ParametricEq::FILTER_ID& filter_id) const;
-    float getFilterGain(const ParametricEq::FILTER_ID& filter_id) const;
-    float getFilterQ(const ParametricEq::FILTER_ID& filter_id) const;
-    int   getFilterOrder(const ParametricEq::FILTER_ID& filter_id) const;
+    bool  getFilterEnabled(const parametric_eq::FILTER_ID& filter_id) const;
+    float getFilterFrequency(const parametric_eq::FILTER_ID& filter_id) const;
+    float getFilterGain(const parametric_eq::FILTER_ID& filter_id) const;
+    float getFilterQ(const parametric_eq::FILTER_ID& filter_id) const;
+    int   getFilterOrder(const parametric_eq::FILTER_ID& filter_id) const;
 
-    void updateFilterChain(ParametricEq::FilterChain& filter_chain) const;
+    void updateFilterChain(parametric_eq::FilterChain& filter_chain) const;
 
     bool pluginIsEnabled() const;
     bool showWaveform() const;
@@ -64,7 +64,7 @@ private:
     FilterFactory                      filter_factory_;
 
     // vector of filter chains; one per channel.
-    std::vector< ParametricEq::FilterChain > filter_chains_;
+    std::vector< parametric_eq::FilterChain > filter_chains_;
 
     FftInputDataFifo fft_fifo_;
 

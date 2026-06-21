@@ -11,11 +11,11 @@ class FilterFactory
 public:
     explicit FilterFactory(ParametricEqProcessor& processor_ref);
 
-    void updateCutCoefficients(ParametricEq::FilterChain& filter_chain, const ParametricEq::FILTER_ID& filter_id) const;
-    void updateLowShelfCoefficients(ParametricEq::FilterChain& filter_chain) const;
-    void updateHighShelfCoefficients(ParametricEq::FilterChain& filter_chain) const;
-    void updatePeakCoefficients(ParametricEq::FilterChain& filter_chain, const ParametricEq::FILTER_ID& filter_id) const;
-    void updateBandEnablements(ParametricEq::FilterChain& filter_chain) const;
+    void updateCutCoefficients(parametric_eq::FilterChain& filters, const parametric_eq::FILTER_ID& filter_id) const;
+    void updateLowShelfCoefficients(parametric_eq::FilterChain& filters) const;
+    void updateHighShelfCoefficients(parametric_eq::FilterChain& filters) const;
+    void updatePeakCoefficients(parametric_eq::FilterChain& filters, const parametric_eq::FILTER_ID& filter_id) const;
+    void updateBandEnablements(parametric_eq::FilterChain& filters) const;
 
 private:
     ParametricEqProcessor& processor_ref_;

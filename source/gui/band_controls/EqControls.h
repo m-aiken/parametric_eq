@@ -11,7 +11,7 @@ public:
 
     void resized() override;
 
-    void setActiveBand(const ParametricEq::FILTER_ID& active_band);
+    void setActiveBand(const parametric_eq::FILTER_ID& active_band);
 
 private:
     EqBandWidget low_cut_controls_;

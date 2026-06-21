@@ -10,7 +10,7 @@ GraphNode::GraphNode(ParametricEqProcessor& processor_ref, const juce::String& b
     , coordinates_(0, 0)
     , is_active_band_(false)
 {
-    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
     setEnablement();
 }
 
@@ -19,7 +19,7 @@ GraphNode::GraphNode(ParametricEqProcessor& processor_ref, const juce::String& b
 */
 GraphNode::~GraphNode()
 {
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -33,10 +33,10 @@ GraphNode::paint(juce::Graphics& g)
     const bool  band_enabled   = getToggleState();
 
     if (plugin_enabled) {
-        g.setColour(band_enabled ? ParametricEq::Theme::NODE_ON : ParametricEq::Theme::NODE_OFF);
+        g.setColour(band_enabled ? parametric_eq::theme::NODE_ON : parametric_eq::theme::NODE_OFF);
     }
     else {
-        g.setColour(ParametricEq::Theme::PLUGIN_DISABLED_NODE);
+        g.setColour(parametric_eq::theme::PLUGIN_DISABLED_NODE);
     }
 
     // Always draw the centre circle.
@@ -59,7 +59,7 @@ GraphNode::parameterChanged(const juce::String& parameter_id, float new_value)
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         setEnablement();
         repaint();
     }

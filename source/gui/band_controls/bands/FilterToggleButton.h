@@ -10,7 +10,7 @@ class FilterToggleButton final
     , public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    FilterToggleButton(ParametricEqProcessor& processor_ref, const ParametricEq::FILTER_ID& filter_id);
+    FilterToggleButton(ParametricEqProcessor& processor_ref, const parametric_eq::FILTER_ID& filter_id);
     ~FilterToggleButton() override;
 
     void paintButton(juce::Graphics& g, bool should_draw_button_as_highlighted, bool should_draw_button_as_down) override;
@@ -22,7 +22,7 @@ private:
     void setEnablement();
 
     ParametricEqProcessor&                               processor_ref_;
-    const ParametricEq::FILTER_ID                        filter_id_;
+    const parametric_eq::FILTER_ID                       filter_id_;
     juce::AudioProcessorValueTreeState::ButtonAttachment button_attachment_;
 
     juce::Colour background_colour_;

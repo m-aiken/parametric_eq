@@ -7,9 +7,9 @@
 */
 WaveformButton::WaveformButton(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
-    , button_attachment_(processor_ref.getApvts(), ParametricEq::SHOW_WAVEFORM_PARAMETER, *this)
+    , button_attachment_(processor_ref.getApvts(), parametric_eq::SHOW_WAVEFORM_PARAMETER, *this)
 {
-    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
     setBufferedToImage(true);
     setEnablement();
 }
@@ -19,7 +19,7 @@ WaveformButton::WaveformButton(ParametricEqProcessor& processor_ref)
 */
 WaveformButton::~WaveformButton()
 {
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -56,8 +56,8 @@ WaveformButton::paintButton(juce::Graphics& g, bool should_draw_button_as_highli
     path.lineTo(p3);
     path.lineTo(p4);
 
-    g.setColour(show_waveform && plugin_enabled ? ParametricEq::Theme::WAVEFORM_BUTTON_ON :
-                                                  ParametricEq::Theme::WAVEFORM_BUTTON_OFF);
+    g.setColour(show_waveform && plugin_enabled ? parametric_eq::theme::WAVEFORM_BUTTON_ON :
+                                                  parametric_eq::theme::WAVEFORM_BUTTON_OFF);
 
     g.strokePath(path.createPathWithRoundedCorners(corner_radius), juce::PathStrokeType(ICON_LINE_THICKNESS));
 }
@@ -70,7 +70,7 @@ WaveformButton::parameterChanged(const juce::String& parameter_id, float new_val
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         setEnablement();
         repaint();
     }

@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-namespace ParametricEq::Theme
+namespace parametric_eq::theme
 {
 
 extern const juce::Colour MAIN_BACKGROUND;
@@ -38,4 +38,4 @@ inline constexpr float BORDER_RADIUS  = 4.f;
 
 extern juce::Font getFont();
 
-}  // namespace ParametricEq::Theme
+}  // namespace parametric_eq::theme

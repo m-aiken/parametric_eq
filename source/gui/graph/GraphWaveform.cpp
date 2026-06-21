@@ -7,20 +7,20 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
     : processor_ref_(processor_ref)
     , colour_(colour)
     , fft_input_data_fifo_(processor_ref.getFftFifo())
-    , fft_(ParametricEq::FFT::ORDER)
-    , windowing_func_(ParametricEq::FFT::SIZE, juce::dsp::WindowingFunction< float >::blackmanHarris)
+    , fft_(parametric_eq::fft::ORDER)
+    , windowing_func_(parametric_eq::fft::SIZE, juce::dsp::WindowingFunction< float >::blackmanHarris)
     , fft_output_buffer_()
     , smoothed_fft_output_()
 {
-    fft_input_buffer_.setSize(1, ParametricEq::FFT::INPUT_BUFFER_SIZE);
-    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), ParametricEq::FFT::MIN_DB);
-    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), ParametricEq::FFT::MIN_DB);
+    fft_input_buffer_.setSize(1, parametric_eq::fft::INPUT_BUFFER_SIZE);
+    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), parametric_eq::fft::MIN_DB);
+    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), parametric_eq::fft::MIN_DB);
 
-    processor_ref_.getApvts().addParameterListener(ParametricEq::SHOW_WAVEFORM_PARAMETER, this);
-    processor_ref_.getApvts().addParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().addParameterListener(parametric_eq::SHOW_WAVEFORM_PARAMETER, this);
+    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 
     if (processor_ref_.showWaveform()) {
-        startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ);
+        startTimerHz(parametric_eq::WAVEFORM_REFRESH_RATE_HZ);
     }
 }
 
@@ -30,8 +30,8 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
 GraphWaveform::~GraphWaveform()
 {
     stopTimer();
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::SHOW_WAVEFORM_PARAMETER, this);
-    processor_ref_.getApvts().removeParameterListener(ParametricEq::PLUGIN_BYPASS_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::SHOW_WAVEFORM_PARAMETER, this);
+    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -56,10 +56,10 @@ GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_valu
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == ParametricEq::SHOW_WAVEFORM_PARAMETER || parameter_id == ParametricEq::PLUGIN_BYPASS_PARAMETER) {
+    if (parameter_id == parametric_eq::SHOW_WAVEFORM_PARAMETER || parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         const bool show_waveform = (processor_ref_.pluginIsEnabled() && processor_ref_.showWaveform());
 
-        show_waveform ? startTimerHz(ParametricEq::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
+        show_waveform ? startTimerHz(parametric_eq::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
     }
 }
 
@@ -84,17 +84,17 @@ void
 GraphWaveform::performFft()
 {
     std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), 0.f);
-    std::copy_n(fft_input_buffer_.getReadPointer(0), ParametricEq::FFT::SIZE, fft_output_buffer_.begin());
+    std::copy_n(fft_input_buffer_.getReadPointer(0), parametric_eq::fft::SIZE, fft_output_buffer_.begin());
 
-    windowing_func_.multiplyWithWindowingTable(fft_output_buffer_.data(), ParametricEq::FFT::SIZE);
+    windowing_func_.multiplyWithWindowingTable(fft_output_buffer_.data(), parametric_eq::fft::SIZE);
     fft_.performFrequencyOnlyForwardTransform(fft_output_buffer_.data(), true);
 
     juce::FloatVectorOperations::multiply(fft_output_buffer_.data(),
-                                          1.f / static_cast< float >(ParametricEq::FFT::NUM_BINS),
-                                          ParametricEq::FFT::NUM_BINS + 1);
+                                          1.f / static_cast< float >(parametric_eq::fft::NUM_BINS),
+                                          parametric_eq::fft::NUM_BINS + 1);
 
-    for (size_t i = 0; i < static_cast< size_t >(ParametricEq::FFT::NUM_BINS + 1); ++i) {
-        fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], ParametricEq::FFT::MIN_DB);
+    for (size_t i = 0; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS + 1); ++i) {
+        fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], parametric_eq::fft::MIN_DB);
     }
 }
 
@@ -104,11 +104,11 @@ GraphWaveform::performFft()
 void
 GraphWaveform::smoothFftOutput()
 {
-    for (size_t i = 0; i < static_cast< size_t >(ParametricEq::FFT::NUM_BINS); ++i) {
+    for (size_t i = 0; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS); ++i) {
         const auto previous_value = smoothed_fft_output_[i];
         const auto candidate      = fft_output_buffer_[i];
-        const auto final_value    = juce::jmax(candidate, previous_value - ParametricEq::WAVEFORM_DECAY_RATE);
-        smoothed_fft_output_[i]   = juce::jlimit(ParametricEq::FFT::MIN_DB, ParametricEq::FFT::MAX_DB, final_value);
+        const auto final_value    = juce::jmax(candidate, previous_value - parametric_eq::WAVEFORM_DECAY_RATE);
+        smoothed_fft_output_[i]   = juce::jlimit(parametric_eq::fft::MIN_DB, parametric_eq::fft::MAX_DB, final_value);
     }
 }
 
@@ -119,7 +119,7 @@ void
 GraphWaveform::generatePath()
 {
     const auto& path_bounds = getLocalBounds().toFloat();
-    const auto  bin_width   = static_cast< float >(ParametricEq::FFT::getBinWidth(processor_ref_.getSampleRate()));
+    const auto  bin_width   = static_cast< float >(parametric_eq::fft::getBinWidth(processor_ref_.getSampleRate()));
 
     const auto bounds_bottom = path_bounds.getBottom();
     const auto bounds_y      = path_bounds.getY();
@@ -133,20 +133,20 @@ GraphWaveform::generatePath()
 
     path.startNewSubPath(last_x_coordinate, y_coordinate);
 
-    for (size_t i = 1; i < static_cast< size_t >(ParametricEq::FFT::NUM_BINS + 1);
-         i += ParametricEq::WAVEFORM_PATH_RESOLUTION) {
+    for (size_t i = 1; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS + 1);
+         i += parametric_eq::WAVEFORM_PATH_RESOLUTION) {
         y_coordinate = juce::jmap< float >(smoothed_fft_output_.at(i),
-                                           ParametricEq::FFT::MIN_DB,
-                                           ParametricEq::FFT::MAX_DB,
+                                           parametric_eq::fft::MIN_DB,
+                                           parametric_eq::fft::MAX_DB,
                                            bounds_bottom,
                                            bounds_y);
 
         if (!std::isnan(y_coordinate) && !std::isinf(y_coordinate)) {
             const auto bin_freq     = static_cast< float >(i) * bin_width;
-            const auto normalized_x = juce::mapFromLog10(bin_freq, ParametricEq::MIN_HZ, ParametricEq::MAX_HZ);
+            const auto normalized_x = juce::mapFromLog10(bin_freq, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
             const auto x_coord      = std::floor(normalized_x * bounds_width);
 
-            if (x_coord - last_x_coordinate >= ParametricEq::WAVEFORM_PATH_RESOLUTION && x_coord <= bounds_width) {
+            if (x_coord - last_x_coordinate >= parametric_eq::WAVEFORM_PATH_RESOLUTION && x_coord <= bounds_width) {
                 path.lineTo(x_coord, y_coordinate);
                 last_x_coordinate = x_coord;
             }

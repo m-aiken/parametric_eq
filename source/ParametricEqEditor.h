@@ -25,7 +25,7 @@ private:
     Graph      graph_;
     EqControls eq_controls_;
 
-    ParametricEq::FILTER_ID queued_active_band_;
+    parametric_eq::FILTER_ID queued_active_band_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqEditor)
 };

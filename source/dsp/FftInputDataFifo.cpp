@@ -6,7 +6,7 @@
 */
 FftInputDataFifo::FftInputDataFifo()
 {
-    fifo_.setSize(1, ParametricEq::FFT::INPUT_BUFFER_SIZE);
+    fifo_.setSize(1, parametric_eq::fft::INPUT_BUFFER_SIZE);
 }
 
 /*---------------------------------------------------------------------------

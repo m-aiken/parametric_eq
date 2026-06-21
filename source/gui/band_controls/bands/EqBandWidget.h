@@ -19,9 +19,9 @@ public:
     };
 
 public:
-    EqBandWidget(ParametricEqProcessor&         processor_ref,
-                 const ParametricEq::FILTER_ID& filter_id,
-                 const BAND_TYPE&               band_type);
+    EqBandWidget(ParametricEqProcessor&          processor_ref,
+                 const parametric_eq::FILTER_ID& filter_id,
+                 const BAND_TYPE&                band_type);
     ~EqBandWidget() override;
 
     void paint(juce::Graphics& g) override;
@@ -33,9 +33,9 @@ public:
 private:
     void setEnablement();
 
-    ParametricEqProcessor&        processor_ref_;
-    const ParametricEq::FILTER_ID filter_id_;
-    bool                          is_active_band_;
+    ParametricEqProcessor&         processor_ref_;
+    const parametric_eq::FILTER_ID filter_id_;
+    bool                           is_active_band_;
 
     FilterToggleButton                band_enablement_button_;
     std::unique_ptr< TextOnlyRotary > slider_1_;

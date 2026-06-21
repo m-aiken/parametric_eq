@@ -13,7 +13,7 @@ public:
 
     void resized() override;
 
-    void setActiveBand(const ParametricEq::FILTER_ID& active_band) const;
+    void setActiveBand(const parametric_eq::FILTER_ID& active_band) const;
 
 private:
     GraphBackground   background_;

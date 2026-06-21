@@ -9,9 +9,9 @@ ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     , processor_ref_(p)
     , graph_(p)
     , eq_controls_(processor_ref_)
-    , queued_active_band_(ParametricEq::NULL_BAND)
+    , queued_active_band_(parametric_eq::NULL_BAND)
 {
-    ParametricEq::addListenerToAllParameters(processor_ref_.getApvts(), this);
+    parametric_eq::addListenerToAllParameters(processor_ref_.getApvts(), this);
 
     addAndMakeVisible(graph_);
     addAndMakeVisible(eq_controls_);
@@ -27,7 +27,7 @@ ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
 ParametricEqEditor::~ParametricEqEditor()
 {
     stopTimer();
-    ParametricEq::removeListenerFromAllParameters(processor_ref_.getApvts(), this);
+    parametric_eq::removeListenerFromAllParameters(processor_ref_.getApvts(), this);
 }
 
 /*---------------------------------------------------------------------------
@@ -36,7 +36,7 @@ ParametricEqEditor::~ParametricEqEditor()
 void
 ParametricEqEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(ParametricEq::Theme::MAIN_BACKGROUND);
+    g.fillAll(parametric_eq::theme::MAIN_BACKGROUND);
 }
 
 /*---------------------------------------------------------------------------
@@ -72,13 +72,13 @@ ParametricEqEditor::parameterChanged(const juce::String& parameter_id, float new
 {
     juce::ignoreUnused(new_value);
 
-    const auto&             apvts       = processor_ref_.getApvts();
-    ParametricEq::FILTER_ID active_band = ParametricEq::NULL_BAND;
+    const auto&              apvts       = processor_ref_.getApvts();
+    parametric_eq::FILTER_ID active_band = parametric_eq::NULL_BAND;
 
-    for (int i = ParametricEq::LOW_CUT; i <= ParametricEq::HIGH_CUT; ++i) {
-        const auto filter_id = static_cast< ParametricEq::FILTER_ID >(i);
+    for (int i = parametric_eq::LOW_CUT; i <= parametric_eq::HIGH_CUT; ++i) {
+        const auto filter_id = static_cast< parametric_eq::FILTER_ID >(i);
 
-        const auto& [enabled_, frequency_, gain_, q_, slope_] = ParametricEq::PARAMETER_MAP.at(filter_id);
+        const auto& [enabled_, frequency_, gain_, q_, slope_] = parametric_eq::PARAMETER_MAP.at(filter_id);
 
         // Enablement button: this band is active if its enablement button was toggled to on/true.
         if (parameter_id == enabled_) {
@@ -110,11 +110,11 @@ ParametricEqEditor::parameterChanged(const juce::String& parameter_id, float new
 void
 ParametricEqEditor::timerCallback()
 {
-    if (queued_active_band_ != ParametricEq::NULL_BAND) {
+    if (queued_active_band_ != parametric_eq::NULL_BAND) {
         graph_.setActiveBand(queued_active_band_);
         eq_controls_.setActiveBand(queued_active_band_);
 
-        queued_active_band_ = ParametricEq::NULL_BAND;
+        queued_active_band_ = parametric_eq::NULL_BAND;
     }
 }
 
