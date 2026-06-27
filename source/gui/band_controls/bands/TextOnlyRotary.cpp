@@ -1,5 +1,5 @@
+#include "ParametricEqTheme.h"
 #include "TextOnlyRotary.h"
-#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **

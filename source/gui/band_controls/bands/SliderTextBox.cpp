@@ -1,5 +1,5 @@
+#include "ParametricEqTheme.h"
 #include "SliderTextBox.h"
-#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **

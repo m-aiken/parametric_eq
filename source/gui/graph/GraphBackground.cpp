@@ -1,6 +1,6 @@
 #include "GraphBackground.h"
 #include "ParametricEqGlobals.h"
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 
 /*static*/ const std::vector< float > GraphBackground::HZ_LIST = {
     20.f, 50.f, 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, 10000.f, 20000.f,

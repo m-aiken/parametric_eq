@@ -1,4 +1,5 @@
 #include "FftInputDataFifo.h"
+#include "ParametricEqFft.h"
 #include "ParametricEqGlobals.h"
 
 /*---------------------------------------------------------------------------

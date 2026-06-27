@@ -1,5 +1,5 @@
 #include "ParametricEqEditor.h"
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 
 /*---------------------------------------------------------------------------
 **

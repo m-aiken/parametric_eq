@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 
 #include "FftInputDataFifo.h"
-#include "ParametricEqGlobals.h"
+#include "ParametricEqFft.h"
 #include "ParametricEqProcessor.h"
 
 class GraphWaveform final

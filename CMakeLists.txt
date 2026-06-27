@@ -40,6 +40,7 @@ set(PROJECT_SOURCES
         PRIVATE
         source/ParametricEqEditor.cpp
         source/ParametricEqProcessor.cpp
+        source/constants/ParametricEqTheme.cpp
         source/dsp/FftInputDataFifo.cpp
         source/dsp/FilterFactory.cpp
         source/gui/band_controls/EqControls.cpp
@@ -48,7 +49,6 @@ set(PROJECT_SOURCES
         source/gui/band_controls/bands/SliderTextBox.cpp
         source/gui/band_controls/bands/TextOnlyRotary.cpp
         source/gui/band_controls/bands/TextOnlyRotaryLnf.cpp
-        source/gui/colour_theme/Theme.cpp
         source/gui/graph/Graph.cpp
         source/gui/graph/GraphBackground.cpp
         source/gui/graph/GraphControlLayer.cpp
@@ -63,6 +63,9 @@ set(PROJECT_HEADERS
         PRIVATE
         source/ParametricEqEditor.h
         source/ParametricEqProcessor.h
+        source/constants/ParametricEqFft.h
+        source/constants/ParametricEqGlobals.h
+        source/constants/ParametricEqTheme.h
         source/dsp/FftInputDataFifo.h
         source/dsp/FilterFactory.h
         source/gui/band_controls/EqControls.h
@@ -71,7 +74,6 @@ set(PROJECT_HEADERS
         source/gui/band_controls/bands/SliderTextBox.h
         source/gui/band_controls/bands/TextOnlyRotary.h
         source/gui/band_controls/bands/TextOnlyRotaryLnf.h
-        source/gui/colour_theme/Theme.h
         source/gui/graph/Graph.h
         source/gui/graph/GraphBackground.h
         source/gui/graph/GraphControlLayer.h
@@ -80,7 +82,6 @@ set(PROJECT_HEADERS
         source/gui/menu_bar/DisableButton.h
         source/gui/menu_bar/MenuBar.h
         source/gui/menu_bar/WaveformButton.h
-        source/utility/ParametricEqGlobals.h
 )
 
 target_sources(${PROJECT_NAME}
@@ -92,14 +93,13 @@ target_sources(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/source
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/constants
         ${CMAKE_CURRENT_SOURCE_DIR}/source/dsp
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/colour_theme
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/graph
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/menu_bar
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/utility
 )
 
 target_compile_definitions(${PROJECT_NAME}

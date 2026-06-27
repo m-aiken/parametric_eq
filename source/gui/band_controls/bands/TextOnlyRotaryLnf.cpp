@@ -1,6 +1,6 @@
+#include "ParametricEqTheme.h"
 #include "SliderTextBox.h"
 #include "TextOnlyRotaryLnf.h"
-#include "Theme.h"
 
 /*---------------------------------------------------------------------------
 **

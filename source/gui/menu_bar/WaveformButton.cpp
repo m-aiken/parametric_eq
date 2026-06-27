@@ -1,5 +1,5 @@
 #include "ParametricEqGlobals.h"
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 #include "WaveformButton.h"
 
 /*---------------------------------------------------------------------------

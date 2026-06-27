@@ -20,7 +20,7 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
     processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 
     if (processor_ref_.showWaveform()) {
-        startTimerHz(parametric_eq::WAVEFORM_REFRESH_RATE_HZ);
+        startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ);
     }
 }
 
@@ -59,7 +59,7 @@ GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_valu
     if (parameter_id == parametric_eq::SHOW_WAVEFORM_PARAMETER || parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
         const bool show_waveform = (processor_ref_.pluginIsEnabled() && processor_ref_.showWaveform());
 
-        show_waveform ? startTimerHz(parametric_eq::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
+        show_waveform ? startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
     }
 }
 
@@ -107,7 +107,7 @@ GraphWaveform::smoothFftOutput()
     for (size_t i = 0; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS); ++i) {
         const auto previous_value = smoothed_fft_output_[i];
         const auto candidate      = fft_output_buffer_[i];
-        const auto final_value    = juce::jmax(candidate, previous_value - parametric_eq::WAVEFORM_DECAY_RATE);
+        const auto final_value    = juce::jmax(candidate, previous_value - parametric_eq::fft::WAVEFORM_DECAY_RATE);
         smoothed_fft_output_[i]   = juce::jlimit(parametric_eq::fft::MIN_DB, parametric_eq::fft::MAX_DB, final_value);
     }
 }
@@ -134,7 +134,7 @@ GraphWaveform::generatePath()
     path.startNewSubPath(last_x_coordinate, y_coordinate);
 
     for (size_t i = 1; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS + 1);
-         i += parametric_eq::WAVEFORM_PATH_RESOLUTION) {
+         i += parametric_eq::fft::WAVEFORM_PATH_RESOLUTION) {
         y_coordinate = juce::jmap< float >(smoothed_fft_output_.at(i),
                                            parametric_eq::fft::MIN_DB,
                                            parametric_eq::fft::MAX_DB,
@@ -146,7 +146,7 @@ GraphWaveform::generatePath()
             const auto normalized_x = juce::mapFromLog10(bin_freq, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
             const auto x_coord      = std::floor(normalized_x * bounds_width);
 
-            if (x_coord - last_x_coordinate >= parametric_eq::WAVEFORM_PATH_RESOLUTION && x_coord <= bounds_width) {
+            if (x_coord - last_x_coordinate >= parametric_eq::fft::WAVEFORM_PATH_RESOLUTION && x_coord <= bounds_width) {
                 path.lineTo(x_coord, y_coordinate);
                 last_x_coordinate = x_coord;
             }

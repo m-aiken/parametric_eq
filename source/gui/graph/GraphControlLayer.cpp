@@ -1,6 +1,6 @@
 #include "GraphControlLayer.h"
 #include "ParametricEqProcessor.h"
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 
 /*---------------------------------------------------------------------------
 **

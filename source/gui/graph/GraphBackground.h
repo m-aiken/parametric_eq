@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 
 #include "ParametricEqProcessor.h"
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 
 class GraphBackground final
     : public juce::Component

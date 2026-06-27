@@ -1,4 +1,4 @@
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 
 const juce::Colour DARK_GREY = { 37u, 33u, 38u };
 const juce::Colour PARCHMENT = { 250u, 244u, 237u };

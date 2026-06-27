@@ -1,5 +1,5 @@
 #include "Graph.h"
-#include "Theme.h"
+#include "ParametricEqTheme.h"
 
 /*---------------------------------------------------------------------------
 **
