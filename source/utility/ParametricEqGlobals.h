@@ -170,27 +170,27 @@ inline constexpr float LOW_CUT_FREQ_MIN        = MIN_HZ;
 inline constexpr float LOW_CUT_FREQ_MAX        = 200.f;
 inline constexpr float LOW_CUT_FREQ_DEFAULT    = 50.f;
 
+inline constexpr bool  LOW_SHELF_ENABLED_DEFAULT = false;
+inline constexpr float LOW_SHELF_FREQ_MIN        = MIN_HZ;
+inline constexpr float LOW_SHELF_FREQ_MAX        = 200.f;
+inline constexpr float LOW_SHELF_FREQ_DEFAULT    = 100.f;
+
 inline constexpr bool  HIGH_CUT_ENABLED_DEFAULT = false;
 inline constexpr float HIGH_CUT_FREQ_MIN        = 5000.f;
 inline constexpr float HIGH_CUT_FREQ_MAX        = MAX_HZ;
 inline constexpr float HIGH_CUT_FREQ_DEFAULT    = 15000.f;
-
-inline constexpr int CUT_FILTER_SLOPE_DEFAULT = SLOPE_48_DBPO;  //! Same for low and high cut.
-
-inline constexpr bool  LOW_SHELF_ENABLED_DEFAULT = false;
-inline constexpr float LOW_SHELF_FREQ_MIN        = MIN_HZ;
-inline constexpr float LOW_SHELF_FREQ_MAX        = 100.f;
-inline constexpr float LOW_SHELF_FREQ_DEFAULT    = 75.f;
 
 inline constexpr bool  HIGH_SHELF_ENABLED_DEFAULT = false;
 inline constexpr float HIGH_SHELF_FREQ_MIN        = 5000.f;
 inline constexpr float HIGH_SHELF_FREQ_MAX        = MAX_HZ;
 inline constexpr float HIGH_SHELF_FREQ_DEFAULT    = 8000.f;
 
-inline const juce::NormalisableRange LOW_CUT_FREQ_NORM_RANGE   = { LOW_CUT_FREQ_MIN, LOW_CUT_FREQ_MAX, 1.f, 0.5f };
-inline const juce::NormalisableRange HIGH_CUT_FREQ_NORM_RANGE  = { HIGH_CUT_FREQ_MIN, HIGH_CUT_FREQ_MAX, 1.f, 0.2f };
-inline const juce::NormalisableRange LOW_SHELF_FREQ_NORM_RANGE = { LOW_SHELF_FREQ_MIN, LOW_SHELF_FREQ_MAX, 1.f, 0.5f };
-inline const juce::NormalisableRange HIGH_SHELF_FREQ_NORM_RANGE = { HIGH_SHELF_FREQ_MIN, HIGH_SHELF_FREQ_MAX, 1.f, 0.2f };
+inline constexpr int CUT_FILTER_SLOPE_DEFAULT = SLOPE_48_DBPO;  //! Same for low and high cut.
+
+inline const juce::NormalisableRange LOW_CUT_FREQ_NORM_RANGE   = { LOW_CUT_FREQ_MIN, LOW_CUT_FREQ_MAX, 1.f, 0.4f };
+inline const juce::NormalisableRange LOW_SHELF_FREQ_NORM_RANGE = { LOW_SHELF_FREQ_MIN, LOW_SHELF_FREQ_MAX, 1.f, 0.4f };
+inline const juce::NormalisableRange HIGH_CUT_FREQ_NORM_RANGE  = { HIGH_CUT_FREQ_MIN, HIGH_CUT_FREQ_MAX, 1.f, 0.4f };
+inline const juce::NormalisableRange HIGH_SHELF_FREQ_NORM_RANGE = { HIGH_SHELF_FREQ_MIN, HIGH_SHELF_FREQ_MAX, 1.f, 0.4f };
 
 inline constexpr float SHELF_DB_MIN     = MIN_DB / 2.f;
 inline constexpr float SHELF_DB_MAX     = MAX_DB / 2.f;
@@ -206,7 +206,7 @@ inline constexpr float PEAK_Q_MIN      = 0.1f;
 inline constexpr float PEAK_Q_MAX      = 10.f;
 inline constexpr float PEAK_Q_DEFAULT  = 1.f;
 
-inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { MIN_HZ, MAX_HZ, 0.01f, 1.f };
+inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { MIN_HZ, MAX_HZ, 0.01f, 0.15f };
 inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE = { PEAK_DB_MIN, PEAK_DB_MAX, 0.01f, 1.f };
 inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE    = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
 
