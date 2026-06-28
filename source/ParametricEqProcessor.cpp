@@ -164,7 +164,13 @@ void
 ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::MidiBuffer& midi_messages)
 {
     juce::ignoreUnused(midi_messages);
+    juce::ScopedNoDenormals no_denormals;
 
+    // Hosts vary in how they handle the plugin bypass.
+    // Some will set the parameter returned by our getBypassParameter() method;
+    // others will simply stop calling processBlock.
+
+    // If we know explicitly that we're bypassed we can exit early.
     if (!pluginIsEnabled()) {
         if (showWaveform()) {
             fft_fifo_.clear();
@@ -174,7 +180,9 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         return;
     }
 
-    juce::ScopedNoDenormals no_denormals;
+    // Else fall back to a timeout heuristic.
+    // Bump the listener to reset the timeout starting point.
+    audio_callback_listener_.bump();
 
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -443,6 +451,15 @@ ParametricEqProcessor::showWaveform() const
     }
 
     return show_waveform;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+const AudioCallbackListener&
+ParametricEqProcessor::getAudioCallbackListener() const
+{
+    return audio_callback_listener_;
 }
 
 /*---------------------------------------------------------------------------

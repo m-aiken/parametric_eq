@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 
+#include "AudioCallbackListener.h"
 #include "FftInputDataFifo.h"
 #include "FilterFactory.h"
 
@@ -57,6 +58,8 @@ public:
     bool pluginIsEnabled() const;
     bool showWaveform() const;
 
+    const AudioCallbackListener& getAudioCallbackListener() const;
+
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
@@ -67,6 +70,8 @@ private:
     std::vector< parametric_eq::FilterChain > filter_chains_;
 
     FftInputDataFifo fft_fifo_;
+
+    AudioCallbackListener audio_callback_listener_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEqProcessor)
 };

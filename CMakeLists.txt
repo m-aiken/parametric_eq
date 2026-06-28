@@ -57,6 +57,7 @@ set(PROJECT_SOURCES
         source/gui/menu_bar/DisableButton.cpp
         source/gui/menu_bar/MenuBar.cpp
         source/gui/menu_bar/WaveformButton.cpp
+        source/utility/AudioCallbackListener.cpp
 )
 
 set(PROJECT_HEADERS
@@ -82,6 +83,7 @@ set(PROJECT_HEADERS
         source/gui/menu_bar/DisableButton.h
         source/gui/menu_bar/MenuBar.h
         source/gui/menu_bar/WaveformButton.h
+        source/utility/AudioCallbackListener.h
 )
 
 target_sources(${PROJECT_NAME}
@@ -100,6 +102,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/graph
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/menu_bar
+        ${CMAKE_CURRENT_SOURCE_DIR}/source/utility
 )
 
 target_compile_definitions(${PROJECT_NAME}

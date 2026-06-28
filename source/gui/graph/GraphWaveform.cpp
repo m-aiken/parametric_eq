@@ -17,7 +17,6 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
     std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), parametric_eq::fft::MIN_DB);
 
     processor_ref_.getApvts().addParameterListener(parametric_eq::SHOW_WAVEFORM_PARAMETER, this);
-    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 
     if (processor_ref_.showWaveform()) {
         startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ);
@@ -31,7 +30,6 @@ GraphWaveform::~GraphWaveform()
 {
     stopTimer();
     processor_ref_.getApvts().removeParameterListener(parametric_eq::SHOW_WAVEFORM_PARAMETER, this);
-    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -56,10 +54,8 @@ GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_valu
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == parametric_eq::SHOW_WAVEFORM_PARAMETER || parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
-        const bool show_waveform = (processor_ref_.pluginIsEnabled() && processor_ref_.showWaveform());
-
-        show_waveform ? startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
+    if (parameter_id == parametric_eq::SHOW_WAVEFORM_PARAMETER) {
+        processor_ref_.showWaveform() ? startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
     }
 }
 
@@ -69,7 +65,12 @@ GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_valu
 void
 GraphWaveform::timerCallback()
 {
-    fft_input_data_fifo_.pullData(fft_input_buffer_);
+    if (processor_ref_.getAudioCallbackListener().callbackIsActive()) {
+        fft_input_data_fifo_.pullData(fft_input_buffer_);
+    }
+    else {
+        fft_input_buffer_.clear();
+    }
 
     performFft();
     smoothFftOutput();
@@ -84,7 +85,10 @@ void
 GraphWaveform::performFft()
 {
     std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), 0.f);
-    std::copy_n(fft_input_buffer_.getReadPointer(0), parametric_eq::fft::SIZE, fft_output_buffer_.begin());
+
+    if (!fft_input_buffer_.hasBeenCleared()) {
+        std::copy_n(fft_input_buffer_.getReadPointer(0), parametric_eq::fft::SIZE, fft_output_buffer_.begin());
+    }
 
     windowing_func_.multiplyWithWindowingTable(fft_output_buffer_.data(), parametric_eq::fft::SIZE);
     fft_.performFrequencyOnlyForwardTransform(fft_output_buffer_.data(), true);

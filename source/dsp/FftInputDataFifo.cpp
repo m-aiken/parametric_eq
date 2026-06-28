@@ -8,6 +8,10 @@
 FftInputDataFifo::FftInputDataFifo()
 {
     fifo_.setSize(1, parametric_eq::fft::INPUT_BUFFER_SIZE);
+
+    for (int i = 0; i < fifo_.getNumSamples(); ++i) {
+        fifo_.setSample(0, i, 0.f);
+    }
 }
 
 /*---------------------------------------------------------------------------
