@@ -5,16 +5,12 @@
 #include "ParametricEqProcessor.h"
 #include "ParametricEqTheme.h"
 
-class GraphBackground final
-    : public juce::Component
-    , public juce::AudioProcessorValueTreeState::Listener
+class GraphBackground final : public juce::Component
 {
 public:
-    GraphBackground(ParametricEqProcessor& processor_ref);
-    ~GraphBackground() override;
+    explicit GraphBackground(ParametricEqProcessor& processor_ref);
 
     void paint(juce::Graphics& g) override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
 private:
     void drawDbLabels(const juce::Graphics& g) const;

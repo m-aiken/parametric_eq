@@ -7,7 +7,7 @@
 class EqControls final : public juce::Component
 {
 public:
-    explicit EqControls(ParametricEqProcessor& processor_ref);
+    explicit EqControls(juce::AudioProcessorValueTreeState& apvts);
 
     void resized() override;
 

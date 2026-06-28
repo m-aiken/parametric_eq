@@ -7,7 +7,6 @@
 */
 GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
-    , plugin_enablement_changed_(false)
     , filter_parameters_changed_(true)
     , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
@@ -19,7 +18,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
         const auto& filter_id       = static_cast< parametric_eq::FILTER_ID >(i);
         const auto& band_parameters = parametric_eq::PARAMETER_MAP.at(filter_id);
 
-        nodes_.at(i) = std::make_unique< GraphNode >(processor_ref_, band_parameters.enabled_);
+        nodes_.at(i) = std::make_unique< GraphNode >(apvts, band_parameters.enabled_);
 
         addAndMakeVisible(*nodes_.at(i));
 
@@ -53,12 +52,11 @@ GraphControlLayer::~GraphControlLayer()
 void
 GraphControlLayer::paint(juce::Graphics& g)
 {
-    const bool  plugin_enabled = processor_ref_.pluginIsEnabled();
-    const auto& bounds         = getLocalBounds().toFloat();
-    const auto  bounds_width   = bounds.getWidth();
-    const auto  bounds_x       = bounds.getX();
-    const auto  bounds_y       = bounds.getY();
-    const auto  bounds_bottom  = bounds.getBottom();
+    const auto& bounds        = getLocalBounds().toFloat();
+    const auto  bounds_width  = bounds.getWidth();
+    const auto  bounds_x      = bounds.getX();
+    const auto  bounds_y      = bounds.getY();
+    const auto  bounds_bottom = bounds.getBottom();
 
     for (auto& path : paths_) {
         path.clear();
@@ -66,8 +64,7 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
-    g.setColour(plugin_enabled ? parametric_eq::theme::RESPONSE_CURVE_FILL :
-                                 parametric_eq::theme::PLUGIN_DISABLED_RESPONSE_CURVE_FILL);
+    g.setColour(parametric_eq::theme::RESPONSE_CURVE_FILL);
 
     for (size_t band_index = 0; band_index < paths_.size() - 1; ++band_index) {
         auto&       path = paths_.at(band_index);
@@ -102,8 +99,7 @@ GraphControlLayer::paint(juce::Graphics& g)
         final_path.lineTo(x, y);
     }
 
-    g.setColour(plugin_enabled ? parametric_eq::theme::RESPONSE_CURVE_AVG :
-                                 parametric_eq::theme::PLUGIN_DISABLED_RESPONSE_CURVE_AVG);
+    g.setColour(parametric_eq::theme::RESPONSE_CURVE_AVG);
     g.strokePath(final_path, juce::PathStrokeType(1.f));
 
     // Draw the nodes.
@@ -244,11 +240,6 @@ GraphControlLayer::parameterChanged(const juce::String& parameter_id, float new_
 {
     juce::ignoreUnused(new_value);
 
-    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
-        plugin_enablement_changed_.set(true);
-        return;
-    }
-
     for (auto i = 0; i < parametric_eq::NUM_FILTERS; ++i) {
         const auto filter_id                                 = static_cast< parametric_eq::FILTER_ID >(i);
         const auto [enabled_, frequency_, gain_, q_, slope_] = parametric_eq::PARAMETER_MAP.at(filter_id);
@@ -276,10 +267,6 @@ void
 GraphControlLayer::timerCallback()
 {
     bool should_repaint = false;
-
-    if (plugin_enablement_changed_.compareAndSetBool(false, true)) {
-        should_repaint = true;
-    }
 
     if (filter_parameters_changed_.compareAndSetBool(false, true)) {
         updateFilterChain();

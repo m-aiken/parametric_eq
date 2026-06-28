@@ -2,18 +2,12 @@
 
 #include <JuceHeader.h>
 
-#include "ParametricEqProcessor.h"
-
-class GraphNode final
-    : public juce::ToggleButton
-    , public juce::AudioProcessorValueTreeState::Listener
+class GraphNode final : public juce::ToggleButton
 {
 public:
-    GraphNode(ParametricEqProcessor& processor_ref, const juce::String& band_enablement_parameter);
-    ~GraphNode() override;
+    GraphNode(juce::AudioProcessorValueTreeState& apvts, const juce::String& band_enablement_parameter);
 
     void paint(juce::Graphics& g) override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
     juce::Point< int >& coordinates();
 
@@ -27,9 +21,6 @@ public:
     };
 
 private:
-    void setEnablement();
-
-    ParametricEqProcessor&                               processor_ref_;
     juce::AudioProcessorValueTreeState::ButtonAttachment attachment_;
     juce::Point< int >                                   coordinates_;
     bool                                                 is_active_band_;

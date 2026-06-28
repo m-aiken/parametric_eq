@@ -8,7 +8,7 @@ ParametricEqEditor::ParametricEqEditor(ParametricEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processor_ref_(p)
     , graph_(p)
-    , eq_controls_(processor_ref_)
+    , eq_controls_(p.getApvts())
     , queued_active_band_(parametric_eq::NULL_BAND)
 {
     parametric_eq::addListenerToAllParameters(processor_ref_.getApvts(), this);

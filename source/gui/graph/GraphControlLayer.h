@@ -38,7 +38,6 @@ private:
     void initialiseCoefficientsRefs();
 
     ParametricEqProcessor& processor_ref_;
-    juce::Atomic< bool >   plugin_enablement_changed_;
     juce::Atomic< bool >   filter_parameters_changed_;
 
     parametric_eq::FilterChain filter_chain_;

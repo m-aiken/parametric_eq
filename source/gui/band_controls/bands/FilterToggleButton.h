@@ -3,25 +3,17 @@
 #include <JuceHeader.h>
 
 #include "ParametricEqGlobals.h"
-#include "ParametricEqProcessor.h"
 
-class FilterToggleButton final
-    : public juce::ToggleButton
-    , public juce::AudioProcessorValueTreeState::Listener
+class FilterToggleButton final : public juce::ToggleButton
 {
 public:
-    FilterToggleButton(ParametricEqProcessor& processor_ref, const parametric_eq::FILTER_ID& filter_id);
-    ~FilterToggleButton() override;
+    FilterToggleButton(juce::AudioProcessorValueTreeState& apvts, const parametric_eq::FILTER_ID& filter_id);
 
     void paintButton(juce::Graphics& g, bool should_draw_button_as_highlighted, bool should_draw_button_as_down) override;
     void mouseEnter(const juce::MouseEvent& event) override;
     void mouseExit(const MouseEvent& event) override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
 private:
-    void setEnablement();
-
-    ParametricEqProcessor&                               processor_ref_;
     const parametric_eq::FILTER_ID                       filter_id_;
     juce::AudioProcessorValueTreeState::ButtonAttachment button_attachment_;
 

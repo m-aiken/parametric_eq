@@ -4,20 +4,15 @@
 
 #include "ParametricEqProcessor.h"
 
-class WaveformButton final
-    : public juce::ToggleButton
-    , public juce::AudioProcessorValueTreeState::Listener
+class WaveformButton final : public juce::ToggleButton
 {
 public:
     explicit WaveformButton(ParametricEqProcessor& processor_ref);
-    ~WaveformButton() override;
 
+protected:
     void paintButton(juce::Graphics& g, bool should_draw_button_as_highlighted, bool should_draw_button_as_down) override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
 private:
-    void setEnablement();
-
     ParametricEqProcessor&                               processor_ref_;
     juce::AudioProcessorValueTreeState::ButtonAttachment button_attachment_;
 

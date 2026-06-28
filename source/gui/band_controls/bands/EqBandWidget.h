@@ -4,12 +4,9 @@
 
 #include "FilterToggleButton.h"
 #include "ParametricEqGlobals.h"
-#include "ParametricEqProcessor.h"
 #include "TextOnlyRotary.h"
 
-class EqBandWidget final
-    : public juce::Component
-    , public juce::AudioProcessorValueTreeState::Listener
+class EqBandWidget final : public juce::Component
 {
 public:
     enum BAND_TYPE {
@@ -19,21 +16,18 @@ public:
     };
 
 public:
-    EqBandWidget(ParametricEqProcessor&          processor_ref,
-                 const parametric_eq::FILTER_ID& filter_id,
-                 const BAND_TYPE&                band_type);
-    ~EqBandWidget() override;
+    EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
+                 const parametric_eq::FILTER_ID&     filter_id,
+                 const BAND_TYPE&                    band_type);
 
     void paint(juce::Graphics& g) override;
     void resized() override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
 
     void setIsActiveBand(const bool is_active);
 
 private:
-    void setEnablement();
+    void setEnablement() const;
 
-    ParametricEqProcessor&         processor_ref_;
     const parametric_eq::FILTER_ID filter_id_;
     bool                           is_active_band_;
 

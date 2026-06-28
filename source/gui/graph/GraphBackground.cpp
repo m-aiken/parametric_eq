@@ -13,16 +13,6 @@ GraphBackground::GraphBackground(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
 {
     setBufferedToImage(true);
-
-    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-GraphBackground::~GraphBackground()
-{
-    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -61,27 +51,13 @@ GraphBackground::paint(juce::Graphics& g)
     }
 
     g.setFont(parametric_eq::theme::getFont());
-    g.setColour(processor_ref_.pluginIsEnabled() ? parametric_eq::theme::ANALYSER_TEXT :
-                                                   parametric_eq::theme::PLUGIN_DISABLED_ANALYSER_TEXT);
+    g.setColour(parametric_eq::theme::ANALYSER_TEXT);
 
     // dB labels.
     drawDbLabels(g);
 
     // Hz labels.
     drawFrequencyLabels(g);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphBackground::parameterChanged(const juce::String& parameter_id, float new_value)
-{
-    juce::ignoreUnused(new_value);
-
-    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
-        repaint();
-    }
 }
 
 /*---------------------------------------------------------------------------

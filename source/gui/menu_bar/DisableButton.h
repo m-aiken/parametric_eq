@@ -9,6 +9,7 @@ class DisableButton final : public juce::ToggleButton
 public:
     explicit DisableButton(ParametricEqProcessor& processor_ref);
 
+protected:
     void paintButton(juce::Graphics& g, bool should_draw_button_as_highlighted, bool should_draw_button_as_down) override;
 
 private:

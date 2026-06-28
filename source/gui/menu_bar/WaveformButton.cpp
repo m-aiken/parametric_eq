@@ -9,17 +9,8 @@ WaveformButton::WaveformButton(ParametricEqProcessor& processor_ref)
     : processor_ref_(processor_ref)
     , button_attachment_(processor_ref.getApvts(), parametric_eq::SHOW_WAVEFORM_PARAMETER, *this)
 {
-    processor_ref_.getApvts().addParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
     setBufferedToImage(true);
-    setEnablement();
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-WaveformButton::~WaveformButton()
-{
-    processor_ref_.getApvts().removeParameterListener(parametric_eq::PLUGIN_BYPASS_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -30,17 +21,15 @@ WaveformButton::paintButton(juce::Graphics& g, bool should_draw_button_as_highli
 {
     juce::ignoreUnused(should_draw_button_as_highlighted, should_draw_button_as_down);
 
-    const bool  show_waveform  = processor_ref_.showWaveform();
-    const bool  plugin_enabled = processor_ref_.pluginIsEnabled();
-    const auto& bounds         = getLocalBounds().toFloat();
-    const auto  path_height    = bounds.getHeight() / 2.f;
-    const auto  path_width     = bounds.getWidth() - path_height;
-    const auto& path_bounds    = bounds.withSizeKeepingCentre(path_width, path_height);
-    const auto  x_origin       = path_bounds.getX();
-    const auto  centre_y       = path_bounds.getCentreY();
-    const auto  top            = path_bounds.getY();
-    const auto  bottom         = path_bounds.getBottom();
-    const auto  corner_radius  = path_width * 0.25f;
+    const auto& bounds        = getLocalBounds().toFloat();
+    const auto  path_height   = bounds.getHeight() / 2.f;
+    const auto  path_width    = bounds.getWidth() - path_height;
+    const auto& path_bounds   = bounds.withSizeKeepingCentre(path_width, path_height);
+    const auto  x_origin      = path_bounds.getX();
+    const auto  centre_y      = path_bounds.getCentreY();
+    const auto  top           = path_bounds.getY();
+    const auto  bottom        = path_bounds.getBottom();
+    const auto  corner_radius = path_width * 0.25f;
 
     // Draw a sine wave.
     const juce::Point p0(x_origin, centre_y);
@@ -56,36 +45,10 @@ WaveformButton::paintButton(juce::Graphics& g, bool should_draw_button_as_highli
     path.lineTo(p3);
     path.lineTo(p4);
 
-    g.setColour(show_waveform && plugin_enabled ? parametric_eq::theme::WAVEFORM_BUTTON_ON :
-                                                  parametric_eq::theme::WAVEFORM_BUTTON_OFF);
+    g.setColour(processor_ref_.showWaveform() ? parametric_eq::theme::WAVEFORM_BUTTON_ON :
+                                                parametric_eq::theme::WAVEFORM_BUTTON_OFF);
 
     g.strokePath(path.createPathWithRoundedCorners(corner_radius), juce::PathStrokeType(ICON_LINE_THICKNESS));
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-WaveformButton::parameterChanged(const juce::String& parameter_id, float new_value)
-{
-    juce::ignoreUnused(new_value);
-
-    if (parameter_id == parametric_eq::PLUGIN_BYPASS_PARAMETER) {
-        setEnablement();
-        repaint();
-    }
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-WaveformButton::setEnablement()
-{
-    const bool plugin_enabled = processor_ref_.pluginIsEnabled();
-
-    setMouseCursor(plugin_enabled ? juce::MouseCursor::PointingHandCursor : juce::MouseCursor::NormalCursor);
-    setEnabled(plugin_enabled);
 }
 
 /*---------------------------------------------------------------------------
