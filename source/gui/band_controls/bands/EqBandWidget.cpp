@@ -72,11 +72,10 @@ EqBandWidget::EqBandWidget(juce::AudioProcessorValueTreeState& apvts,
 void
 EqBandWidget::paint(juce::Graphics& g)
 {
-    const bool band_enabled = band_enablement_button_.getToggleState();
-    g.setColour(is_active_band_ && band_enabled ? parametric_eq::theme::ACTIVE_BAND_BACKGROUND :
-                                                  parametric_eq::theme::BAND_BACKGROUND);
-
-    g.fillRoundedRectangle(getLocalBounds().toFloat(), parametric_eq::theme::BORDER_RADIUS);
+    if (band_enablement_button_.getToggleState() && is_active_band_) {
+        g.setColour(parametric_eq::theme::ACTIVE_BAND_BACKGROUND);
+        g.fillRoundedRectangle(getLocalBounds().toFloat(), parametric_eq::theme::BORDER_RADIUS);
+    }
 }
 
 /*---------------------------------------------------------------------------

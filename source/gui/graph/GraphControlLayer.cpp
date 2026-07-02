@@ -100,7 +100,7 @@ GraphControlLayer::paint(juce::Graphics& g)
     }
 
     g.setColour(parametric_eq::theme::RESPONSE_CURVE_AVG);
-    g.strokePath(final_path, juce::PathStrokeType(1.f));
+    g.strokePath(final_path, juce::PathStrokeType(2.f));
 
     // Draw the nodes.
     for (size_t i = 0; i < nodes_.size(); ++i) {

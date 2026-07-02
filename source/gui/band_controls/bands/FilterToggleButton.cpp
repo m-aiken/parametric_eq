@@ -9,7 +9,6 @@ FilterToggleButton::FilterToggleButton(juce::AudioProcessorValueTreeState& apvts
                                        const parametric_eq::FILTER_ID&     filter_id)
     : filter_id_(filter_id)
     , button_attachment_(apvts, parametric_eq::PARAMETER_MAP.at(filter_id).enabled_, *this)
-    , background_colour_(parametric_eq::theme::TEXT_BUTTON_BG_STD)
 {
     setMouseCursor(juce::MouseCursor::PointingHandCursor);
 }
@@ -222,7 +221,7 @@ FilterToggleButton::mouseExit(const MouseEvent& event)
 {
     juce::ToggleButton::mouseExit(event);
 
-    background_colour_ = parametric_eq::theme::TEXT_BUTTON_BG_STD;
+    background_colour_ = juce::Colour();  //! Nothing.
     repaint();
 }
 
