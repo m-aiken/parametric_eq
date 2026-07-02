@@ -16,11 +16,7 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
     std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), parametric_eq::fft::MIN_DB);
     std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), parametric_eq::fft::MIN_DB);
 
-    processor_ref_.getApvts().addParameterListener(parametric_eq::SHOW_WAVEFORM_PARAMETER, this);
-
-    if (processor_ref_.showWaveform()) {
-        startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ);
-    }
+    startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ);
 }
 
 /*---------------------------------------------------------------------------
@@ -29,7 +25,6 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
 GraphWaveform::~GraphWaveform()
 {
     stopTimer();
-    processor_ref_.getApvts().removeParameterListener(parametric_eq::SHOW_WAVEFORM_PARAMETER, this);
 }
 
 /*---------------------------------------------------------------------------
@@ -44,19 +39,6 @@ GraphWaveform::paint(juce::Graphics& g)
 
     path_.applyTransform(juce::AffineTransform::translation(bounds.getX(), bounds.getY()));
     g.fillPath(path_);
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
-void
-GraphWaveform::parameterChanged(const juce::String& parameter_id, float new_value)
-{
-    juce::ignoreUnused(new_value);
-
-    if (parameter_id == parametric_eq::SHOW_WAVEFORM_PARAMETER) {
-        processor_ref_.showWaveform() ? startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ) : shutdown();
-    }
 }
 
 /*---------------------------------------------------------------------------

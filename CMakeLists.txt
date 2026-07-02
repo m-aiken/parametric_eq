@@ -54,9 +54,6 @@ set(PROJECT_SOURCES
         source/gui/graph/GraphControlLayer.cpp
         source/gui/graph/GraphNode.cpp
         source/gui/graph/GraphWaveform.cpp
-        source/gui/menu_bar/DisableButton.cpp
-        source/gui/menu_bar/MenuBar.cpp
-        source/gui/menu_bar/WaveformButton.cpp
         source/utility/AudioCallbackListener.cpp
 )
 
@@ -80,9 +77,6 @@ set(PROJECT_HEADERS
         source/gui/graph/GraphControlLayer.h
         source/gui/graph/GraphNode.h
         source/gui/graph/GraphWaveform.h
-        source/gui/menu_bar/DisableButton.h
-        source/gui/menu_bar/MenuBar.h
-        source/gui/menu_bar/WaveformButton.h
         source/utility/AudioCallbackListener.h
 )
 
@@ -101,7 +95,6 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/band_controls/bands
         ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/graph
-        ${CMAKE_CURRENT_SOURCE_DIR}/source/gui/menu_bar
         ${CMAKE_CURRENT_SOURCE_DIR}/source/utility
 )
 

@@ -56,7 +56,6 @@ public:
     void updateFilterChain(parametric_eq::FilterChain& filter_chain) const;
 
     bool pluginIsEnabled() const;
-    bool showWaveform() const;
 
     const AudioCallbackListener& getAudioCallbackListener() const;
 

@@ -17,11 +17,6 @@ extern const juce::Colour ANALYSER_GRID;
 extern const juce::Colour ANALYSER_WAVEFORM;
 extern const juce::Colour ACTIVE_BAND_BACKGROUND;
 extern const juce::Colour TEXT_BUTTON_BG_HOVER;
-extern const juce::Colour POWER_ICON;
-extern const juce::Colour POWER_ORB_ON;
-extern const juce::Colour POWER_ORB_OFF;
-extern const juce::Colour WAVEFORM_BUTTON_ON;
-extern const juce::Colour WAVEFORM_BUTTON_OFF;
 
 inline constexpr float ENABLED_ALPHA  = 1.f;
 inline constexpr float DISABLED_ALPHA = 0.2f;

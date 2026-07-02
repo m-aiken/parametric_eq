@@ -25,11 +25,6 @@ const juce::Colour ANALYSER_GRID          = DARK_GREY;
 const juce::Colour ANALYSER_WAVEFORM      = DARK_GREY.withAlpha(0.1f);
 const juce::Colour ACTIVE_BAND_BACKGROUND = DARK_GREY.withAlpha(0.1f);
 const juce::Colour TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.05f);
-const juce::Colour POWER_ICON             = TEXT;
-const juce::Colour POWER_ORB_ON           = GREEN;
-const juce::Colour POWER_ORB_OFF          = RED;
-const juce::Colour WAVEFORM_BUTTON_ON     = TEXT;
-const juce::Colour WAVEFORM_BUTTON_OFF    = TEXT_DISABLED;
 
 /*---------------------------------------------------------------------------
 **

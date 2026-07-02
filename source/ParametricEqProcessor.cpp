@@ -172,9 +172,7 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
 
     // If we know explicitly that we're bypassed we can exit early.
     if (!pluginIsEnabled()) {
-        if (showWaveform()) {
-            fft_fifo_.clear();
-        }
+        fft_fifo_.clear();
 
         // Plugin is bypassed.
         return;
@@ -204,10 +202,8 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
         filter_chains_.at(i).process(single_channel_context);
     }
 
-    if (showWaveform()) {
-        // Push the buffer to the FFT FIFO.
-        fft_fifo_.pushData(buffer);
-    }
+    // Push the buffer to the FFT FIFO.
+    fft_fifo_.pushData(buffer);
 }
 
 /*---------------------------------------------------------------------------
@@ -440,22 +436,6 @@ ParametricEqProcessor::pluginIsEnabled() const
 /*---------------------------------------------------------------------------
 **
 */
-bool
-ParametricEqProcessor::showWaveform() const
-{
-    const auto id            = parametric_eq::SHOW_WAVEFORM_PARAMETER;
-    bool       show_waveform = parametric_eq::SHOW_WAVEFORM_DEFAULT;
-
-    if (const auto p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(id)); p != nullptr) {
-        show_waveform = p->get();
-    }
-
-    return show_waveform;
-}
-
-/*---------------------------------------------------------------------------
-**
-*/
 const AudioCallbackListener&
 ParametricEqProcessor::getAudioCallbackListener() const
 {
@@ -474,11 +454,6 @@ ParametricEqProcessor::createParameterLayout()
     layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(parametric_eq::PLUGIN_BYPASS_PARAMETER, 1),
                                                             parametric_eq::PLUGIN_BYPASS_PARAMETER,
                                                             parametric_eq::PLUGIN_BYPASS_DEFAULT));
-
-    // Show waveform parameter.
-    layout.add(std::make_unique< juce::AudioParameterBool >(juce::ParameterID(parametric_eq::SHOW_WAVEFORM_PARAMETER, 1),
-                                                            parametric_eq::SHOW_WAVEFORM_PARAMETER,
-                                                            parametric_eq::SHOW_WAVEFORM_DEFAULT));
 
     const auto hz_string_from_value_func = [](const float value, int /*maximum_string_length*/) -> juce::String {
         const auto rounded_hz = std::round(value);

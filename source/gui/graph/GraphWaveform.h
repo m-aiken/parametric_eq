@@ -8,7 +8,6 @@
 
 class GraphWaveform final
     : public juce::Component
-    , public juce::AudioProcessorValueTreeState::Listener
     , public juce::Timer
 {
 public:
@@ -16,7 +15,6 @@ public:
     ~GraphWaveform() override;
 
     void paint(juce::Graphics& g) override;
-    void parameterChanged(const juce::String& parameter_id, float new_value) override;
     void timerCallback() override;
 
 private:
