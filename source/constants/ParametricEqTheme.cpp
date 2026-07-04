@@ -1,17 +1,17 @@
 #include "ParametricEqTheme.h"
 
+/*---------------------------------------------------------------------------
+**
+*/
+namespace parametric_eq::theme
+{
+
 const juce::Colour DARK_GREY = { 37u, 33u, 38u };
 const juce::Colour PARCHMENT = { 250u, 244u, 237u };
 const juce::Colour RED       = { 214u, 132u, 129u };
 const juce::Colour TEAL      = { 96u, 153u, 162u };
 const juce::Colour PURPLE    = { 103u, 96u, 162u };
 const juce::Colour GREEN     = { 96u, 162u, 107u };
-
-/*---------------------------------------------------------------------------
-**
-*/
-namespace parametric_eq::theme
-{
 
 const juce::Colour MAIN_BACKGROUND        = PARCHMENT;
 const juce::Colour TEXT                   = DARK_GREY;
