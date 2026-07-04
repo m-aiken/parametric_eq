@@ -32,7 +32,7 @@ const juce::Colour TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.05f);
 juce::Font
 getFont()
 {
-    return juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 10.f, juce::Font::plain);
+    return juce::FontOptions(juce::Font::getDefaultMonospacedFontName(), 11.f, juce::Font::plain);
 }
 
 }  // namespace parametric_eq::theme
