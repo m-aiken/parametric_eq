@@ -131,13 +131,6 @@ GraphControlLayer::paint(juce::Graphics& g)
         node->setBounds(node_x - GraphNode::RADIUS, node_y - GraphNode::RADIUS, GraphNode::DIAMETER, GraphNode::DIAMETER);
         node->coordinates().setXY(node_x, node_y);
     }
-
-    // Vertical lines on both ends of the container to hide the edge of the response curve.
-    g.setColour(parametric_eq::theme::MAIN_BACKGROUND);
-    constexpr auto line_thickness = 3.f;
-
-    g.drawLine(0.f, 0.f, 0.f, bounds.getBottom(), line_thickness);
-    g.drawLine(bounds_width - 1.f, 0.f, bounds_width - 1.f, bounds.getBottom(), line_thickness);
 }
 
 /*---------------------------------------------------------------------------
