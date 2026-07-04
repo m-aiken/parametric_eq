@@ -172,8 +172,6 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
 
     // If we know explicitly that we're bypassed we can exit early.
     if (!pluginIsEnabled()) {
-        fft_fifo_.clear();
-
         // Plugin is bypassed.
         return;
     }
