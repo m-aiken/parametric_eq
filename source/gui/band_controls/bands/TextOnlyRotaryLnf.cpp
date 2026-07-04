@@ -2,6 +2,11 @@
 #include "SliderTextBox.h"
 #include "TextOnlyRotaryLnf.h"
 
+namespace
+{
+constexpr int TEXT_BOX_VERTICAL_PADDING = 2;
+}
+
 /*---------------------------------------------------------------------------
 **
 */
@@ -44,7 +49,8 @@ TextOnlyRotaryLnf::getSliderLayout(juce::Slider& slider)
     const auto& font_height = static_cast< int >(parametric_eq::theme::getFont().getHeight());
 
     layout.sliderBounds  = full_bounds;
-    layout.textBoxBounds = full_bounds.withSizeKeepingCentre(full_bounds.getWidth(), font_height);
+    layout.textBoxBounds = full_bounds.withSizeKeepingCentre(full_bounds.getWidth(),
+                                                             font_height + (TEXT_BOX_VERTICAL_PADDING * 2));
 
     return layout;
 }
