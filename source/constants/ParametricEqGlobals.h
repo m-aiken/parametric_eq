@@ -190,18 +190,19 @@ inline constexpr float SHELF_Q_DEFAULT  = 0.7f;
 
 inline const juce::NormalisableRange SHELF_GAIN_NORMALISABLE_RANGE = { SHELF_DB_MIN, SHELF_DB_MAX, 0.01f, 1.f };
 
-inline constexpr float PEAK_DB_MIN     = MIN_DB;
-inline constexpr float PEAK_DB_MAX     = MAX_DB;
-inline constexpr float PEAK_DB_DEFAULT = 0.f;
-inline constexpr float PEAK_Q_MIN      = 0.1f;
-inline constexpr float PEAK_Q_MAX      = 10.f;
-inline constexpr float PEAK_Q_DEFAULT  = 1.f;
+inline constexpr bool  PEAK_ENABLED_DEFAULT = true;
+inline constexpr float PEAK_DB_MIN          = MIN_DB;
+inline constexpr float PEAK_DB_MAX          = MAX_DB;
+inline constexpr float PEAK_DB_DEFAULT      = 0.f;
+inline constexpr float PEAK_Q_MIN           = 0.1f;
+inline constexpr float PEAK_Q_MAX           = 10.f;
+inline constexpr float PEAK_Q_DEFAULT       = 1.f;
 
 inline const juce::NormalisableRange PEAK_FREQ_NORMALISABLE_RANGE = { MIN_HZ, MAX_HZ, 0.01f, 0.15f };
 inline const juce::NormalisableRange PEAK_GAIN_NORMALISABLE_RANGE = { PEAK_DB_MIN, PEAK_DB_MAX, 0.01f, 1.f };
 inline const juce::NormalisableRange PEAK_Q_NORMALISABLE_RANGE    = { PEAK_Q_MIN, PEAK_Q_MAX, 0.05f, 1.f };
 
-inline constexpr std::array< float, NUM_PEAK_BANDS > PEAK_BAND_DEFAULT_FREQUENCIES = {
+inline constexpr std::array PEAK_BAND_DEFAULT_FREQUENCIES = {
     140.f,   //! Peak Band 1.
     320.f,   //! Peak Band 2.
     720.f,   //! Peak Band 3.
@@ -209,72 +210,8 @@ inline constexpr std::array< float, NUM_PEAK_BANDS > PEAK_BAND_DEFAULT_FREQUENCI
     3200.f,  //! Peak Band 5.
 };
 
-inline constexpr bool PEAK_ENABLED_DEFAULT = true;
-
-inline void
-addListenerToAllParameters(juce::AudioProcessorValueTreeState&           apvts,
-                           juce::AudioProcessorValueTreeState::Listener* listener)
-{
-    if (listener == nullptr) {
-        return;
-    }
-
-    apvts.addParameterListener(PLUGIN_BYPASS_PARAMETER, listener);
-
-    for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
-        if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.addParameterListener(parameters.enabled_, listener);
-        }
-
-        if (parameters.frequency_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.addParameterListener(parameters.frequency_, listener);
-        }
-
-        if (parameters.gain_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.addParameterListener(parameters.gain_, listener);
-        }
-
-        if (parameters.q_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.addParameterListener(parameters.q_, listener);
-        }
-
-        if (parameters.slope_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.addParameterListener(parameters.slope_, listener);
-        }
-    }
-}
-
-inline void
-removeListenerFromAllParameters(juce::AudioProcessorValueTreeState&           apvts,
-                                juce::AudioProcessorValueTreeState::Listener* listener)
-{
-    if (listener == nullptr) {
-        return;
-    }
-
-    apvts.removeParameterListener(PLUGIN_BYPASS_PARAMETER, listener);
-
-    for (auto const& [filter_id, parameters] : PARAMETER_MAP) {
-        if (parameters.enabled_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.removeParameterListener(parameters.enabled_, listener);
-        }
-
-        if (parameters.frequency_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.removeParameterListener(parameters.frequency_, listener);
-        }
-
-        if (parameters.gain_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.removeParameterListener(parameters.gain_, listener);
-        }
-
-        if (parameters.q_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.removeParameterListener(parameters.q_, listener);
-        }
-
-        if (parameters.slope_ != PARAMETER_NOT_SUPPORTED) {
-            apvts.removeParameterListener(parameters.slope_, listener);
-        }
-    }
-}
+using APVTS = juce::AudioProcessorValueTreeState;
+extern void addListenerToAllParameters(APVTS& apvts, APVTS::Listener* listener);
+extern void removeListenerFromAllParameters(APVTS& apvts, APVTS::Listener* listener);
 
 }  // namespace parametric_eq

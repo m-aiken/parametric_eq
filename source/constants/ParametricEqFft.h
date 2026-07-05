@@ -23,15 +23,11 @@ inline constexpr int OUTPUT_BUFFER_SIZE = SIZE * 2;
 
 typedef std::array< float, OUTPUT_BUFFER_SIZE > OutputBuffer;
 
-inline double
-getBinWidth(const double sample_rate)
-{
-    return sample_rate / static_cast< double >(SIZE);
-}
-
 inline constexpr int   WAVEFORM_REFRESH_RATE_HZ          = 60;
 inline constexpr int   WAVEFORM_PATH_RESOLUTION          = 2;
 inline constexpr float WAVEFORM_DECAY_RATE_DB_PER_SECOND = 30.f;
 inline constexpr float WAVEFORM_DECAY_RATE               = WAVEFORM_DECAY_RATE_DB_PER_SECOND / 60.f;
+
+extern double getBinWidth(const double sample_rate);
 
 }  // namespace parametric_eq::fft

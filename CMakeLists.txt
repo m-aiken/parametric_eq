@@ -40,6 +40,8 @@ set(PROJECT_SOURCES
         PRIVATE
         source/ParametricEqEditor.cpp
         source/ParametricEqProcessor.cpp
+        source/constants/ParametricEqFft.cpp
+        source/constants/ParametricEqGlobals.cpp
         source/constants/ParametricEqTheme.cpp
         source/dsp/FftInputDataFifo.cpp
         source/dsp/FilterFactory.cpp
