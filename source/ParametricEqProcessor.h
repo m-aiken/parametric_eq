@@ -49,6 +49,7 @@ public:
 
     bool  getFilterEnabled(const parametric_eq::FILTER_ID& filter_id) const;
     float getFilterFrequency(const parametric_eq::FILTER_ID& filter_id) const;
+    float getFilterDecibels(const parametric_eq::FILTER_ID& filter_id) const;
     float getFilterGain(const parametric_eq::FILTER_ID& filter_id) const;
     float getFilterQ(const parametric_eq::FILTER_ID& filter_id) const;
     int   getFilterOrder(const parametric_eq::FILTER_ID& filter_id) const;

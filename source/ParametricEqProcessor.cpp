@@ -329,6 +329,26 @@ ParametricEqProcessor::getFilterFrequency(const parametric_eq::FILTER_ID& filter
 **
 */
 float
+ParametricEqProcessor::getFilterDecibels(const parametric_eq::FILTER_ID& filter_id) const
+{
+    float       ret = 0.f;
+    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).gain_;
+
+    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
+
+        if (p != nullptr) {
+            ret = p->get();
+        }
+    }
+
+    return ret;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+float
 ParametricEqProcessor::getFilterGain(const parametric_eq::FILTER_ID& filter_id) const
 {
     float       ret = 1.f;

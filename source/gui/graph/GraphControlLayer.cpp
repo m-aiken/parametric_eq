@@ -55,7 +55,6 @@ GraphControlLayer::paint(juce::Graphics& g)
     const auto& bounds        = getLocalBounds().toFloat();
     const auto  bounds_width  = bounds.getWidth();
     const auto  bounds_x      = bounds.getX();
-    const auto  bounds_y      = bounds.getY();
     const auto  bounds_bottom = bounds.getBottom();
 
     for (auto& path : paths_) {
@@ -70,16 +69,16 @@ GraphControlLayer::paint(juce::Graphics& g)
         auto&       path = paths_.at(band_index);
         const auto& mags = magnitudes_.at(band_index);
 
-        path.startNewSubPath(bounds_x, getPathYCoordinate(0.0, bounds_y, bounds_bottom));
+        path.startNewSubPath(bounds_x, getPathYCoordinate(0.0, bounds_bottom));
 
         for (int i = 1; i < static_cast< int >(bounds_width) - 1; ++i) {
             const auto x = bounds_x + static_cast< float >(i);
-            const auto y = getPathYCoordinate(mags.at(static_cast< size_t >(i)), bounds_y, bounds_bottom);
+            const auto y = getPathYCoordinate(mags.at(static_cast< size_t >(i)), bounds_bottom);
 
             path.lineTo(x, y);
         }
 
-        path.lineTo(bounds_width - 1.f, getPathYCoordinate(0.0, bounds_y, bounds_bottom));
+        path.lineTo(bounds_width - 1.f, getPathYCoordinate(0.0, bounds_bottom));
         path.closeSubPath();
 
         g.fillPath(path);
@@ -90,11 +89,11 @@ GraphControlLayer::paint(juce::Graphics& g)
     auto&       final_path = paths_.back();
     const auto& final_mags = magnitudes_.back();
 
-    final_path.startNewSubPath(bounds_x, getPathYCoordinate(final_mags.front(), bounds_y, bounds_bottom));
+    final_path.startNewSubPath(bounds_x, getPathYCoordinate(final_mags.front(), bounds_bottom));
 
     for (int i = 1; i < static_cast< int >(bounds_width); ++i) {
         const auto x = bounds_x + static_cast< float >(i);
-        const auto y = getPathYCoordinate(final_mags.at(static_cast< size_t >(i)), bounds_y, bounds_bottom);
+        const auto y = getPathYCoordinate(final_mags.at(static_cast< size_t >(i)), bounds_bottom);
 
         final_path.lineTo(x, y);
     }
@@ -118,17 +117,16 @@ GraphControlLayer::paint(juce::Graphics& g)
         // y coordinate = correct magnitude.
 
         const auto& filter_id = static_cast< parametric_eq::FILTER_ID >(i);
-        const int   node_x    = getNodeXCoordinate(filter_id, bounds_width);
-        double      magnitude = 0.0;
+        const auto  node_x    = getNodeXCoordinate(filter_id, bounds_width);
+        const auto  node_y    = getNodeYCoordinate(filter_id, bounds_bottom);
 
-        if (filter_id != parametric_eq::LOW_CUT && filter_id != parametric_eq::HIGH_CUT) {
-            const auto mag_it = static_cast< size_t >(node_x) - static_cast< size_t >(bounds_x);
-            magnitude         = magnitudes_.at(i).at(mag_it);
-        }
+        const auto node_bounds = juce::Rectangle< float >(node_x - GraphNode::RADIUS,
+                                                          node_y - GraphNode::RADIUS,
+                                                          GraphNode::DIAMETER,
+                                                          GraphNode::DIAMETER)
+                                     .toNearestInt();
 
-        const int node_y = getNodeYCoordinate(magnitude, bounds_y, bounds_bottom);
-
-        node->setBounds(node_x - GraphNode::RADIUS, node_y - GraphNode::RADIUS, GraphNode::DIAMETER, GraphNode::DIAMETER);
+        node->setBounds(node_bounds);
         node->coordinates().setXY(node_x, node_y);
     }
 }
@@ -156,17 +154,12 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
         return;
     }
 
-    const auto x = static_cast< int >(std::round(event.position.getX()));
-    const auto y = static_cast< int >(std::round(event.position.getY()));
-
-    const auto& bounds        = getLocalBounds();
+    const auto& bounds        = getLocalBounds().toFloat();
     const auto  bounds_width  = bounds.getWidth();
     const auto  bounds_height = bounds.getHeight();
 
-    // Check that the coordinates are within the legal range.
-    if (x < 0 || x > bounds_width || y < 0 || y > bounds_height) {
-        return;
-    }
+    const auto x = constrainXCoordinate(event.position.getX(), bounds_width);
+    const auto y = constrainYCoordinate(event.position.getY(), bounds_height);
 
     // If the latched dragged node is unset calculate the closest node.
     if (latched_node_index_ == LATCHED_NODE_INDEX_UNSET) {
@@ -199,15 +192,8 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
     }
 
     // Update the frequency and gain parameters for the node being dragged.
-    const auto hz = mapToLog10< float >(static_cast< float >(x) / static_cast< float >(bounds_width),
-                                        parametric_eq::MIN_HZ,
-                                        parametric_eq::MAX_HZ);
-
-    const auto db = juce::jmap< float >(static_cast< float >(y),
-                                        0.f,
-                                        static_cast< float >(bounds_height),
-                                        parametric_eq::MAX_DB,
-                                        parametric_eq::MIN_DB);
+    const auto hz = mapToLog10< float >(x / bounds_width, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
+    const auto db = juce::jmap< float >(y, 0.f, bounds_height, parametric_eq::MAX_DB, parametric_eq::MIN_DB);
 
     x_values_.at(latched_node_index_) = hz;
     y_values_.at(latched_node_index_) = db;
@@ -396,38 +382,58 @@ GraphControlLayer::getHzFromPx(const int px, const int max_px)
 **
 */
 /*static*/ float
-GraphControlLayer::getPathYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom)
+GraphControlLayer::getPathYCoordinate(const double magnitude, const float bounds_bottom)
 {
     return juce::jmap< float >(static_cast< float >(magnitude),
                                parametric_eq::MIN_DB,
                                parametric_eq::MAX_DB,
                                bounds_bottom,
-                               bounds_top);
+                               0);
 }
 
 /*---------------------------------------------------------------------------
 **
 */
-/*static*/ int
-GraphControlLayer::getNodeYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom)
+float
+GraphControlLayer::getNodeYCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_bottom) const
 {
-    const auto mapped = getPathYCoordinate(magnitude, bounds_top, bounds_bottom);
+    const auto mag = static_cast< double >(processor_ref_.getFilterDecibels(filter_id));
+    const auto y   = getPathYCoordinate(mag, bounds_bottom);
 
-    return static_cast< int >(std::round(mapped));  //! Round, don't truncate!
+    return constrainYCoordinate(y, bounds_bottom);
 }
 
 /*---------------------------------------------------------------------------
 **
 */
-int
+float
 GraphControlLayer::getNodeXCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_width) const
 {
     const auto hz      = processor_ref_.getFilterFrequency(filter_id);
     const auto norm_hz = juce::mapFromLog10< float >(hz, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
-    const auto x       = static_cast< int >(std::round(bounds_width * norm_hz));  //! Round, don't truncate!
+    const auto x       = bounds_width * norm_hz;
 
+    return constrainXCoordinate(x, bounds_width);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ float
+GraphControlLayer::constrainYCoordinate(const float y, const float bounds_bottom)
+{
     // Clamp the value to keep the node within the graph bounds.
-    return juce::jlimit< int >(GraphNode::RADIUS, static_cast< int >(bounds_width) - GraphNode::RADIUS, x);
+    return juce::jlimit< float >(0, bounds_bottom, y);
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+/*static*/ float
+GraphControlLayer::constrainXCoordinate(const float x, const float bounds_width)
+{
+    // Clamp the value to keep the node within the graph bounds.
+    return juce::jlimit< float >(0, bounds_width, x);
 }
 
 /*---------------------------------------------------------------------------

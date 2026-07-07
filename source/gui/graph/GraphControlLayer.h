@@ -30,9 +30,11 @@ private:
     void          calculateFilterMagnitudeResponse(const parametric_eq::FILTER_ID& filter_id);
     void          calculateTotalMagnitudeResponse();
     static double getHzFromPx(const int px, const int max_px);
-    static float  getPathYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom);
-    static int    getNodeYCoordinate(const double magnitude, const float bounds_top, const float bounds_bottom);
-    int           getNodeXCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_width) const;
+    static float  getPathYCoordinate(const double magnitude, const float bounds_bottom);
+    float         getNodeYCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_bottom) const;
+    float         getNodeXCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_width) const;
+    static float  constrainYCoordinate(const float y, const float bounds_bottom);
+    static float  constrainXCoordinate(const float x, const float bounds_width);
 
     void resetUpdateFlags(const bool should_update = false);
     void initialiseCoefficientsRefs();
