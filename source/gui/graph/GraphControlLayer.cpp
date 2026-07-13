@@ -397,8 +397,13 @@ GraphControlLayer::getPathYCoordinate(const double magnitude, const float bounds
 float
 GraphControlLayer::getNodeYCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_bottom) const
 {
-    const auto mag = static_cast< double >(processor_ref_.getFilterDecibels(filter_id));
-    const auto y   = getPathYCoordinate(mag, bounds_bottom);
+    double mag = 0.0;
+
+    if (processor_ref_.getFilterEnabled(filter_id)) {
+        mag = static_cast< double >(processor_ref_.getFilterDecibels(filter_id));
+    }
+
+    const auto y = getPathYCoordinate(mag, bounds_bottom);
 
     return constrainYCoordinate(y, bounds_bottom);
 }
