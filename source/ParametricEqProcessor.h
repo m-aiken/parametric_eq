@@ -54,7 +54,7 @@ public:
     float getFilterQ(const parametric_eq::FILTER_ID& filter_id) const;
     int   getFilterOrder(const parametric_eq::FILTER_ID& filter_id) const;
 
-    void updateFilterChain(parametric_eq::FilterChain& filter_chain) const;
+    void updateFilterChain(parametric_eq::FilterChain& filter_chain, const bool force = false) const;
 
     bool pluginIsEnabled() const;
 

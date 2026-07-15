@@ -407,31 +407,31 @@ ParametricEqProcessor::getFilterOrder(const parametric_eq::FILTER_ID& filter_id)
 **
 */
 void
-ParametricEqProcessor::updateFilterChain(parametric_eq::FilterChain& filter_chain) const
+ParametricEqProcessor::updateFilterChain(parametric_eq::FilterChain& filter_chain, const bool force) const
 {
     // Update the enabled/disabled state of each filter in the chain.
     filter_factory_.updateBandEnablements(filter_chain);
 
     // Update the coefficients.
-    if (getFilterEnabled(parametric_eq::LOW_CUT)) {
+    if (getFilterEnabled(parametric_eq::LOW_CUT) || force) {
         filter_factory_.updateCutCoefficients(filter_chain, parametric_eq::LOW_CUT);
     }
 
-    if (getFilterEnabled(parametric_eq::LOW_SHELF)) {
+    if (getFilterEnabled(parametric_eq::LOW_SHELF) || force) {
         filter_factory_.updateLowShelfCoefficients(filter_chain);
     }
 
     for (int i = parametric_eq::PEAK_BAND_1; i <= parametric_eq::PEAK_BAND_5; ++i) {
-        if (const auto& filter_id = static_cast< parametric_eq::FILTER_ID >(i); getFilterEnabled(filter_id)) {
+        if (const auto& filter_id = static_cast< parametric_eq::FILTER_ID >(i); getFilterEnabled(filter_id) || force) {
             filter_factory_.updatePeakCoefficients(filter_chain, filter_id);
         }
     }
 
-    if (getFilterEnabled(parametric_eq::HIGH_SHELF)) {
+    if (getFilterEnabled(parametric_eq::HIGH_SHELF) || force) {
         filter_factory_.updateHighShelfCoefficients(filter_chain);
     }
 
-    if (getFilterEnabled(parametric_eq::HIGH_CUT)) {
+    if (getFilterEnabled(parametric_eq::HIGH_CUT) || force) {
         filter_factory_.updateCutCoefficients(filter_chain, parametric_eq::HIGH_CUT);
     }
 }

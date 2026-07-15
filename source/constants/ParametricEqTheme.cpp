@@ -16,18 +16,19 @@ const juce::Colour GREEN     = { 96u, 162u, 107u };
 /*---------------------------------------------------------------------------
 **
 */
-const juce::Colour MAIN_BACKGROUND        = PARCHMENT;
-const juce::Colour TEXT                   = DARK_GREY;
-const juce::Colour TEXT_DISABLED          = TEXT.withAlpha(DISABLED_ALPHA);
-const juce::Colour ANALYSER_TEXT          = TEXT.withAlpha(0.7f);
-const juce::Colour RESPONSE_CURVE_FILL    = TEAL.withAlpha(0.3f);
-const juce::Colour RESPONSE_CURVE_AVG     = RED;
-const juce::Colour NODE_ON                = TEAL;
-const juce::Colour NODE_OFF               = DARK_GREY.withAlpha(0.5f);
-const juce::Colour ANALYSER_GRID          = DARK_GREY;
-const juce::Colour ANALYSER_WAVEFORM      = DARK_GREY.withAlpha(0.1f);
-const juce::Colour ACTIVE_BAND_BACKGROUND = DARK_GREY.withAlpha(0.1f);
-const juce::Colour TEXT_BUTTON_BG_HOVER   = DARK_GREY.withAlpha(0.05f);
+const juce::Colour MAIN_BACKGROUND         = PARCHMENT;
+const juce::Colour TEXT                    = DARK_GREY;
+const juce::Colour TEXT_DISABLED           = TEXT.withAlpha(DISABLED_ALPHA);
+const juce::Colour ANALYSER_TEXT           = TEXT.withAlpha(0.7f);
+const juce::Colour RESPONSE_CURVE_FILL     = TEAL.withAlpha(0.3f);
+const juce::Colour RESPONSE_CURVE_DISABLED = DARK_GREY.withAlpha(0.1f);
+const juce::Colour RESPONSE_CURVE_AVG      = RED;
+const juce::Colour NODE_ON                 = TEAL;
+const juce::Colour NODE_OFF                = DARK_GREY.withAlpha(0.5f);
+const juce::Colour ANALYSER_GRID           = DARK_GREY;
+const juce::Colour ANALYSER_WAVEFORM       = DARK_GREY.withAlpha(0.1f);
+const juce::Colour ACTIVE_BAND_BACKGROUND  = DARK_GREY.withAlpha(0.1f);
+const juce::Colour TEXT_BUTTON_BG_HOVER    = DARK_GREY.withAlpha(0.05f);
 
 /*---------------------------------------------------------------------------
 **

@@ -10,6 +10,7 @@ extern const juce::Colour TEXT;
 extern const juce::Colour TEXT_DISABLED;
 extern const juce::Colour ANALYSER_TEXT;
 extern const juce::Colour RESPONSE_CURVE_FILL;
+extern const juce::Colour RESPONSE_CURVE_DISABLED;
 extern const juce::Colour RESPONSE_CURVE_AVG;
 extern const juce::Colour NODE_ON;
 extern const juce::Colour NODE_OFF;

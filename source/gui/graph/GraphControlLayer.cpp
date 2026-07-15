@@ -11,6 +11,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
     initialiseCoefficientsRefs();
+    processor_ref_.updateFilterChain(filter_chain_, true);
 
     auto& apvts = processor_ref_.getApvts();
 
@@ -63,8 +64,6 @@ GraphControlLayer::paint(juce::Graphics& g)
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
-    g.setColour(parametric_eq::theme::RESPONSE_CURVE_FILL);
-
     for (size_t band_index = 0; band_index < paths_.size() - 1; ++band_index) {
         auto&       path = paths_.at(band_index);
         const auto& mags = magnitudes_.at(band_index);
@@ -80,6 +79,10 @@ GraphControlLayer::paint(juce::Graphics& g)
 
         path.lineTo(bounds_width - 1.f, getPathYCoordinate(0.0, bounds_bottom));
         path.closeSubPath();
+
+        const auto band_enabled = processor_ref_.getFilterEnabled(static_cast< parametric_eq::FILTER_ID >(band_index));
+        g.setColour(band_enabled ? parametric_eq::theme::RESPONSE_CURVE_FILL :
+                                   parametric_eq::theme::RESPONSE_CURVE_DISABLED);
 
         g.fillPath(path);
     }
@@ -294,14 +297,8 @@ GraphControlLayer::calculateFilterMagnitudeResponse(const parametric_eq::FILTER_
 {
     using namespace parametric_eq;
 
-    const auto filter_id_t = static_cast< size_t >(filter_id);
-    auto&      filter_mags = magnitudes_.at(filter_id_t);
-
-    if (!processor_ref_.getFilterEnabled(filter_id)) {
-        std::fill(filter_mags.begin(), filter_mags.end(), juce::Decibels::gainToDecibels(1.0));
-        return;
-    }
-
+    const auto filter_id_t  = static_cast< size_t >(filter_id);
+    auto&      filter_mags  = magnitudes_.at(filter_id_t);
     const int  bounds_width = getLocalBounds().getWidth();
     const auto sample_rate  = processor_ref_.getSampleRate();
 
@@ -362,7 +359,10 @@ GraphControlLayer::calculateTotalMagnitudeResponse()
         double mag_all = 1.0;
 
         for (size_t filter = 0; filter < static_cast< size_t >(parametric_eq::NUM_FILTERS); ++filter) {
-            mag_all *= juce::Decibels::decibelsToGain(magnitudes_.at(filter).at(px));
+            // Only include the filter if it's enabled.
+            if (processor_ref_.getFilterEnabled(static_cast< parametric_eq::FILTER_ID >(filter))) {
+                mag_all *= juce::Decibels::decibelsToGain(magnitudes_.at(filter).at(px));
+            }
         }
 
         magnitudes_.back().at(px) = juce::Decibels::gainToDecibels(mag_all);
@@ -397,13 +397,8 @@ GraphControlLayer::getPathYCoordinate(const double magnitude, const float bounds
 float
 GraphControlLayer::getNodeYCoordinate(const parametric_eq::FILTER_ID& filter_id, const float bounds_bottom) const
 {
-    double mag = 0.0;
-
-    if (processor_ref_.getFilterEnabled(filter_id)) {
-        mag = static_cast< double >(processor_ref_.getFilterDecibels(filter_id));
-    }
-
-    const auto y = getPathYCoordinate(mag, bounds_bottom);
+    const auto mag = static_cast< double >(processor_ref_.getFilterDecibels(filter_id));
+    const auto y   = getPathYCoordinate(mag, bounds_bottom);
 
     return constrainYCoordinate(y, bounds_bottom);
 }
