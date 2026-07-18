@@ -178,10 +178,10 @@ inline constexpr float HIGH_SHELF_FREQ_DEFAULT    = 8000.f;
 
 inline constexpr int CUT_FILTER_SLOPE_DEFAULT = SLOPE_48_DBPO;  //! Same for low and high cut.
 
-inline const juce::NormalisableRange LOW_CUT_FREQ_NORM_RANGE   = { LOW_CUT_FREQ_MIN, LOW_CUT_FREQ_MAX, 1.f, 0.4f };
-inline const juce::NormalisableRange LOW_SHELF_FREQ_NORM_RANGE = { LOW_SHELF_FREQ_MIN, LOW_SHELF_FREQ_MAX, 1.f, 0.4f };
-inline const juce::NormalisableRange HIGH_CUT_FREQ_NORM_RANGE  = { HIGH_CUT_FREQ_MIN, HIGH_CUT_FREQ_MAX, 1.f, 0.4f };
-inline const juce::NormalisableRange HIGH_SHELF_FREQ_NORM_RANGE = { HIGH_SHELF_FREQ_MIN, HIGH_SHELF_FREQ_MAX, 1.f, 0.4f };
+inline const juce::NormalisableRange LOW_CUT_FREQ_NORM_RANGE = { LOW_CUT_FREQ_MIN, LOW_CUT_FREQ_MAX, 0.01f, 0.4f };
+inline const juce::NormalisableRange LOW_SHELF_FREQ_NORM_RANGE = { LOW_SHELF_FREQ_MIN, LOW_SHELF_FREQ_MAX, 0.01f, 0.4f };
+inline const juce::NormalisableRange HIGH_CUT_FREQ_NORM_RANGE = { HIGH_CUT_FREQ_MIN, HIGH_CUT_FREQ_MAX, 0.01f, 0.4f };
+inline const juce::NormalisableRange HIGH_SHELF_FREQ_NORM_RANGE = { HIGH_SHELF_FREQ_MIN, HIGH_SHELF_FREQ_MAX, 0.01f, 0.4f };
 
 inline constexpr float SHELF_DB_MIN     = MIN_DB / 2.f;
 inline constexpr float SHELF_DB_MAX     = MAX_DB / 2.f;
