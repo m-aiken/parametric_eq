@@ -158,21 +158,21 @@ inline const juce::StringArray CUT_FILTER_SLOPE_CHOICES = {
 
 inline constexpr bool  LOW_CUT_ENABLED_DEFAULT = false;
 inline constexpr float LOW_CUT_FREQ_MIN        = MIN_HZ;
-inline constexpr float LOW_CUT_FREQ_MAX        = 200.f;
+inline constexpr float LOW_CUT_FREQ_MAX        = 1000.f;
 inline constexpr float LOW_CUT_FREQ_DEFAULT    = 50.f;
 
 inline constexpr bool  LOW_SHELF_ENABLED_DEFAULT = false;
 inline constexpr float LOW_SHELF_FREQ_MIN        = MIN_HZ;
-inline constexpr float LOW_SHELF_FREQ_MAX        = 200.f;
+inline constexpr float LOW_SHELF_FREQ_MAX        = 1000.f;
 inline constexpr float LOW_SHELF_FREQ_DEFAULT    = 100.f;
 
 inline constexpr bool  HIGH_CUT_ENABLED_DEFAULT = false;
-inline constexpr float HIGH_CUT_FREQ_MIN        = 5000.f;
+inline constexpr float HIGH_CUT_FREQ_MIN        = 1000.f;
 inline constexpr float HIGH_CUT_FREQ_MAX        = MAX_HZ;
 inline constexpr float HIGH_CUT_FREQ_DEFAULT    = 15000.f;
 
 inline constexpr bool  HIGH_SHELF_ENABLED_DEFAULT = false;
-inline constexpr float HIGH_SHELF_FREQ_MIN        = 5000.f;
+inline constexpr float HIGH_SHELF_FREQ_MIN        = 1000.f;
 inline constexpr float HIGH_SHELF_FREQ_MAX        = MAX_HZ;
 inline constexpr float HIGH_SHELF_FREQ_DEFAULT    = 8000.f;
 
