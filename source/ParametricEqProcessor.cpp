@@ -198,7 +198,7 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
 
     // Process the EQ.
     // The filters need to be processed as doubles.
-    filter_buffer_.makeCopyOf(buffer);
+    filter_buffer_.makeCopyOf(buffer, true);
     const auto audio_block = juce::dsp::AudioBlock< double >(filter_buffer_);
 
     for (size_t i = 0; i < static_cast< size_t >(getTotalNumInputChannels()); ++i) {
@@ -210,7 +210,7 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
 
     // Push the buffer to the FFT FIFO.
     // The FFT needs to be processed as floats.
-    buffer.makeCopyOf(filter_buffer_);
+    buffer.makeCopyOf(filter_buffer_, true);
     fft_fifo_.pushData(buffer);
 }
 
