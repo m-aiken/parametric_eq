@@ -121,16 +121,16 @@ ParametricEqProcessor::changeProgramName(int index, const juce::String& new_name
 void
 ParametricEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
 {
-    const juce::dsp::ProcessSpec filter_process_spec {
+    const juce::dsp::ProcessSpec filter_chain_spec {
         .sampleRate       = sample_rate,
         .maximumBlockSize = static_cast< uint32 >(samples_per_block),
-        .numChannels      = static_cast< uint32 >(getTotalNumInputChannels()),
+        .numChannels      = 1,  //! Each filter chain is mono.
     };
 
     filter_chains_.resize(static_cast< size_t >(getTotalNumInputChannels()));
 
     for (auto& chain : filter_chains_) {
-        chain.prepare(filter_process_spec);
+        chain.prepare(filter_chain_spec);
         updateFilterChain(chain);
     }
 
