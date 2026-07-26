@@ -15,7 +15,7 @@ inline const juce::String PLUGIN_BYPASS_PARAMETER = "Bypass";
 inline constexpr bool     PLUGIN_BYPASS_DEFAULT   = false;
 
 // Filter constants.
-using Filter = juce::dsp::IIR::Filter< float >;
+using Filter = juce::dsp::IIR::Filter< double >;
 
 // Cut filter chain: x4 filters to allow for 12/24/36/48 dB/oct options.
 using CutFilter = juce::dsp::ProcessorChain< Filter, Filter, Filter, Filter >;

@@ -69,6 +69,10 @@ private:
     // vector of filter chains; one per channel.
     std::vector< parametric_eq::FilterChain > filter_chains_;
 
+    // The filters become unstable at lower frequencies with floats.
+    // They need a buffer of doubles instead.
+    juce::AudioBuffer< double > filter_buffer_;
+
     FftInputDataFifo fft_fifo_;
 
     AudioCallbackListener audio_callback_listener_;

@@ -21,17 +21,17 @@ FilterFactory::updateCutCoefficients(parametric_eq::FilterChain& filters, const 
     const auto order       = processor_ref_.getFilterOrder(filter_id);
     const auto sample_rate = processor_ref_.getSampleRate();
 
-    juce::ReferenceCountedArray< juce::dsp::FilterDesign< float >::IIRCoefficients > coefficients;
+    juce::ReferenceCountedArray< juce::dsp::FilterDesign< double >::IIRCoefficients > coefficients;
 
     if (is_low_cut) {
-        coefficients = juce::dsp::FilterDesign< float >::designIIRHighpassHighOrderButterworthMethod(frequency,
-                                                                                                     sample_rate,
-                                                                                                     order);
+        coefficients = juce::dsp::FilterDesign< double >::designIIRHighpassHighOrderButterworthMethod(frequency,
+                                                                                                      sample_rate,
+                                                                                                      order);
     }
     else {
-        coefficients = juce::dsp::FilterDesign< float >::designIIRLowpassHighOrderButterworthMethod(frequency,
-                                                                                                    sample_rate,
-                                                                                                    order);
+        coefficients = juce::dsp::FilterDesign< double >::designIIRLowpassHighOrderButterworthMethod(frequency,
+                                                                                                     sample_rate,
+                                                                                                     order);
     }
 
     if (coefficients.isEmpty()) {
@@ -77,11 +77,11 @@ FilterFactory::updateCutCoefficients(parametric_eq::FilterChain& filters, const 
 void
 FilterFactory::updateLowShelfCoefficients(parametric_eq::FilterChain& filters) const
 {
-    *filters.get< parametric_eq::LOW_SHELF >().coefficients =
-        *juce::dsp::IIR::Coefficients< float >::makeLowShelf(processor_ref_.getSampleRate(),
-                                                             processor_ref_.getFilterFrequency(parametric_eq::LOW_SHELF),
-                                                             parametric_eq::SHELF_Q_DEFAULT,
-                                                             processor_ref_.getFilterGain(parametric_eq::LOW_SHELF));
+    *filters.get< parametric_eq::LOW_SHELF >().coefficients = *juce::dsp::IIR::Coefficients< double >::makeLowShelf(
+        processor_ref_.getSampleRate(),
+        processor_ref_.getFilterFrequency(parametric_eq::LOW_SHELF),
+        parametric_eq::SHELF_Q_DEFAULT,
+        processor_ref_.getFilterGain(parametric_eq::LOW_SHELF));
 }
 
 /*---------------------------------------------------------------------------
@@ -90,7 +90,7 @@ FilterFactory::updateLowShelfCoefficients(parametric_eq::FilterChain& filters) c
 void
 FilterFactory::updateHighShelfCoefficients(parametric_eq::FilterChain& filters) const
 {
-    *filters.get< parametric_eq::HIGH_SHELF >().coefficients = *juce::dsp::IIR::Coefficients< float >::makeHighShelf(
+    *filters.get< parametric_eq::HIGH_SHELF >().coefficients = *juce::dsp::IIR::Coefficients< double >::makeHighShelf(
         processor_ref_.getSampleRate(),
         processor_ref_.getFilterFrequency(parametric_eq::HIGH_SHELF),
         parametric_eq::SHELF_Q_DEFAULT,
@@ -108,7 +108,7 @@ FilterFactory::updatePeakCoefficients(parametric_eq::FilterChain& filters, const
     const auto q         = processor_ref_.getFilterQ(filter_id);
 
     const auto coefficients =
-        juce::dsp::IIR::Coefficients< float >::makePeakFilter(processor_ref_.getSampleRate(), frequency, q, gain);
+        juce::dsp::IIR::Coefficients< double >::makePeakFilter(processor_ref_.getSampleRate(), frequency, q, gain);
 
     switch (filter_id) {
     case parametric_eq::PEAK_BAND_1:

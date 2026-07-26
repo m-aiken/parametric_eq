@@ -56,7 +56,7 @@ private:
 
     std::array< juce::Atomic< bool >, parametric_eq::NUM_FILTERS > update_flags_;
 
-    typedef juce::dsp::IIR::Filter< float >::CoefficientsPtr               FilterCoefficients;
+    typedef juce::dsp::IIR::Filter< double >::CoefficientsPtr              FilterCoefficients;
     std::array< FilterCoefficients, parametric_eq::NUM_CUT_SLOPE_OPTIONS > lcut_coefficients_;
     std::array< FilterCoefficients, parametric_eq::NUM_CUT_SLOPE_OPTIONS > hcut_coefficients_;
     std::array< FilterCoefficients, parametric_eq::NUM_FILTERS >           band_coefficients_;

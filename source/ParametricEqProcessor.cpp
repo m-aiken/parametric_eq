@@ -121,18 +121,24 @@ ParametricEqProcessor::changeProgramName(int index, const juce::String& new_name
 void
 ParametricEqProcessor::prepareToPlay(double sample_rate, int samples_per_block)
 {
-    const juce::dsp::ProcessSpec spec {
+    const juce::dsp::ProcessSpec filter_process_spec {
         .sampleRate       = sample_rate,
         .maximumBlockSize = static_cast< uint32 >(samples_per_block),
-        .numChannels      = static_cast< uint32 >(getTotalNumOutputChannels()),
+        .numChannels      = static_cast< uint32 >(getTotalNumInputChannels()),
     };
 
     filter_chains_.resize(static_cast< size_t >(getTotalNumInputChannels()));
 
     for (auto& chain : filter_chains_) {
-        chain.prepare(spec);
+        chain.prepare(filter_process_spec);
         updateFilterChain(chain);
     }
+
+    // The filter buffer will just be a float->double converting copy of the
+    // buffer passed into processBlock. The channel count of that buffer is
+    // the greater of the number of inputs or outputs from the bus layout.
+    const auto max_channels = juce::jmax(getTotalNumInputChannels(), getTotalNumOutputChannels());
+    filter_buffer_.setSize(max_channels, samples_per_block);
 }
 
 /*---------------------------------------------------------------------------
@@ -191,16 +197,20 @@ ParametricEqProcessor::processBlock(juce::AudioBuffer< float >& buffer, juce::Mi
     }
 
     // Process the EQ.
-    const auto audio_block = juce::dsp::AudioBlock< float >(buffer);
+    // The filters need to be processed as doubles.
+    filter_buffer_.makeCopyOf(buffer);
+    const auto audio_block = juce::dsp::AudioBlock< double >(filter_buffer_);
 
     for (size_t i = 0; i < static_cast< size_t >(getTotalNumInputChannels()); ++i) {
         auto       single_channel_block   = audio_block.getSingleChannelBlock(i);
-        const auto single_channel_context = juce::dsp::ProcessContextReplacing< float >(single_channel_block);
+        const auto single_channel_context = juce::dsp::ProcessContextReplacing< double >(single_channel_block);
 
         filter_chains_.at(i).process(single_channel_context);
     }
 
     // Push the buffer to the FFT FIFO.
+    // The FFT needs to be processed as floats.
+    buffer.makeCopyOf(filter_buffer_);
     fft_fifo_.pushData(buffer);
 }
 
