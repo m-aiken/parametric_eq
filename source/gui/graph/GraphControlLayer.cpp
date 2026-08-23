@@ -56,11 +56,22 @@ GraphControlLayer::paint(juce::Graphics& g)
     const auto& bounds        = getLocalBounds().toFloat();
     const auto  bounds_width  = bounds.getWidth();
     const auto  bounds_x      = bounds.getX();
+    const auto  bounds_y      = bounds.getY();
     const auto  bounds_bottom = bounds.getBottom();
 
     for (auto& path : paths_) {
         path.clear();
     }
+
+    // Gradient fill for the band paths.
+    const auto& fill_enabled  = parametric_eq::theme::RESPONSE_CURVE_FILL;
+    const auto& fill_disabled = parametric_eq::theme::RESPONSE_CURVE_DISABLED;
+
+    auto enabled_gradient = juce::ColourGradient::vertical(fill_enabled, bounds_bottom, fill_enabled, bounds_y);
+    enabled_gradient.addColour(0.5, fill_enabled.withAlpha(0.1f));
+
+    auto disabled_gradient = juce::ColourGradient::vertical(fill_disabled, bounds_bottom, fill_disabled, bounds_y);
+    disabled_gradient.addColour(0.5, fill_disabled.withAlpha(0.025f));
 
     // Plot the paths for each band.
     // These need to be closed paths starting and ending at 0 for the fill effect to look correct.
@@ -81,9 +92,7 @@ GraphControlLayer::paint(juce::Graphics& g)
         path.closeSubPath();
 
         const auto band_enabled = processor_ref_.getFilterEnabled(static_cast< parametric_eq::FILTER_ID >(band_index));
-        g.setColour(band_enabled ? parametric_eq::theme::RESPONSE_CURVE_FILL :
-                                   parametric_eq::theme::RESPONSE_CURVE_DISABLED);
-
+        g.setGradientFill(band_enabled ? enabled_gradient : disabled_gradient);
         g.fillPath(path);
     }
 
