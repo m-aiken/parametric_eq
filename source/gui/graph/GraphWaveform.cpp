@@ -13,8 +13,8 @@ GraphWaveform::GraphWaveform(ParametricEqProcessor& processor_ref, const juce::C
     , smoothed_fft_output_()
 {
     fft_input_buffer_.setSize(1, parametric_eq::fft::INPUT_BUFFER_SIZE);
-    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), parametric_eq::fft::MIN_DB);
-    std::fill(smoothed_fft_output_.begin(), smoothed_fft_output_.end(), parametric_eq::fft::MIN_DB);
+    std::ranges::fill(fft_output_buffer_, parametric_eq::fft::MIN_DB);
+    std::ranges::fill(smoothed_fft_output_, parametric_eq::fft::MIN_DB);
 
     startTimerHz(parametric_eq::fft::WAVEFORM_REFRESH_RATE_HZ);
 }
@@ -68,7 +68,7 @@ GraphWaveform::timerCallback()
 void
 GraphWaveform::performFft()
 {
-    std::fill(fft_output_buffer_.begin(), fft_output_buffer_.end(), 0.f);
+    std::ranges::fill(fft_output_buffer_, 0.f);
 
     if (!fft_input_buffer_.hasBeenCleared()) {
         std::copy_n(fft_input_buffer_.getReadPointer(0), parametric_eq::fft::SIZE, fft_output_buffer_.begin());
@@ -81,7 +81,7 @@ GraphWaveform::performFft()
                                           1.f / static_cast< float >(parametric_eq::fft::NUM_BINS),
                                           parametric_eq::fft::NUM_BINS + 1);
 
-    for (size_t i = 0; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS + 1); ++i) {
+    for (size_t i = 0; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS) + 1; ++i) {
         fft_output_buffer_[i] = juce::Decibels::gainToDecibels(fft_output_buffer_[i], parametric_eq::fft::MIN_DB);
     }
 }
@@ -121,7 +121,7 @@ GraphWaveform::generatePath()
 
     path.startNewSubPath(last_x_coordinate, y_coordinate);
 
-    for (size_t i = 1; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS + 1);
+    for (size_t i = 1; i < static_cast< size_t >(parametric_eq::fft::NUM_BINS) + 1;
          i += parametric_eq::fft::WAVEFORM_PATH_RESOLUTION) {
         y_coordinate = juce::jmap< float >(smoothed_fft_output_.at(i),
                                            parametric_eq::fft::MIN_DB,
