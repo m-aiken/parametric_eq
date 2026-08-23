@@ -34,8 +34,10 @@ void
 GraphWaveform::paint(juce::Graphics& g)
 {
     const auto& bounds = getLocalBounds().toFloat();
+    const auto  gradient =
+        juce::ColourGradient::vertical(colour_.withAlpha(0.f), bounds.getBottom(), colour_, bounds.getCentreY());
 
-    g.setColour(colour_);
+    g.setGradientFill(gradient);
 
     path_.applyTransform(juce::AffineTransform::translation(bounds.getX(), bounds.getY()));
     g.fillPath(path_);
