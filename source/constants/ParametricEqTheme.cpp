@@ -30,6 +30,8 @@ const juce::Colour ANALYSER_GRID           = PARCHMENT;
 const juce::Colour ANALYSER_WAVEFORM       = PARCHMENT.withAlpha(0.05f);
 const juce::Colour ACTIVE_BAND_BACKGROUND  = PARCHMENT.withAlpha(0.025f);
 const juce::Colour TEXT_BUTTON_BG_HOVER    = PARCHMENT.withAlpha(0.025f);
+const juce::Colour BUTTON_ICON             = ACCENT;
+const juce::Colour BUTTON_ICON_DISABLED    = TEXT_DISABLED;
 
 /*---------------------------------------------------------------------------
 **

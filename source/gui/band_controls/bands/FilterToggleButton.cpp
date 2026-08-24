@@ -36,7 +36,7 @@ FilterToggleButton::paintButton(juce::Graphics& g, bool should_draw_button_as_hi
     g.fillRoundedRectangle(bounds, parametric_eq::theme::BORDER_RADIUS);
 
     // Icon.
-    g.setColour(getToggleState() ? parametric_eq::theme::TEXT : parametric_eq::theme::TEXT_DISABLED);
+    g.setColour(getToggleState() ? parametric_eq::theme::BUTTON_ICON : parametric_eq::theme::BUTTON_ICON_DISABLED);
 
     switch (filter_id_) {
     case parametric_eq::LOW_CUT:
