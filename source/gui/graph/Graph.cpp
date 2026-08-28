@@ -5,8 +5,7 @@
 **
 */
 Graph::Graph(ParametricEqProcessor& processor_ref)
-    : background_(processor_ref)
-    , waveform_(processor_ref, parametric_eq::theme::ANALYSER_WAVEFORM)
+    : waveform_(processor_ref, parametric_eq::theme::ANALYSER_WAVEFORM)
     , control_layer_(processor_ref)
 {
     addAndMakeVisible(background_);

@@ -2,13 +2,12 @@
 
 #include <JuceHeader.h>
 
-#include "ParametricEqProcessor.h"
 #include "ParametricEqTheme.h"
 
 class GraphBackground final : public juce::Component
 {
 public:
-    explicit GraphBackground(ParametricEqProcessor& processor_ref);
+    GraphBackground();
 
     void paint(juce::Graphics& g) override;
 
@@ -25,8 +24,6 @@ private:
     static constexpr float            LINE_ALPHA_LIGHTER = 0.02f;
     static constexpr int              DB_LABEL_INTERVAL  = 3;
     static const std::vector< float > HZ_LIST;
-
-    ParametricEqProcessor& processor_ref_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphBackground)
 };

@@ -9,8 +9,7 @@
 /*---------------------------------------------------------------------------
 **
 */
-GraphBackground::GraphBackground(ParametricEqProcessor& processor_ref)
-    : processor_ref_(processor_ref)
+GraphBackground::GraphBackground()
 {
     setBufferedToImage(true);
 }
