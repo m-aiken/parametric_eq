@@ -11,7 +11,7 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     , latched_node_index_(LATCHED_NODE_INDEX_UNSET)
 {
     initialiseCoefficientsRefs();
-    processor_ref_.updateFilterChain(filter_chain_, true);
+    updateFilterChain();
 
     auto& apvts = processor_ref_.getApvts();
 
@@ -290,7 +290,15 @@ GraphControlLayer::setActiveBand(const parametric_eq::FILTER_ID& active_band) co
 void
 GraphControlLayer::updateFilterChain()
 {
-    processor_ref_.updateFilterChain(filter_chain_);
+    // Update our (GUI) filter chain with the current state of all of the
+    // filter parameters, regardless of whether the band is enabled or not.
+    // The audio thread updates its chain sparsely; it only cares about
+    // parameter changes to bands that are enabled as only their filters
+    // are processed.
+    // The GUI thread needs to know about the state of all bands, regardless
+    // of enablement so that we can draw all bands properly.
+    // This is particularly important when the user changes presets.
+    processor_ref_.updateFilterChain(filter_chain_, true);
 }
 
 /*---------------------------------------------------------------------------
