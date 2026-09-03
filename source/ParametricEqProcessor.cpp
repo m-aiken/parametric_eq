@@ -417,6 +417,30 @@ ParametricEqProcessor::getFilterOrder(const parametric_eq::FILTER_ID& filter_id)
 **
 */
 void
+ParametricEqProcessor::setParameterValue(const juce::String& parameter_id, const float value) const
+{
+    if (parameter_id == parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        return;
+    }
+
+    auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id));
+
+    if (p == nullptr) {
+        return;
+    }
+
+    // Make sure the value is within the legal bounds.
+    const auto safe_value = p->getNormalisableRange().getRange().clipValue(value);
+
+    p->beginChangeGesture();
+    p->setValueNotifyingHost(p->convertTo0to1(safe_value));
+    p->endChangeGesture();
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
 ParametricEqProcessor::updateFilterChain(parametric_eq::FilterChain& filter_chain, const bool force) const
 {
     // Update the enabled/disabled state of each filter in the chain.
@@ -473,7 +497,7 @@ ParametricEqProcessor::getAudioCallbackListener() const
 /*---------------------------------------------------------------------------
 **
 */
-juce::AudioProcessorValueTreeState::ParameterLayout
+/*static*/ juce::AudioProcessorValueTreeState::ParameterLayout
 ParametricEqProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;

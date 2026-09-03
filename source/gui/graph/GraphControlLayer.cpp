@@ -16,21 +16,11 @@ GraphControlLayer::GraphControlLayer(ParametricEqProcessor& processor_ref)
     auto& apvts = processor_ref_.getApvts();
 
     for (size_t i = 0; i < nodes_.size(); ++i) {
-        const auto& filter_id       = static_cast< parametric_eq::FILTER_ID >(i);
-        const auto& band_parameters = parametric_eq::PARAMETER_MAP.at(filter_id);
+        const auto& filter_id            = static_cast< parametric_eq::FILTER_ID >(i);
+        const auto& enablement_parameter = parametric_eq::PARAMETER_MAP.at(filter_id).enabled_;
 
-        nodes_.at(i) = std::make_unique< GraphNode >(apvts, band_parameters.enabled_);
-
+        nodes_.at(i) = std::make_unique< GraphNode >(apvts, enablement_parameter);
         addAndMakeVisible(*nodes_.at(i));
-
-        // Map the x coordinate to the band frequency.
-        x_values_.at(i).referTo(apvts.getParameterAsValue(band_parameters.frequency_));
-
-        // Map the y coordinate to the band gain except for the cut filters.
-        // Up/down drag on the cut filters currently does nothing.
-        if (filter_id != parametric_eq::LOW_CUT && filter_id != parametric_eq::HIGH_CUT) {
-            y_values_.at(i).referTo(apvts.getParameterAsValue(band_parameters.gain_));
-        }
     }
 
     parametric_eq::addListenerToAllParameters(processor_ref_.getApvts(), this);
@@ -204,11 +194,16 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
     }
 
     // Update the frequency and gain parameters for the node being dragged.
-    const auto hz = mapToLog10< float >(x / bounds_width, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
-    const auto db = juce::jmap< float >(y, 0.f, bounds_height, parametric_eq::MAX_DB, parametric_eq::MIN_DB);
+    // Note that ParametricEqProcessor::setParameterValue checks that validity of the
+    // parameter internally before updating its value (i.e. the gain won't be set on
+    // the cut filters; up/down drag currently does nothing for those).
+    const auto  hz        = mapToLog10< float >(x / bounds_width, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
+    const auto  db        = juce::jmap< float >(y, 0.f, bounds_height, parametric_eq::MAX_DB, parametric_eq::MIN_DB);
+    const auto  filter_id = static_cast< parametric_eq::FILTER_ID >(latched_node_index_);
+    const auto& filter_params = parametric_eq::PARAMETER_MAP.at(filter_id);
 
-    x_values_.at(latched_node_index_) = hz;
-    y_values_.at(latched_node_index_) = db;
+    processor_ref_.setParameterValue(filter_params.frequency_, hz);
+    processor_ref_.setParameterValue(filter_params.gain_, db);
 }
 
 /*---------------------------------------------------------------------------

@@ -45,8 +45,6 @@ private:
     parametric_eq::FilterChain filter_chain_;
 
     std::array< std::unique_ptr< GraphNode >, parametric_eq::NUM_FILTERS > nodes_;
-    std::array< juce::Value, parametric_eq::NUM_FILTERS >                  x_values_;
-    std::array< juce::Value, parametric_eq::NUM_FILTERS >                  y_values_;
     std::array< juce::Path, parametric_eq::NUM_FILTERS + 1 >               paths_;
     std::array< std::vector< double >, parametric_eq::NUM_FILTERS + 1 >    magnitudes_;
 
