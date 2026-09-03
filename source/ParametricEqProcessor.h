@@ -54,7 +54,8 @@ public:
     float getFilterQ(const parametric_eq::FILTER_ID& filter_id) const;
     int   getFilterOrder(const parametric_eq::FILTER_ID& filter_id) const;
 
-    void setParameterValue(const juce::String& parameter_id, const float value) const;
+    void setFilterFrequency(const parametric_eq::FILTER_ID& filter_id, const float hz) const;
+    void setFilterDecibels(const parametric_eq::FILTER_ID& filter_id, const float db) const;
 
     void updateFilterChain(parametric_eq::FilterChain& filter_chain, const bool force = false) const;
 
@@ -63,6 +64,8 @@ public:
     const AudioCallbackListener& getAudioCallbackListener() const;
 
 private:
+    void setFloatParameterValue(const juce::String& parameter_id, const float value) const;
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     juce::AudioProcessorValueTreeState apvts_;

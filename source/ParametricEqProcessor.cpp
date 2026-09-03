@@ -301,11 +301,11 @@ ParametricEqProcessor::getFftFifo()
 bool
 ParametricEqProcessor::getFilterEnabled(const parametric_eq::FILTER_ID& filter_id) const
 {
-    bool        ret = false;
-    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).enabled_;
+    bool        ret          = false;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).enabled_;
 
-    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(id));
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        const auto* p = dynamic_cast< juce::AudioParameterBool* >(apvts_.getParameter(parameter_id));
 
         if (p != nullptr) {
             ret = p->get();
@@ -321,11 +321,11 @@ ParametricEqProcessor::getFilterEnabled(const parametric_eq::FILTER_ID& filter_i
 float
 ParametricEqProcessor::getFilterFrequency(const parametric_eq::FILTER_ID& filter_id) const
 {
-    float       ret = parametric_eq::MIN_HZ;
-    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).frequency_;
+    float       ret          = parametric_eq::MIN_HZ;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).frequency_;
 
-    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id));
 
         if (p != nullptr) {
             ret = p->get();
@@ -341,11 +341,11 @@ ParametricEqProcessor::getFilterFrequency(const parametric_eq::FILTER_ID& filter
 float
 ParametricEqProcessor::getFilterDecibels(const parametric_eq::FILTER_ID& filter_id) const
 {
-    float       ret = 0.f;
-    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).gain_;
+    float       ret          = 0.f;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).gain_;
 
-    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id));
 
         if (p != nullptr) {
             ret = p->get();
@@ -361,11 +361,11 @@ ParametricEqProcessor::getFilterDecibels(const parametric_eq::FILTER_ID& filter_
 float
 ParametricEqProcessor::getFilterGain(const parametric_eq::FILTER_ID& filter_id) const
 {
-    float       ret = 1.f;
-    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).gain_;
+    float       ret          = 1.f;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).gain_;
 
-    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id));
 
         if (p != nullptr) {
             ret = juce::Decibels::decibelsToGain(p->get());
@@ -381,11 +381,11 @@ ParametricEqProcessor::getFilterGain(const parametric_eq::FILTER_ID& filter_id) 
 float
 ParametricEqProcessor::getFilterQ(const parametric_eq::FILTER_ID& filter_id) const
 {
-    float       ret = 0.f;
-    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).q_;
+    float       ret          = 0.f;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).q_;
 
-    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(id));
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        const auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id));
 
         if (p != nullptr) {
             ret = p->get();
@@ -401,11 +401,11 @@ ParametricEqProcessor::getFilterQ(const parametric_eq::FILTER_ID& filter_id) con
 int
 ParametricEqProcessor::getFilterOrder(const parametric_eq::FILTER_ID& filter_id) const
 {
-    int         ret = parametric_eq::SLOPE_48_DBPO * 2;
-    const auto& id  = parametric_eq::PARAMETER_MAP.at(filter_id).slope_;
+    int         ret          = parametric_eq::SLOPE_48_DBPO * 2;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).slope_;
 
-    if (id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        if (const auto* p = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(id)); p != nullptr) {
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        if (const auto* p = dynamic_cast< juce::AudioParameterChoice* >(apvts_.getParameter(parameter_id)); p != nullptr) {
             ret = (p->getIndex() + 1) * 2;
         }
     }
@@ -417,24 +417,26 @@ ParametricEqProcessor::getFilterOrder(const parametric_eq::FILTER_ID& filter_id)
 **
 */
 void
-ParametricEqProcessor::setParameterValue(const juce::String& parameter_id, const float value) const
+ParametricEqProcessor::setFilterFrequency(const parametric_eq::FILTER_ID& filter_id, const float hz) const
 {
-    if (parameter_id == parametric_eq::PARAMETER_NOT_SUPPORTED) {
-        return;
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).frequency_;
+
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        setFloatParameterValue(parameter_id, hz);
     }
+}
 
-    auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id));
+/*---------------------------------------------------------------------------
+**
+*/
+void
+ParametricEqProcessor::setFilterDecibels(const parametric_eq::FILTER_ID& filter_id, const float db) const
+{
+    const auto& parameter_id = parametric_eq::PARAMETER_MAP.at(filter_id).gain_;
 
-    if (p == nullptr) {
-        return;
+    if (parameter_id != parametric_eq::PARAMETER_NOT_SUPPORTED) {
+        setFloatParameterValue(parameter_id, db);
     }
-
-    // Make sure the value is within the legal bounds.
-    const auto safe_value = p->getNormalisableRange().getRange().clipValue(value);
-
-    p->beginChangeGesture();
-    p->setValueNotifyingHost(p->convertTo0to1(safe_value));
-    p->endChangeGesture();
 }
 
 /*---------------------------------------------------------------------------
@@ -492,6 +494,22 @@ const AudioCallbackListener&
 ParametricEqProcessor::getAudioCallbackListener() const
 {
     return audio_callback_listener_;
+}
+
+/*---------------------------------------------------------------------------
+**
+*/
+void
+ParametricEqProcessor::setFloatParameterValue(const juce::String& parameter_id, const float value) const
+{
+    if (auto* p = dynamic_cast< juce::AudioParameterFloat* >(apvts_.getParameter(parameter_id)); p != nullptr) {
+        // Make sure the value is within the legal bounds.
+        const auto safe_value = p->getNormalisableRange().getRange().clipValue(value);
+
+        p->beginChangeGesture();
+        p->setValueNotifyingHost(p->convertTo0to1(safe_value));
+        p->endChangeGesture();
+    }
 }
 
 /*---------------------------------------------------------------------------
