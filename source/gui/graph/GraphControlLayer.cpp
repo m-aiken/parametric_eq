@@ -194,9 +194,6 @@ GraphControlLayer::mouseDrag(const juce::MouseEvent& event)
     }
 
     // Update the frequency and gain parameters for the node being dragged.
-    // Note that ParametricEqProcessor::setParameterValue checks that validity of the
-    // parameter internally before updating its value (i.e. the gain won't be set on
-    // the cut filters; up/down drag currently does nothing for those).
     const auto filter_id = static_cast< parametric_eq::FILTER_ID >(latched_node_index_);
     const auto hz        = mapToLog10< float >(x / bounds_width, parametric_eq::MIN_HZ, parametric_eq::MAX_HZ);
     const auto db        = juce::jmap< float >(y, 0.f, bounds_height, parametric_eq::MAX_DB, parametric_eq::MIN_DB);
